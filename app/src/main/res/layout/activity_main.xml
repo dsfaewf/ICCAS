@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="180dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button2"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="Diary"
+            android:textSize="24dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button4"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="@string/setting"
+            android:textSize="24dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button3"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="My Cat"
+            android:textSize="24dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="Game"
+            android:textSize="24dp" />
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TestFolder</string>
+    <string name="level_upper">상</string>
+    <string name="level_middle">중</string>
+    <string name="level_lower">하</string>
+    <string name="level">난이도 조절</string>
+    <string name="volume">볼륨조절</string>
+    <string name="setting">Setting</string>
+    <string name="music_setting">사운드 음악 설정</string>
+    <string name="music_sound1">음악 1</string>
+    <string name="music_sound2">음악 2</string>
+    <string name="music_sound3">음악 3</string>
+</resources>
