@@ -10,11 +10,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val imageButton = findViewById<View>(R.id.my_button4) as Button
-        imageButton.setOnClickListener {
+
+        val imageButton1 = findViewById<View>(R.id.my_button4) as Button
+        val imageButton2 = findViewById<View>(R.id.my_button2) as Button
+
+        imageButton1.setOnClickListener {
             val intent = Intent(applicationContext, MainActivity2::class.java)
-            val intents = arrayOf(intent)
-            startActivities(intents)
+            startActivity(intent)
+        }
+
+        imageButton2.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity3::class.java)
+            startActivity(intent)
         }
     }
 }

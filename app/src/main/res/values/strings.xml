@@ -10,4 +10,6 @@
     <string name="music_sound1">음악 1</string>
     <string name="music_sound2">음악 2</string>
     <string name="music_sound3">음악 3</string>
+    <string name="game_record_view">게임기록보기</string>
+    <string name="back_button">뒤로가기</string>
 </resources>
