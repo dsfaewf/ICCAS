@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -37,6 +38,12 @@ android {
 
 dependencies {
 
+    // Add the dependency for the Realtime Database library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-database-ktx")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
