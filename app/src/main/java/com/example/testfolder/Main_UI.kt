@@ -6,7 +6,8 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+
+class Main_UI : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -15,12 +16,12 @@ class MainActivity : AppCompatActivity() {
         val imageButton2 = findViewById<View>(R.id.my_button2) as Button
 
         imageButton1.setOnClickListener {
-            val intent = Intent(applicationContext, MainActivity2::class.java)
+            val intent = Intent(applicationContext, Setting_UI::class.java)
             startActivity(intent)
         }
 
         imageButton2.setOnClickListener {
-            val intent = Intent(applicationContext, MainActivity3::class.java)
+            val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
         }
     }
