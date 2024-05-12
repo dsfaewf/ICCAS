@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392698074344",
+    "project_id": "iccas2024-main",
+    "storage_bucket": "iccas2024-main.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392698074344:android:ffbdeb76934dba0a23e55d",
+        "android_client_info": {
+          "package_name": "com.example.testfolder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key":"AIzaSyDj_8d2lzOX02OcjRTH-68maAxL3rnX4_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
