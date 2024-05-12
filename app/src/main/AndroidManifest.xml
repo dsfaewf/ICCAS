@@ -15,7 +15,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".Main_UI"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Main_UI" />
         <activity android:name=".Setting_UI" />
         <activity android:name=".Diary_write_UI" />
+        <activity android:name=".FindIdActivity" />
+        <activity android:name=".FindPwActivity" />
+        <activity android:name=".RegisterActivity" />
+        
     </application>
 </manifest>
