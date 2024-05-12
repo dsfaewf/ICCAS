@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity3"
+    tools:context="Diary_write_UI"
     android:orientation="vertical"
     android:padding="40dp">
     >
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <View
             android:layout_width="0dp"
@@ -32,7 +32,17 @@
             android:textStyle="bold"
             />
 
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"/>
+
 
     <LinearLayout
         android:layout_marginTop="20dp"
@@ -55,6 +65,9 @@
             android:textSize="16sp" />
 
     </LinearLayout>
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -74,6 +87,45 @@
             android:textSize="20sp"
             android:textColor="@android:color/black"/>
 
+
+    </LinearLayout>
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button7"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="20dp"
+            android:background="@color/gray"
+            android:text="@string/view_diary_button"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+
+        <View
+            android:layout_width="5dp"
+            android:layout_height="match_parent"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button8"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="20dp"
+            android:background="@color/gray"
+            android:text="@string/back_button"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 

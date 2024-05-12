@@ -13,4 +13,7 @@
     <string name="game_record_view">게임기록보기</string>
     <string name="back_button">뒤로가기</string>
     <string name="save_button">Save</string>
+    <string name="view_diary_button">일지 조회하기</string>
+    <string name="diary_hint">Write your diary here</string>
+
 </resources>

@@ -13,11 +13,9 @@
         android:theme="@style/Theme.TestFolder"
         tools:ignore="ExtraText"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity3"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".Main_UI"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity2" />
+        <activity android:name=".Setting_UI" />
+        <activity android:name=".Diary_write_UI" />
     </application>
 
 </manifest>
