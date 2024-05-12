@@ -26,5 +26,4 @@
         <activity android:name=".Setting_UI" />
         <activity android:name=".Diary_write_UI" />
     </application>
-
 </manifest>
