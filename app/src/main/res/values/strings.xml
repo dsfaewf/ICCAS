@@ -12,4 +12,5 @@
     <string name="music_sound3">음악 3</string>
     <string name="game_record_view">게임기록보기</string>
     <string name="back_button">뒤로가기</string>
+    <string name="save_button">Save</string>
 </resources>
