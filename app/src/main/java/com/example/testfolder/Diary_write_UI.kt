@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
@@ -14,6 +15,7 @@ import java.util.*
 
 class Diary_write_UI : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +28,8 @@ class Diary_write_UI : AppCompatActivity() {
 
         // Firebase 데이터베이스 루트 참조 가져오기
         databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
+        // Firebase 인증 가져오기
+        auth = FirebaseAuth.getInstance()
 
         // Save 버튼 클릭 시 날짜 표시
         saveButton.setOnClickListener {
@@ -36,7 +40,16 @@ class Diary_write_UI : AppCompatActivity() {
 
             // 일기 내용을 Firebase 데이터베이스에 업로드
             val diaryContent = diaryEditText.text.toString()
-            databaseReference.push().setValue(diaryContent)
+            // 현재 로그인된 사용자의 UID 가져오기
+            val currentUser = auth.currentUser
+            val userId = currentUser?.uid
+            // 사용자별로 데이터 저장하기
+            userId?.let {
+                val userDiaryRef = databaseReference.child(it)
+                // 날짜와 일기 내용 함께 저장
+                val diaryEntry = DiaryEntry(currentDate, diaryContent)
+                userDiaryRef.push().setValue(diaryEntry)
+            }
         }
 
         // 텍스트 입력 수를 표시
@@ -56,4 +69,7 @@ class Diary_write_UI : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
+
+    // 일기 내용과 함께 저장할 데이터 클래스
+    data class DiaryEntry(val date: String, val content: String)
 }
