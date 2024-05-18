@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 class Setting_UI : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main2)
+            super.onCreate(savedInstanceState)
+            setContentView(R.layout.activity_setting)
 
         val imageButton1 = findViewById<View>(R.id.my_button6) as Button
 

@@ -50,7 +50,6 @@
             android:text="@string/setting"
             android:textSize="24dp" />
 
-
     </LinearLayout>
 
     <LinearLayout
