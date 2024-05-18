@@ -87,7 +87,7 @@
         tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button"
+            android:id="@+id/btn_game"
             android:layout_width="180dp"
             android:layout_height="50dp"
             android:background="@drawable/rectangle_style"
