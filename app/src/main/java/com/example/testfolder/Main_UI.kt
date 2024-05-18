@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import com.example.testfolder.Diary_write_UI
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,14 +14,14 @@ class Main_UI : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val imageButton1 = findViewById<View>(R.id.my_button4) as Button
-        val imageButton2 = findViewById<View>(R.id.my_button2) as Button
+        val diaryButton = findViewById<View>(R.id.my_button2) as Button
 
         imageButton1.setOnClickListener {
             val intent = Intent(applicationContext, Setting_UI::class.java)
             startActivity(intent)
         }
 
-        imageButton2.setOnClickListener {
+        diaryButton.setOnClickListener {
             val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
         }
