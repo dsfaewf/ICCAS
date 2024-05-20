@@ -15,6 +15,7 @@ class Main_UI : AppCompatActivity() {
 
         val imageButton1 = findViewById<View>(R.id.my_button4) as Button
         val diaryButton = findViewById<View>(R.id.my_button2) as Button
+        val gameButton = findViewById<Button>(R.id.btn_game)
 
         imageButton1.setOnClickListener {
             val intent = Intent(applicationContext, Setting_UI::class.java)
@@ -25,5 +26,12 @@ class Main_UI : AppCompatActivity() {
             val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
         }
+
+        gameButton.setOnClickListener {
+            val intent = Intent(this, gametestActivity::class.java)
+            startActivity(intent)
+        }
+
+
     }
 }
