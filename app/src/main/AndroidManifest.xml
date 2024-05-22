@@ -14,11 +14,14 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ServeGame_NumberActivity"
+            android:exported="false" />
+        <activity
             android:name=".gametestActivity"
             android:exported="false" />
         <activity
             android:name=".gameHighActivity"
-            android:windowSoftInputMode="adjustUnspecified"/>
+            android:windowSoftInputMode="adjustUnspecified" />
         <activity
             android:name=".gameMidActivity"
             android:exported="false" />
@@ -43,7 +46,6 @@
         <activity android:name=".FindIdActivity" />
         <activity android:name=".FindPwActivity" />
         <activity android:name=".RegisterActivity" />
-
     </application>
 
 </manifest>
