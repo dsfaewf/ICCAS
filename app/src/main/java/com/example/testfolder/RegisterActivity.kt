@@ -9,6 +9,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.database.FirebaseDatabase
 
 class RegisterActivity : AppCompatActivity() {
@@ -49,7 +50,14 @@ class RegisterActivity : AppCompatActivity() {
                                 Toast.makeText(this, "회원가입 실패: 사용자 ID를 가져올 수 없음", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            Toast.makeText(this, "회원가입 실패: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            // 예외 처리 추가
+                            try {
+                                throw task.exception!!
+                            } catch (e: FirebaseAuthUserCollisionException) {
+                                Toast.makeText(this, "회원가입 실패: 이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show()
+                            } catch (e: Exception) {
+                                Toast.makeText(this, "회원가입 실패: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
             } else {
@@ -76,48 +84,3 @@ class RegisterActivity : AppCompatActivity() {
     }
 }
 
-
-//package com.example.testfolder
-//
-//import android.content.Intent
-//import android.os.Bundle
-//import android.widget.Button
-//import android.widget.Toast
-//import androidx.appcompat.app.AppCompatActivity
-//import com.google.android.material.textfield.TextInputEditText
-//import com.google.firebase.Firebase
-//import com.google.firebase.auth.FirebaseAuth
-//import com.google.firebase.auth.auth
-//
-//class RegisterActivity : AppCompatActivity() {
-//
-//    private lateinit var auth: FirebaseAuth
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        auth = Firebase.auth
-//
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_register)
-//
-//        val inputEmail = findViewById<TextInputEditText>(R.id.input_email)
-//        val inputPassword = findViewById<TextInputEditText>(R.id.input_pw)
-//        val registerBtn = findViewById<Button>(R.id.register_btn)
-//
-//        registerBtn.setOnClickListener {
-//            val email = inputEmail.text.toString()
-//            val password = inputPassword.text.toString()
-//
-//            auth.createUserWithEmailAndPassword(email, password)
-//                .addOnCompleteListener(this) { task ->
-//                    if (task.isSuccessful) {
-//                        Toast.makeText(this, "회원가입 성공", Toast.LENGTH_LONG).show()
-//                        val intent = Intent(this, LoginActivity::class.java)
-//                        startActivity(intent)
-//                        finish() // 현재 RegisterActivity 종료
-//                    } else {
-//                        Toast.makeText(this, "회원가입 실패", Toast.LENGTH_LONG).show()
-//                    }
-//                }
-//        }
-//    }
-//}
