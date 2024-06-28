@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.HashSet;
 import java.util.Random;
 
 public class ServeGame_NumberActivity extends AppCompatActivity implements View.OnClickListener {
@@ -25,6 +26,8 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     //도전할 횟수 카운트
     int count = 7;
 
+    HashSet<Character> enteredNumbers = new HashSet<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +43,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         responseText = findViewById(R.id.response_text);
 
         //정답버튼
-        answerBtn = findViewById(R.id.answer_btn);  // Fixed the ID
+        answerBtn = findViewById(R.id.answer_btn);
 
         //시작버튼
         startBtn = findViewById(R.id.start_btn);
@@ -65,6 +68,9 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 //랜덤숫자 생성
                 Random random = new Random();
                 randomNumber = random.nextInt(100) + 1; //1~100
+
+                // 시작 버튼을 누를 때 정답 텍스트 초기화
+                responseText.setText("");
 
                 Toast.makeText(ServeGame_NumberActivity.this, "숫자가 생성되었습니다.",
                         Toast.LENGTH_SHORT).show();
@@ -125,45 +131,29 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 }
             }
         });
-    }//onCreate();
+    }
 
-    //버튼 클릭 이벤트
+    // 버튼 클릭 이벤트
     @Override
     public void onClick(View view) {
         int id = view.getId();
 
-        //숫자 길이 체크
+        // 숫자 길이 체크
         if (checkLength(answer)) {
-            if (id == R.id.btn0) {
-                answer = answer + "0";
+            Button clickedButton = (Button) view;
+            String buttonText = clickedButton.getText().toString();
+
+            // HashSet에 이미 해당 숫자가 있는지 확인하여 중복 방지
+            if (!enteredNumbers.contains(buttonText.charAt(0))) {
+                // HashSet에 해당 숫자 추가
+                enteredNumbers.add(buttonText.charAt(0));
+
+                // 정답에 숫자 추가 및 화면에 표시
+                answer = answer + buttonText;
                 display();
-            } else if (id == R.id.btn1) {
-                answer = answer + "1";
-                display();
-            } else if (id == R.id.btn2) {
-                answer = answer + "2";
-                display();
-            } else if (id == R.id.btn3) {
-                answer = answer + "3";
-                display();
-            } else if (id == R.id.btn4) {
-                answer = answer + "4";
-                display();
-            } else if (id == R.id.btn5) {
-                answer = answer + "5";
-                display();
-            } else if (id == R.id.btn6) {
-                answer = answer + "6";
-                display();
-            } else if (id == R.id.btn7) {
-                answer = answer + "7";
-                display();
-            } else if (id == R.id.btn8) {
-                answer = answer + "8";
-                display();
-            } else if (id == R.id.btn9) {
-                answer = answer + "9";
-                display();
+            } else {
+                // 이미 입력된 숫자라면 알림 표시
+                Toast.makeText(this, "같은 숫자는 중복해서 입력할 수 없습니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -172,6 +162,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     private void resetButtons() {
         answer = ""; //정답 변수 초기화
         requestText.setText(""); //입력창 초기화
+        enteredNumbers.clear(); // HashSet 초기화
     }
 
     //게임타입
