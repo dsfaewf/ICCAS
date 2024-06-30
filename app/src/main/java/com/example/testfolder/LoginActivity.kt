@@ -18,6 +18,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class LoginActivity : AppCompatActivity() {
 
@@ -50,35 +53,34 @@ class LoginActivity : AppCompatActivity() {
 
         // 로그인 버튼 클릭 시
         loginBtn.setOnClickListener {
-            val email = findViewById<TextView>(R.id.input_id).text.toString()
+            val userId = findViewById<TextView>(R.id.input_id).text.toString()
             val password = findViewById<TextView>(R.id.input_pw).text.toString()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            val userId = auth.currentUser?.uid
-                            if (userId != null) {
-                                checkUserExistsAndLogin(userId)
-                            } else {
-                                Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            if (userId.isNotEmpty() && password.isNotEmpty()) {
+                // 사용자 아이디로 이메일 찾기
+                val userRef = FirebaseDatabase.getInstance().reference.child("users")
+                userRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (userSnapshot in dataSnapshot.children) {
+                                val email = userSnapshot.child("email").getValue(String::class.java)
+                                if (email != null) {
+                                    signInWithEmail(email, password)
+                                } else {
+                                    Toast.makeText(this@LoginActivity, "아이디에 해당하는 이메일을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         } else {
-                            val errorMessage = when (task.exception) {
-                                is FirebaseAuthInvalidUserException ->
-                                    "등록되지 않은 계정입니다."
-
-                                is FirebaseAuthInvalidCredentialsException ->
-                                    "잘못된 ID 또는 Password입니다."
-
-                                else ->
-                                    "로그인에 실패했습니다."
-                            }
-                            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "등록되지 않은 아이디입니다.", Toast.LENGTH_SHORT).show()
                         }
                     }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(this@LoginActivity, "데이터베이스 오류: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
             } else {
-                Toast.makeText(this, "ID와 Password를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -141,6 +143,27 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun signInWithEmail(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        checkUserExistsAndLogin(userId)
+                    } else {
+                        Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val errorMessage = when (task.exception) {
+                        is FirebaseAuthInvalidUserException -> "등록되지 않은 계정입니다."
+                        is FirebaseAuthInvalidCredentialsException -> "잘못된 아이디 또는 비밀번호입니다."
+                        else -> "로그인에 실패했습니다."
+                    }
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
                 }
             }
     }
