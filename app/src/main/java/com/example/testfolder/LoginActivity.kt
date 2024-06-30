@@ -6,14 +6,27 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    companion object {
+        private const val RC_SIGN_IN = 9001
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,10 +34,19 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        // Google Sign-In 옵션 설정
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
         val loginBtn = findViewById<Button>(R.id.login_btn)
         val findIdPage = findViewById<TextView>(R.id.find_id_tv)
         val findPwPage = findViewById<TextView>(R.id.find_pw_tv)
         val registerPage = findViewById<TextView>(R.id.register_tv)
+        val googleSignInButton = findViewById<com.google.android.gms.common.SignInButton>(R.id.btn_google_sign_in)
 
         // 로그인 버튼 클릭 시
         loginBtn.setOnClickListener {
@@ -60,6 +82,11 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        // Google 로그인 버튼 클릭 시
+        googleSignInButton.setOnClickListener {
+            signIn()
+        }
+
         // 아이디 찾기 페이지로 이동
         findIdPage.setOnClickListener {
             val intent = Intent(this, FindIdActivity::class.java)
@@ -79,6 +106,45 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun signIn() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    val userId = user?.uid
+                    if (userId != null) {
+                        checkUserExistsAndLogin(userId)
+                    }
+                } else {
+                    Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
     // 사용자가 존재하는지 확인하고 로그인 처리
     private fun checkUserExistsAndLogin(userId: String) {
         val userRef = FirebaseDatabase.getInstance().reference.child("users").child(userId)
@@ -89,11 +155,34 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                // 회원가입을 마치지 않은 사용자인 경우
-                Toast.makeText(this, "회원가입을 마치신 후 이용해주세요.", Toast.LENGTH_SHORT).show()
+                // 회원가입을 마치지 않은 사용자인 경우 사용자 정보 추가
+                val user = auth.currentUser
+                val email = user?.email
+                if (email != null) {
+                    addUserToDatabase(userId, email)
+                }
             }
         }.addOnFailureListener { exception ->
             Toast.makeText(this, "데이터베이스 접근 실패. 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun addUserToDatabase(userId: String, email: String) {
+        val userRef = FirebaseDatabase.getInstance().reference.child("users").child(userId)
+        val userData = hashMapOf(
+            "email" to email
+            // 다른 사용자 정보도 추가할 수 있음
+        )
+        userRef.setValue(userData)
+            .addOnSuccessListener {
+                // 데이터베이스에 사용자 정보 추가 성공
+                val intent = Intent(this, Main_UI::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .addOnFailureListener { exception ->
+                // 데이터베이스에 사용자 정보 추가 실패
+                Toast.makeText(this, "데이터베이스에 사용자 정보 추가 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }
