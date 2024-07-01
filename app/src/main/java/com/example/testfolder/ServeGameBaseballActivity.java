@@ -41,6 +41,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             Button startBtn = findViewById(R.id.start_btn);
             Button answerBtn = findViewById(R.id.answer_btn);
             Button resetBtn = findViewById(R.id.reset_btn);
+            Button backBtn = findViewById(R.id.back_btn); // 뒤로가기 버튼
 
             viewMode("end");
 
@@ -50,7 +51,6 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 viewMode("start");
             });
 
-
             answerBtn.setOnClickListener(view -> numberCheck());
 
             resetBtn.setOnClickListener(view -> {
@@ -58,6 +58,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 viewMode("end");
                 reset();
             });
+
+            backBtn.setOnClickListener(view -> finish()); // 뒤로가기 버튼 클릭 리스너 추가
 
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during onCreate", e);
@@ -81,8 +83,6 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             for (int i = 0; i < list.size(); i++) {
                 comNumber[i] = list.get(i);
             }
-
-            responseText.setText("컴퓨터 숫자: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during randomNumber", e);
         }
@@ -90,11 +90,22 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
 
     private void numberCheck() {
         try {
-            lifeCount--;
-            lifeCountText.setText("기회: " + lifeCount + " 번");
             String inputNumber = requestText.getText().toString();
 
             if (inputNumber.length() == 3) {
+                // 중복 체크를 위한 HashSet
+                Set<Character> uniqueDigits = new HashSet<>();
+
+                for (int i = 0; i < 3; i++) {
+                    if (!uniqueDigits.add(inputNumber.charAt(i))) {
+                        toastMessage("중복된 숫자는 입력할 수 없습니다.");
+                        return;
+                    }
+                }
+
+                lifeCount--;
+                lifeCountText.setText("기회: " + lifeCount + " 번");
+
                 userNumber[0] = Integer.parseInt(inputNumber.substring(0, 1));
                 userNumber[1] = Integer.parseInt(inputNumber.substring(1, 2));
                 userNumber[2] = Integer.parseInt(inputNumber.substring(2, 3));
