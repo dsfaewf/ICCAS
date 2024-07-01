@@ -77,7 +77,7 @@
                     android:layout_weight="1"
                     android:clickable="true"
                     android:gravity="center"
-                    android:text="Find PW"
+                    android:text="Reset PW"
                     android:textSize="20sp" />
 
                 <TextView
