@@ -16,4 +16,6 @@
     <string name="view_diary_button">일지 조회하기</string>
     <string name="diary_hint">Write your diary here</string>
 
+    <string name="default_web_client_id">392698074344-k34oj2vn05f555j5th3dduj8trr350kj.apps.googleusercontent.com</string>
+
 </resources>

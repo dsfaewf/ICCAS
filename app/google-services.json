@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "392698074344",
+    "firebase_url": "https://iccas2024-main-default-rtdb.firebaseio.com",
     "project_id": "iccas2024-main",
     "storage_bucket": "iccas2024-main.appspot.com"
   },
@@ -12,15 +13,25 @@
           "package_name": "com.example.testfolder"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "392698074344-k34oj2vn05f555j5th3dduj8trr350kj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key":"AIzaSyDj_8d2lzOX02OcjRTH-68maAxL3rnX4_E"
+          "current_key": "AIzaSyDj_8d2lzOX02OcjRTH-68maAxL3rnX4_E"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "392698074344-k34oj2vn05f555j5th3dduj8trr350kj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
