@@ -288,4 +288,23 @@
         android:text="정답"
         android:textSize="25sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:gravity="end">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/purple_50"
+            android:text="뒤로가기"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+
+    </LinearLayout>
+
 </RelativeLayout>
