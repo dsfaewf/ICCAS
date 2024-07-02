@@ -12,7 +12,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -44,6 +43,12 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        // Google 계정 로그아웃
+        googleSignInClient.signOut().addOnCompleteListener {
+            // 로그아웃 후 작업을 수행할 수 있음
+            // 같은 아이디로만 로그인 되는 현상 해결을 위해 추가함.
+        }
 
         val loginBtn = findViewById<Button>(R.id.login_btn)
         val findIdPage = findViewById<TextView>(R.id.find_id_tv)
