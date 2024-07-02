@@ -31,7 +31,7 @@
         </activity> <!-- 로그인 액티비티를 메인으로 -->
         <activity
             android:name=".LoginActivity"
-            android:exported="false"></activity> <!-- 다른 넘들 -->
+            android:exported="false" /> <!-- 다른 넘들 -->
         <activity
             android:name=".SurveyActivity"
             android:exported="false" />
