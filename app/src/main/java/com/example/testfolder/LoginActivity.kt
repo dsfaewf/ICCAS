@@ -58,8 +58,8 @@ class LoginActivity : AppCompatActivity() {
 
         // 로그인 버튼 클릭 시
         loginBtn.setOnClickListener {
-            val userId = findViewById<TextView>(R.id.input_id).text.toString()
-            val password = findViewById<TextView>(R.id.input_pw).text.toString()
+            val userId = findViewById<TextView>(R.id.input_id).text.toString().trim()
+            val password = findViewById<TextView>(R.id.input_pw).text.toString().trim()
 
             if (userId.isNotEmpty() && password.isNotEmpty()) {
                 // 사용자 아이디로 이메일 찾기

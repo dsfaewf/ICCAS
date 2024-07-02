@@ -1,6 +1,8 @@
 package com.example.testfolder
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -32,8 +34,9 @@ class Diary_Check : AppCompatActivity() {
                     for (diarySnapshot in snapshot.children) {
                         val date = diarySnapshot.child("date").getValue(String::class.java)
                         val content = diarySnapshot.child("content").getValue(String::class.java)
-                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty()) {
-                            addDiaryEntryToView(date, content)
+                        val diaryId = diarySnapshot.key
+                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
+                            addDiaryEntryToView(date, content, diaryId)
                         }
                     }
                 }
@@ -45,7 +48,7 @@ class Diary_Check : AppCompatActivity() {
         }
     }
 
-    private fun addDiaryEntryToView(date: String, content: String) {
+    private fun addDiaryEntryToView(date: String, content: String, diaryId: String) {
         val dateTextView = TextView(this).apply {
             text = date
             textSize = 18f
@@ -58,7 +61,20 @@ class Diary_Check : AppCompatActivity() {
             setPadding(0, 5, 0, 10)
         }
 
-        diaryContainer.addView(dateTextView)
-        diaryContainer.addView(contentTextView)
+        val diaryEntryLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, 20, 0, 20)
+            addView(dateTextView)
+            addView(contentTextView)
+            setOnClickListener {
+                val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java)
+                intent.putExtra("diaryId", diaryId)
+                intent.putExtra("date", date)
+                intent.putExtra("content", content)
+                startActivity(intent)
+            }
+        }
+
+        diaryContainer.addView(diaryEntryLayout)
     }
 }

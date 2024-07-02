@@ -3,6 +3,7 @@ package com.example.testfolder
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
@@ -24,12 +25,13 @@ class RegisterActivity : AppCompatActivity() {
         val inputPassword = findViewById<TextInputEditText>(R.id.input_pw)
         val inputPasswordConfirm = findViewById<TextInputEditText>(R.id.input_pw_confirm)
         val registerBtn = findViewById<Button>(R.id.register_btn)
+        val textViewError = findViewById<TextView>(R.id.textview_error)
 
         registerBtn.setOnClickListener {
-            val userId = inputId.text.toString() //ID 추가
-            val email = inputEmail.text.toString()
-            val password = inputPassword.text.toString()
-            val passwordConfirm = inputPasswordConfirm.text.toString()
+            val userId = inputId.text.toString().trim() //ID 추가
+            val email = inputEmail.text.toString().trim()
+            val password = inputPassword.text.toString().trim()
+            val passwordConfirm = inputPasswordConfirm.text.toString().trim()
 
             if (userId.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && passwordConfirm.isNotEmpty()) {
                 if (password == passwordConfirm) {
@@ -39,28 +41,43 @@ class RegisterActivity : AppCompatActivity() {
                                 val firebaseUserId = auth.currentUser?.uid
                                 if (firebaseUserId != null) {
                                     addUserToDatabase(firebaseUserId, userId, email) //파라미터 하나 늘어남
-                                    Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
                                     val intent = Intent(this, LoginActivity::class.java)
                                     startActivity(intent)
                                     finish()
                                 } else {
-                                    Toast.makeText(this, "회원가입 실패: 사용자 ID를 가져올 수 없음", Toast.LENGTH_SHORT).show()
+                                    val error_msg = "Failed: Cannot bring User ID."
+                                    textViewError.text = error_msg
+                                    textViewError.visibility = TextView.VISIBLE
+//                                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
                                 }
                             } else {
                                 try {
                                     throw task.exception!!
                                 } catch (e: FirebaseAuthUserCollisionException) {
-                                    Toast.makeText(this, "회원가입 실패: 이미 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show()
+                                    val error_msg = "The email already exists."
+                                    textViewError.text = error_msg
+                                    textViewError.visibility = TextView.VISIBLE
+//                                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
                                 } catch (e: Exception) {
-                                    Toast.makeText(this, "회원가입 실패: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    val error_msg = "Failed: ${task.exception?.message}"
+                                    textViewError.text = error_msg
+                                    textViewError.visibility = TextView.VISIBLE
+//                                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                 } else {
-                    Toast.makeText(this, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+                    val error_msg = "Passwords do not match."
+                    textViewError.text = error_msg
+                    textViewError.visibility = TextView.VISIBLE
+//                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "모든 필드를 입력해주세요", Toast.LENGTH_SHORT).show()
+                val error_msg = "All fields are required."
+                textViewError.text = error_msg
+                textViewError.visibility = TextView.VISIBLE
+//                Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
             }
         }
     }
