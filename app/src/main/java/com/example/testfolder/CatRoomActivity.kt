@@ -27,7 +27,8 @@ class CatRoomActivity : AppCompatActivity() {
         gifDrawable.loopCount = 0 // 무한 반복
 
         shopBtn.setOnClickListener {
-            // Shop 버튼 클릭 시 동작
+            val intent = Intent(applicationContext, ShopActivity::class.java)
+            startActivity(intent)
         }
         decoBtn.setOnClickListener {
             // Deco 버튼 클릭 시 동작
