@@ -22,17 +22,50 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="278dp"
-                android:layout_margin="10dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
-                <TextView
-                    android:id="@+id/qeustionbox"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="질문 말풍선"
-                    android:textSize="20sp" />
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="15"
+                    android:background="@drawable/chat"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/qeustionbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        android:text="질문 말풍선"
+                        android:textColorLink="#000000"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/chat_triangle"
+                    android:orientation="horizontal"></LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="70dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:srcCompat="@drawable/sitting_cat" />
 
             </LinearLayout>
 
@@ -41,9 +74,11 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
                 android:max="300"
+                android:paddingStart="20dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="10dp"
                 android:progressDrawable="@drawable/progressbar_style" />
 
             <com.google.android.material.textfield.TextInputLayout
