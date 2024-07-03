@@ -81,6 +81,19 @@
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/textview_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutPasswordConfirm"
+        app:layout_constraintBottom_toTopOf="@id/register_btn"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Error Message"/>
+
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/register_btn"
         android:layout_width="0dp"
@@ -91,6 +104,6 @@
         android:text="Register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPasswordConfirm" />
+        app:layout_constraintTop_toBottomOf="@+id/textview_error" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
