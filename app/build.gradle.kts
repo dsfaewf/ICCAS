@@ -1,7 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+}
+
+// To use values in the file local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { stream ->
+        localProperties.load(stream)
+    }
 }
 
 android {
@@ -16,6 +27,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // For using API_KEY
+        buildConfigField("String", "API_KEY", "${localProperties["API_KEY"]}")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -40,8 +58,8 @@ dependencies {
 
     // Add the dependency for the Realtime Database library
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-database-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx") //비밀번호 인증
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.auth.ktx) //비밀번호 인증
     // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
@@ -50,10 +68,20 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation("androidx.core:core-ktx:+")
-    implementation("androidx.core:core-ktx:+")
+    implementation(libs.core.ktx)
+//    implementation("androidx.core:core-ktx:+")
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.19")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // For tokenizing corpus
+    implementation(libs.smile.nlp)
+    implementation(libs.smile.core)
+    implementation(libs.opennlp.tools)
+
+    // For Using OpenAI API
+    implementation(libs.openai.client)
+    implementation(libs.ktor.client.android)
+    implementation(libs.okhttp)
 }
