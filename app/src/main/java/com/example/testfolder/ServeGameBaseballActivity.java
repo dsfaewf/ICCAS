@@ -10,21 +10,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
@@ -35,9 +27,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private TextView resultText;
     private TextView lifeCountText;
     private TextView coinText;
-    FirebaseAuth auth;
-    DatabaseReference database;
-    FirebaseUser currentUser;
+    private FirebaseUser currentUser;
     private Integer[] comNumber = new Integer[3];
     private Integer[] userNumber = new Integer[3];
 
@@ -52,10 +42,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_baseball);
         coinText = findViewById(R.id.coin_text); // coinText 초기화 추가
-        auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
-        currentUser = auth.getCurrentUser();
-        SingletonJava.getInstance().initialize(auth, database); //싱글톤 객체
+
+        currentUser = SingletonJava.getInstance().getCurrentUser();
 
         try {
             requestText = findViewById(R.id.request_text);
@@ -86,11 +74,10 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during onCreate", e);
         }
+
         // 사용자 코인 및 초기화 날짜 불러오기
-        //checkAndResetDailyClears();
-        SingletonJava.getInstance().checkAndResetDailyClears(currentUser, database, coinText, this);
+        SingletonJava.getInstance().checkAndResetDailyClears(currentUser, coinText, this);
         // 사용자 코인 불러오기
-        //SingletonJava.getInstance().loadUserCoins(coinText);
         SingletonJava.getInstance().loadUserCoins(coinText);
     }
 
@@ -144,9 +131,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 if (strike == 3) {
                     toastMessage("성공");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
-                    // checkAndRewardCoins();
-                    SingletonJava.getInstance().checkAndRewardCoins(currentUser, database,
-                            maxClearsPerDay, coinReward, coinText, ServeGameBaseballActivity.this);
+                    SingletonJava.getInstance().checkAndRewardCoins(currentUser, maxClearsPerDay, coinReward, coinText, ServeGameBaseballActivity.this);
                 } else if (lifeCount == 0) {
                     toastMessage("실패");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
@@ -219,6 +204,4 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private void toastMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
-
-
 }
