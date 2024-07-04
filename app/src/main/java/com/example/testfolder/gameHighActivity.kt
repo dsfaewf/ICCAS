@@ -6,15 +6,19 @@ import android.os.Looper
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseUser
 
 class gameHighActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar;
     private var progressStatus = 0;
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var coinText: TextView
+    private lateinit var currentUser: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +26,22 @@ class gameHighActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar1)
         var question = findViewById<TextView>(R.id.qeustionbox)
         var submitBtn = findViewById<Button>(R.id.submit_btn)
+        coinText = findViewById(R.id.coin_text)
+
+        try {
+            currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("사용자 인증이 필요합니다.")
+        } catch (e: IllegalStateException) {
+            Toast.makeText(this, "SingletonKotlin이 초기화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        // 사용자 코인 불러오기
+        try {
+            SingletonKotlin.loadUserCoins(coinText)
+        } catch (e: IllegalStateException) {
+            Toast.makeText(this, "SingletonKotlin이 초기화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+        }
 
         question.setText("질문 값 넣기 ~~ ")
 
