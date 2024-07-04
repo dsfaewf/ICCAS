@@ -2,7 +2,16 @@ package com.example.testfolder
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.KeyEvent
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,23 +21,30 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthCredential
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    //하위 4개의 변수는 로딩 이미지를 위해 선언함.
+    private lateinit var loadingImage: ImageView
+    private lateinit var loadingText: TextView
+    private lateinit var rotateAnimation: Animation
+    private val handler = Handler(Looper.getMainLooper())
+
 
     companion object {
         private const val RC_SIGN_IN = 9001
+        private const val TAG = "LoginActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,47 +61,49 @@ class LoginActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // Google 계정 로그아웃
+        googleSignInClient.signOut().addOnCompleteListener {
+            // 로그아웃 후 작업을 수행할 수 있음
+            // 같은 아이디로만 로그인 되는 현상 해결을 위해 추가함.
+        }
+
         val loginBtn = findViewById<Button>(R.id.login_btn)
         val findIdPage = findViewById<TextView>(R.id.find_id_tv)
         val findPwPage = findViewById<TextView>(R.id.find_pw_tv)
         val registerPage = findViewById<TextView>(R.id.register_tv)
         val googleSignInButton = findViewById<com.google.android.gms.common.SignInButton>(R.id.btn_google_sign_in)
+        val inputPw = findViewById<TextInputEditText>(R.id.input_pw)
+        val inputId = findViewById<TextInputEditText>(R.id.input_id)
+
+        // 디버깅을 위해 초기화 확인 로그 추가
+        Log.d(TAG, "onCreate: inputPw initialized = ${inputPw != null}")
+
+        // 로딩 이미지와 텍스트
+        loadingImage = findViewById(R.id.loading_image)
+        loadingText = findViewById(R.id.loading_text)
+        //애니메이션 초기화
+        rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
+
+        // 비밀번호 입력 필드에 Enter 키 리스너 추가
+        // 기존의 비밀번호 입력 필드 리스너 수정
+        inputPw.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                loginUser(inputId.text.toString().trim(), inputPw.text.toString().trim())
+                true
+            } else {
+                false
+            }
+        }
+
 
         // 로그인 버튼 클릭 시
         loginBtn.setOnClickListener {
-            val userId = findViewById<TextView>(R.id.input_id).text.toString().trim()
-            val password = findViewById<TextView>(R.id.input_pw).text.toString().trim()
-
-            if (userId.isNotEmpty() && password.isNotEmpty()) {
-                // 사용자 아이디로 이메일 찾기
-                val userRef = FirebaseDatabase.getInstance().reference.child("users")
-                userRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (userSnapshot in dataSnapshot.children) {
-                                val email = userSnapshot.child("email").getValue(String::class.java)
-                                if (email != null) {
-                                    signInWithEmail(email, password)
-                                } else {
-                                    Toast.makeText(this@LoginActivity, "아이디에 해당하는 이메일을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        } else {
-                            Toast.makeText(this@LoginActivity, "등록되지 않은 아이디입니다.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        Toast.makeText(this@LoginActivity, "데이터베이스 오류: ${databaseError.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            } else {
-                Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            loginUser(inputId.text.toString().trim(), inputPw.text.toString().trim())
         }
 
         // Google 로그인 버튼 클릭 시
         googleSignInButton.setOnClickListener {
+            showLoading() //로딩 출력
             signIn()
         }
 
@@ -108,6 +126,46 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun loginUser(userId: String, password: String) {
+        if (userId.isNotEmpty() && password.isNotEmpty()) {
+
+            // 로딩 이미지와 텍스트 표시
+            loadingImage.visibility = View.VISIBLE
+            loadingText.visibility = View.VISIBLE
+            loadingImage.startAnimation(rotateAnimation)
+            startLoadingTextAnimation()
+
+            // 사용자 아이디로 이메일 찾기
+            val userRef = FirebaseDatabase.getInstance().reference.child("users")
+            userRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (userSnapshot in dataSnapshot.children) {
+                            val email = userSnapshot.child("email").getValue(String::class.java)
+                            if (email != null) {
+                                signInWithEmail(email, password)
+                            } else {
+                                hideLoading() //로딩없애기 처리
+                                Toast.makeText(this@LoginActivity, "아이디에 해당하는 이메일을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        hideLoading() //로딩 없애기 처리
+                        Toast.makeText(this@LoginActivity, "등록되지 않은 아이디입니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    hideLoading() //로딩 없애기 처리
+                    Toast.makeText(this@LoginActivity, "데이터베이스 오류: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        } else {
+            hideLoading() //로딩 없애기 처리
+            Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -127,6 +185,7 @@ class LoginActivity : AppCompatActivity() {
             val account = completedTask.getResult(ApiException::class.java)
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
+            hideLoading() //로딩 없애기 처리
             Toast.makeText(this, "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -142,6 +201,7 @@ class LoginActivity : AppCompatActivity() {
                         checkUserExistsAndLogin(userId)
                     }
                 } else {
+                    hideLoading() //로딩 없애기 처리
                     Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -155,9 +215,11 @@ class LoginActivity : AppCompatActivity() {
                     if (userId != null) {
                         checkUserExistsAndLogin(userId)
                     } else {
+                        hideLoading() //로딩 없애기 처리
                         Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    hideLoading() //로딩 없애기 처리
                     val errorMessage = when (task.exception) {
                         is FirebaseAuthInvalidUserException -> "등록되지 않은 계정입니다."
                         is FirebaseAuthInvalidCredentialsException -> "잘못된 아이디 또는 비밀번호입니다."
@@ -208,4 +270,34 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "데이터베이스에 사용자 정보 추가 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun showLoading() { //로딩이미지 표출용
+        loadingImage.visibility = View.VISIBLE
+        loadingText.visibility = View.VISIBLE
+        loadingImage.startAnimation(rotateAnimation)
+        startLoadingTextAnimation()
+    }
+
+    private fun hideLoading() { //로딩이미지 다시 없애는 용도
+        loadingImage.visibility = View.GONE
+        loadingText.visibility = View.GONE
+        loadingImage.clearAnimation()
+        handler.removeCallbacksAndMessages(null) // 애니메이션 중지
+    }
+
+    private fun startLoadingTextAnimation() { //...을 로딩과 함께 애니메이션으로 움직이도록
+        var dotCount = 0
+        handler.post(object : Runnable {
+            override fun run() {
+                dotCount++
+                if (dotCount > 3) {
+                    dotCount = 0
+                }
+                val dots = ".".repeat(dotCount)
+                loadingText.text = "loading$dots"
+                handler.postDelayed(this, 500) // 500ms마다 업데이트
+            }
+        })
+    }
+
 }
