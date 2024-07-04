@@ -5,11 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Diary_write_UI"
     android:orientation="vertical"
-    android:padding="40dp">
-
-
+    android:padding="40dp"
+    android:background="@drawable/diary_background"
+    tools:context="Diary_write_UI">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,10 +28,7 @@
             android:background="@color/gray"
             android:text="@string/save_button"
             android:textSize="20sp"
-            android:textStyle="bold"
-            />
-
-
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <TextView
@@ -58,9 +54,7 @@
             android:visibility="gone"/>
 
     </LinearLayout>
-
-
-
+  
     <LinearLayout
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
@@ -79,11 +73,8 @@
             android:maxLength="1000"
             android:padding="10dp"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
+            android:textSize="16sp"/>
     </LinearLayout>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -103,13 +94,7 @@
             android:text="(0/1000)"
             android:textSize="20sp"
             android:textColor="@android:color/black"/>
-
-
     </LinearLayout>
-
-
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -128,7 +113,6 @@
             android:textSize="20sp"
             android:textStyle="bold"/>
 
-
         <View
             android:layout_width="5dp"
             android:layout_height="match_parent"/>
@@ -142,10 +126,7 @@
             android:background="@color/gray"
             android:text="@string/back_button"
             android:textSize="20sp"
-            android:textStyle="bold" />
-
+            android:textStyle="bold"/>
     </LinearLayout>
-
-
 
 </LinearLayout>

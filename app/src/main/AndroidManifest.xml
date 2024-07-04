@@ -17,6 +17,23 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ShopActivity"
+            android:exported="false" />
+
+        <activity android:name=".ServeGameBaseballActivity"
+            android:exported="false"/>
+
+        <activity android:name=".ServeGame_samepicture"
+            android:exported="false"/>
+
+        <activity
+            android:name=".DiaryDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CatRoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true" >
         <intent-filter>
