@@ -27,7 +27,7 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
-
+        SingletonKotlin.initialize(auth, database)
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
         // GIF 반복 설정
@@ -46,24 +46,8 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         adapter = ShopItemsAdapter(shopItemList, this, this)
         recyclerView.adapter = adapter
 
-        // 사용자 코인 불러오기
-        loadUserCoins()
-    }
-
-    private fun loadUserCoins() {
-        val currentUser = auth.currentUser ?: return
-        val userRef = database.child("users").child(currentUser.uid)
-
-        userRef.child("coins").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val coins = snapshot.getValue(Long::class.java) ?: 0L
-                coinText.text = coins.toString()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ShopActivity, "데이터베이스 오류", Toast.LENGTH_SHORT).show()
-            }
-        })
+        // 사용자 코인 불러오기 - 싱글톤으로 수정!
+        SingletonKotlin.loadUserCoins(coinText)
     }
 
     override fun onItemClick(position: Int) {

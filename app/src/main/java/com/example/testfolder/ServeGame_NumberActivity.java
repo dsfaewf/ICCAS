@@ -57,7 +57,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
         currentUser = auth.getCurrentUser();
-
+        SingletonJava.getInstance().initialize(auth, database);
         coinText = findViewById(R.id.coin_text); // coinText 초기화 추가
 
         //버튼 레이아웃
@@ -140,7 +140,9 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                     }
                     //입력값이랑 랜덤수가 같다면 ( 정답 )
                     else if (inputNumber == randomNumber) {
-                        checkAndRewardCoins();
+                       // 싱글톤으로 수정
+                        SingletonJava.getInstance().checkAndRewardCoins(currentUser, database, maxClearsPerDay,
+                                coinReward, coinText, ServeGame_NumberActivity.this);
                     }
 
                     //입력창 초기화
@@ -151,10 +153,11 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 }
             }
         });
-        // 사용자 코인 및 초기화 날짜 불러오기
-        checkAndResetDailyClears();
-        // 사용자 코인 불러오기
-        loadUserCoins();
+        // 사용자 코인 및 초기화 날짜 불러오기 싱글톤으로 수정
+        // checkAndResetDailyClears();
+        SingletonJava.getInstance().checkAndResetDailyClears(currentUser, database, coinText, this);
+        // 사용자 코인 불러오기 싱글톤으로 수정!
+        SingletonJava.getInstance().loadUserCoins(coinText);
     }
 
     private void checkAndResetDailyClears() {
@@ -170,7 +173,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 if (!currentDate.equals(lastResetDate)) {
                     resetDailyClears(userRef, currentDate);
                 } else {
-                    loadUserCoins();
+                    SingletonJava.getInstance().loadUserCoins(coinText);
                 }
             }
 
@@ -188,38 +191,13 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
 
         userRef.updateChildren(updates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                loadUserCoins();
+                SingletonJava.getInstance().loadUserCoins(coinText);
                 Toast.makeText(ServeGame_NumberActivity.this, "반갑습니다! 오늘도 총 3번 서브게임 보상을 받을 수 있습니다.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(ServeGame_NumberActivity.this, "보상 시스템 기회 업데이트 오류", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    private void loadUserCoins() {
-        String userId = currentUser.getUid();
-        DatabaseReference userRef = database.child("users").child(userId);
-
-        userRef.child("coins").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Long coins = snapshot.exists() ? snapshot.getValue(Long.class) : 0L;
-                if (coins != null) {
-                    coinText.setText(String.valueOf(coins));
-                } else {
-                    coinText.setText("0");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ServeGame_NumberActivity.this, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-
 
     // 버튼 클릭 이벤트
     @Override
@@ -296,67 +274,67 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         return result;
     }
 
-    private void checkAndRewardCoins() { //하루 3번의 보상만 받을 수 있도록 하였음.
-        String userId = currentUser.getUid(); //유저 아이디 변수 추가
-        DatabaseReference userRef = database.child("users").child(userId); //사용자 데이터 참조
-
-        userRef.child("dailyClears").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                long dailyClears = snapshot.exists() ? (long) snapshot.getValue() : 0;
-                /* 데이터가 존재할 경우 dailyClears에 저장, 그렇지 않으면 0으로 초기화.*/
-
-                if (dailyClears < maxClearsPerDay) { //3번 이상 플레이하지 않은 경우메만 코인을 지급
-                    rewardCoins(userRef, dailyClears);
-                } else {
-                    Toast.makeText(ServeGame_NumberActivity.this, "3회 보상을 받아, 오늘은 더 이상 보상을 받을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    viewMode("end");
-                    resetButtons();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { //쿼리 실패
-                Toast.makeText(ServeGame_NumberActivity.this, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // 보상을 지급하는 메서드
-    private void rewardCoins(DatabaseReference userRef, long dailyClears) {
-        userRef.child("coins").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Long coins = snapshot.exists() ? snapshot.getValue(Long.class) : 0L;
-                if (coins != null) {
-                    final Long updatedCoins = coins + coinReward;  // 코인 업데이트를 최종 변수로 설정
-
-                    Map<String, Object> updates = new HashMap<>();
-                    updates.put("coins", updatedCoins);
-                    updates.put("dailyClears", dailyClears + 1);
-
-                    userRef.updateChildren(updates).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(ServeGame_NumberActivity.this, "정답입니다. " + coinReward + " 코인이 지급되었습니다.", Toast.LENGTH_SHORT).show();
-                            coinText.setText(String.valueOf(updatedCoins)); // 코인 텍스트 업데이트
-                        } else {
-                            Toast.makeText(ServeGame_NumberActivity.this, "코인 지급 오류", Toast.LENGTH_SHORT).show();
-                        }
-                        viewMode("end");
-                        reset();
-                        resetButtons();
-                    });
-                } else {
-                    Toast.makeText(ServeGame_NumberActivity.this, "코인 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ServeGame_NumberActivity.this, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void checkAndRewardCoins() { //하루 3번의 보상만 받을 수 있도록 하였음.
+//        String userId = currentUser.getUid(); //유저 아이디 변수 추가
+//        DatabaseReference userRef = database.child("users").child(userId); //사용자 데이터 참조
+//
+//        userRef.child("dailyClears").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                long dailyClears = snapshot.exists() ? (long) snapshot.getValue() : 0;
+//                /* 데이터가 존재할 경우 dailyClears에 저장, 그렇지 않으면 0으로 초기화.*/
+//
+//                if (dailyClears < maxClearsPerDay) { //3번 이상 플레이하지 않은 경우메만 코인을 지급
+//                    rewardCoins(userRef, dailyClears);
+//                } else {
+//                    Toast.makeText(ServeGame_NumberActivity.this, "3회 보상을 받아, 오늘은 더 이상 보상을 받을 수 없습니다.", Toast.LENGTH_SHORT).show();
+//                    viewMode("end");
+//                    resetButtons();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) { //쿼리 실패
+//                Toast.makeText(ServeGame_NumberActivity.this, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+//
+//    // 보상을 지급하는 메서드
+//    private void rewardCoins(DatabaseReference userRef, long dailyClears) {
+//        userRef.child("coins").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                Long coins = snapshot.exists() ? snapshot.getValue(Long.class) : 0L;
+//                if (coins != null) {
+//                    final Long updatedCoins = coins + coinReward;  // 코인 업데이트를 최종 변수로 설정
+//
+//                    Map<String, Object> updates = new HashMap<>();
+//                    updates.put("coins", updatedCoins);
+//                    updates.put("dailyClears", dailyClears + 1);
+//
+//                    userRef.updateChildren(updates).addOnCompleteListener(task -> {
+//                        if (task.isSuccessful()) {
+//                            Toast.makeText(ServeGame_NumberActivity.this, "정답입니다. " + coinReward + " 코인이 지급되었습니다.", Toast.LENGTH_SHORT).show();
+//                            coinText.setText(String.valueOf(updatedCoins)); // 코인 텍스트 업데이트
+//                        } else {
+//                            Toast.makeText(ServeGame_NumberActivity.this, "코인 지급 오류", Toast.LENGTH_SHORT).show();
+//                        }
+//                        viewMode("end");
+//                        reset();
+//                        resetButtons();
+//                    });
+//                } else {
+//                    Toast.makeText(ServeGame_NumberActivity.this, "코인 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Toast.makeText(ServeGame_NumberActivity.this, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
 
 }
