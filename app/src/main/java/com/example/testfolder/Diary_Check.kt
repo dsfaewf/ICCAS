@@ -53,12 +53,14 @@ class Diary_Check : AppCompatActivity() {
             text = date
             textSize = 18f
             setPadding(0, 10, 0, 0)
+            setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
         }
 
         val contentTextView = TextView(this).apply {
             text = content
             textSize = 16f
             setPadding(0, 5, 0, 10)
+            setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
         }
 
         val diaryEntryLayout = LinearLayout(this).apply {
@@ -66,6 +68,7 @@ class Diary_Check : AppCompatActivity() {
             setPadding(0, 20, 0, 20)
             addView(dateTextView)
             addView(contentTextView)
+            //setBackgroundResource(R.drawable.diary_entry_background) // Optional: add background to each entry
             setOnClickListener {
                 val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java)
                 intent.putExtra("diaryId", diaryId)
