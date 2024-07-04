@@ -3,14 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/diary_background">
 
     <EditText
         android:id="@+id/edit_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Date"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:background="#DDFF"
+        android:textColor="#000000"
+        android:padding="10dp" />
 
     <EditText
         android:id="@+id/edit_content"
@@ -21,13 +25,15 @@
         android:gravity="top"
         android:inputType="textMultiLine"
         android:padding="10dp"
+        android:background="#DDFF"
+        android:textColor="#000000"
         android:textSize="16sp" />
 
     <Button
         android:id="@+id/btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="Edit and Save"
         android:layout_marginTop="16dp" />
 
     <Button
