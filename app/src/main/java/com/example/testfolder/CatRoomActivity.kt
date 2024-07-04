@@ -14,18 +14,20 @@ import pl.droidsonroids.gif.GifImageView
 class CatRoomActivity : AppCompatActivity() {
 
     private lateinit var coinText: TextView
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
     private lateinit var currentUser: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cat_room)
 
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance().reference
-        currentUser = auth.currentUser!!
-        SingletonKotlin.initialize(auth, database)
+        try {
+            currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("사용자 인증이 필요합니다.")
+        } catch (e: IllegalStateException) {
+            Toast.makeText(this, "SingletonKotlin이 초기화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
         val shopBtn = findViewById<TextView>(R.id.shop_btn)
@@ -34,8 +36,13 @@ class CatRoomActivity : AppCompatActivity() {
         val gameBtn = findViewById<TextView>(R.id.game_btn)
 
         // 사용자 코인 불러오기
-        //loadUserCoins()
-        SingletonKotlin.loadUserCoins(coinText)
+        try {
+            SingletonKotlin.loadUserCoins(coinText)
+        } catch (e: IllegalStateException) {
+            Toast.makeText(this, "SingletonKotlin이 초기화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
         // GIF 반복 설정
         val gifDrawable = catGif.drawable as GifDrawable
         gifDrawable.loopCount = 0 // 무한 반복
@@ -56,5 +63,4 @@ class CatRoomActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
 }

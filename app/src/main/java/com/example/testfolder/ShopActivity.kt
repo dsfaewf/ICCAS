@@ -25,9 +25,13 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
 
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance().reference
-        SingletonKotlin.initialize(auth, database)
+//        auth = FirebaseAuth.getInstance()
+//        database = FirebaseDatabase.getInstance().reference
+//        SingletonKotlin.initialize(auth, database)
+//        아직 페이지에서 직접적인 사용이 없으므로 주석처리하겠음.
+//        auth = SingletonKotlin.getAuth()
+//        database = SingletonKotlin.getDatabase()
+
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
         // GIF 반복 설정
