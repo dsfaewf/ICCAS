@@ -37,21 +37,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <Button
-            android:id="@+id/btn4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="serve_game" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -61,17 +47,47 @@
         android:layout_marginTop="50dp"
         android:gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/btn5"
+        <Button
+            android:id="@+id/btn4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sub_game_number" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="serve_game_baseball"
-        tools:layout_editor_absoluteX="112dp"
-        tools:layout_editor_absoluteY="496dp" />
-</LinearLayout>
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal">
 
+        <Button
+            android:id="@+id/btn5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sub_game_baseball" />
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal">
 
-
+        <Button
+            android:id="@+id/btn6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sub_game_samepicture" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

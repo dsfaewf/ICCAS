@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 성별 선택 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="성별을 선택해 주세요." />
+        <RadioGroup
+            android:id="@+id/radioGroupGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/radioMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="남성" />
+            <RadioButton
+                android:id="@+id/radioFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="여성" />
+            <RadioButton
+                android:id="@+id/radioOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="기타" />
+        </RadioGroup>
+
+        <!-- 출생 연도 입력 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="출생 연도를 입력해 주세요. (예: 1980)" />
+        <EditText
+            android:id="@+id/editTextBirthYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <!-- 출생지 입력 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="출생지를 입력해 주세요. (예: 서울특별시)" />
+        <EditText
+            android:id="@+id/editTextBirthPlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- 알츠하이머병 진단 여부 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="가족 중에 알츠하이머병을 진단받은 분이 있나요?" />
+        <RadioGroup
+            android:id="@+id/radioGroupAlzheimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/radioAlzheimerYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예" />
+            <RadioButton
+                android:id="@+id/radioAlzheimerNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="아니오" />
+            <RadioButton
+                android:id="@+id/radioAlzheimerUnknown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="모르겠음" />
+        </RadioGroup>
+
+        <!-- 교육 수준 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="현재 교육 수준을 선택해 주세요." />
+        <Spinner
+            android:id="@+id/spinnerEducation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/education_levels" />
+
+        <!-- 어머니 출생 연도 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="어머니의 출생 연도를 입력해 주세요. (예: 1955)" />
+        <EditText
+            android:id="@+id/editTextMotherBirthYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <!-- 아버지 출생 연도 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="아버지의 출생 연도를 입력해 주세요. (예: 1953)" />
+        <EditText
+            android:id="@+id/editTextFatherBirthYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <!-- 형제자매 여부 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="형제자매가 있나요?" />
+        <RadioGroup
+            android:id="@+id/radioGroupSiblings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/radioSiblingsYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예" />
+            <RadioButton
+                android:id="@+id/radioSiblingsNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="아니오" />
+        </RadioGroup>
+
+        <!-- 거주 지역 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="어릴 적 거주 지역을 선택해 주세요." />
+        <Spinner
+            android:id="@+id/spinnerResidence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/residence_areas" />
+
+        <!-- 유전자 검사 여부 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="유전자 검사를 받아본 적이 있나요?" />
+        <RadioGroup
+            android:id="@+id/radioGroupGeneticTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/radioGeneticTestYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="예" />
+            <RadioButton
+                android:id="@+id/radioGeneticTestNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="아니오" />
+        </RadioGroup>
+
+        <!-- 제출 버튼 -->
+        <Button
+            android:id="@+id/submitBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="제출" />
+
+    </LinearLayout>
+</ScrollView>

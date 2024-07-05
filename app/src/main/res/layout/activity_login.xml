@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,6 +11,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/linearLayout5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -34,14 +34,16 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_pw"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:hint="Password" />
+                    android:hint="Password"
+                    android:imeOptions="actionDone" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -49,8 +51,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="login"
-                android:background="@drawable/rectangle_btn_style"/>
+                android:background="@drawable/rectangle_btn_style"
+                android:text="login" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -64,8 +66,8 @@
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:text="Find ID"
                     android:gravity="center"
+                    android:text="Find ID"
                     android:textSize="20sp" />
 
                 <TextView
@@ -75,8 +77,8 @@
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:text="Find PW"
                     android:gravity="center"
+                    android:text="Reset PW"
                     android:textSize="20sp" />
 
                 <TextView
@@ -86,12 +88,45 @@
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:text="Register"
                     android:gravity="center"
+                    android:text="Register"
                     android:textSize="20sp" />
             </LinearLayout>
-
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btn_google_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
+        <ImageView
+            android:id="@+id/loading_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/thinkingcat"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="loading"
+            android:textSize="30sp"
+            android:textColor="@android:color/black"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/loading_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

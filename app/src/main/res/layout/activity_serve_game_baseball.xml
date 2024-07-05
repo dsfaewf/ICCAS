@@ -8,9 +8,38 @@
     tools:context=".ServeGameBaseballActivity">
 
     <LinearLayout
+        android:id="@+id/coin_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_margin="10dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:srcCompat="@drawable/coin2" />
+
+        <TextView
+            android:id="@+id/coin_text"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_gravity="end"
+            android:layout_margin="5dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="coin"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/game_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/coin_layout"
+        android:layout_margin="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,9 +57,7 @@
                 android:text="기회 10번"
                 android:textColor="@android:color/white"
                 android:textSize="25sp"
-                android:textStyle="bold">
-
-            </TextView>
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/response_text"
@@ -38,11 +65,10 @@
                 android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:layout_weight="2"
-                android:layout_gravity="center"
+                android:gravity="center"
                 android:textColor="@android:color/white"
                 android:textSize="25sp"
                 android:textStyle="bold"/>
-
         </LinearLayout>
 
         <TextView
@@ -50,7 +76,8 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"/>
 
         <EditText
             android:id="@+id/request_text"
@@ -60,12 +87,14 @@
             android:inputType="number"
             android:maxLength="3"
             android:textSize="25sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/start_btn"
@@ -99,9 +128,7 @@
                 android:text="초기화"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -120,7 +147,5 @@
             android:text="뒤로가기"
             android:textColor="@android:color/white"
             android:textSize="25sp" />
-
     </LinearLayout>
-
 </RelativeLayout>
