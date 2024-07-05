@@ -108,7 +108,7 @@
             android:id="@+id/loading_image"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@drawable/thinkingcat"
+            android:src="@drawable/thinkingcat2"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
