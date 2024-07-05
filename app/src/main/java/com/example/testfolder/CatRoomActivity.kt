@@ -2,12 +2,11 @@ package com.example.testfolder
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.*
 import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.GifImageView
 
@@ -15,6 +14,7 @@ class CatRoomActivity : AppCompatActivity() {
 
     private lateinit var coinText: TextView
     private lateinit var currentUser: FirebaseUser
+    private lateinit var roomframe: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +34,11 @@ class CatRoomActivity : AppCompatActivity() {
         val decoBtn = findViewById<TextView>(R.id.deco_btn)
         val diaryBtn = findViewById<TextView>(R.id.diary_btn)
         val gameBtn = findViewById<TextView>(R.id.game_btn)
+        roomframe = findViewById(R.id.room_frame)
+
+        // 기본 배경 설정 -> 유저가 저장한 배경이 있으면 해당 배경으로 없으면 기본 배경으로
+        roomframe.setBackgroundResource(R.drawable.room3)
+
 
         // 사용자 코인 불러오기
         try {
@@ -52,14 +57,15 @@ class CatRoomActivity : AppCompatActivity() {
             startActivity(intent)
         }
         decoBtn.setOnClickListener {
-            // Deco 버튼 클릭 시 동작
+            val intent = Intent(applicationContext, DecoActivity::class.java)
+            startActivity(intent)
         }
         diaryBtn.setOnClickListener {
             val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
         }
         gameBtn.setOnClickListener {
-            val intent = Intent(applicationContext, gametestActivity::class.java)
+            val intent = Intent(applicationContext, gamelistActivity::class.java)
             startActivity(intent)
         }
     }
