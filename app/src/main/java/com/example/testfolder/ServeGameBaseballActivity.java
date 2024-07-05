@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -18,6 +20,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private TextView responseText;
     private TextView resultText;
     private TextView lifeCountText;
+    private TextView coinText;
+    private FirebaseUser currentUser;
 
     private Integer[] comNumber = new Integer[3];
     private Set<Integer> userNumbers = new HashSet<>(); // 사용자 입력 숫자 중복 체크용 Set
@@ -26,10 +30,16 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private int strike = 0;
     private int ball = 0;
 
+    private static final int COIN_REWARD = 10; // 코인 보상
+    private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_baseball);
+
+        currentUser = SingletonJava.getInstance().getCurrentUser();
+        coinText = findViewById(R.id.coin_text);
 
         try {
             requestText = findViewById(R.id.request_text);
@@ -60,6 +70,11 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during onCreate", e);
         }
+
+        // 사용자 코인 및 초기화 날짜 불러오기
+        SingletonJava.getInstance().checkAndResetDailyClears(currentUser, coinText, this);
+        // 사용자 코인 불러오기
+        SingletonJava.getInstance().loadUserCoins(coinText);
     }
 
     private void randomNumber() {
@@ -106,6 +121,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 if (strike == 3) {
                     toastMessage("성공");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    // 코인 보상
+                    SingletonJava.getInstance().checkAndRewardCoins(currentUser, MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
                 } else if (lifeCount == 0) {
                     toastMessage("실패");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
