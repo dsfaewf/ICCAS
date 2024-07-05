@@ -9,11 +9,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.HashSet;
 import java.util.Random;
 
 public class ServeGame_NumberActivity extends AppCompatActivity implements View.OnClickListener {
     GridLayout gridLayout;
-    TextView requestText, responseText;
+    TextView requestText, responseText, coinText; //coinText 추가
     Button startBtn, answerBtn;
     Button[] buttons = new Button[10];
     String answer = "";
@@ -22,13 +25,21 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     int min = 1;
     int max = 100;
 
-    //도전할 횟수 카운트
-    int count = 7;
+    int count = 0; //시작은 0번이어야 하므로 0으로 수정
+
+    int coinReward = 10; // 지급되는 보상은 10코인으로 설정해놓음
+    int maxClearsPerDay = 3; // 하루 최대 보상 횟수를 3으로 일단 지정해놓음
+
+    FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_number);
+
+        currentUser = SingletonJava.getInstance().getCurrentUser(); //싱글톤으로써 객체 불러옴
+
+        coinText = findViewById(R.id.coin_text); // coinText 초기화 추가
 
         //버튼 레이아웃
         gridLayout = findViewById(R.id.grid_layout);
@@ -110,6 +121,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                     }
                     //입력값이랑 랜덤수가 같다면 ( 정답 )
                     else if (inputNumber == randomNumber) {
+                        SingletonJava.getInstance().checkAndRewardCoins(currentUser, maxClearsPerDay, coinReward, coinText, ServeGame_NumberActivity.this);
                         Toast.makeText(ServeGame_NumberActivity.this, "정답입니다.", Toast.LENGTH_SHORT).show();
 
                         //버튼 숨김
@@ -128,6 +140,11 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 }
             }
         });
+
+        // 사용자 코인 및 초기화 날짜 불러오기
+        SingletonJava.getInstance().checkAndResetDailyClears(currentUser, coinText, this);
+        // 사용자 코인 불러오기
+        SingletonJava.getInstance().loadUserCoins(coinText);
     }
 
     // 버튼 클릭 이벤트
