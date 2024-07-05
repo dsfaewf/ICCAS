@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- ProgressBar를 위쪽에 배치합니다 -->
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="67dp"
+        android:layout_marginEnd="20dp"
+        android:max="300"
+        android:progressDrawable="@drawable/progress_bar_yellow" />
+
+    <!-- 타이머 숫자를 보여줄 TextView -->
+    <TextView
+        android:id="@+id/timerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01:00"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp" />
+
+    <!-- GridLayout에 ImageButton들을 배치합니다 -->
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="344dp"
+        android:layout_height="403dp"
+        android:layout_below="@id/progressBar1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="44dp"
+        android:columnCount="4"
+        android:padding="10dp"
+        android:rowCount="4">
+
+        <!-- ImageButton들을 정사각형으로 설정하고 배치합니다 -->
+        <ImageButton
+            android:id="@+id/imageButton1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton7"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton8"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton9"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton10"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton11"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton12"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton13"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton14"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton15"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+        <ImageButton
+            android:id="@+id/imageButton16"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="5dp"
+            android:onClick="onCardClicked"
+            android:scaleType="centerCrop"
+            android:src="@drawable/test_cover_image" />
+
+    </GridLayout>
+
+</RelativeLayout>

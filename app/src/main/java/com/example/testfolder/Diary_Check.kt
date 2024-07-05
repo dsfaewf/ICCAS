@@ -1,6 +1,8 @@
 package com.example.testfolder
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -18,11 +20,13 @@ class Diary_Check : AppCompatActivity() {
         setContentView(R.layout.activity_diary_check)
 
         diaryContainer = findViewById(R.id.diary_container)
-        auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
+
+        // Singleton을 통해 Firebase 객체 갖고 오게 변경
+        auth = SingletonKotlin.getAuth()
+        val currentUser = SingletonKotlin.getCurrentUser()
 
         if (currentUser != null) {
-            databaseReference = FirebaseDatabase.getInstance().reference
+            databaseReference = SingletonKotlin.getDatabase()
                 .child("diaries")
                 .child(currentUser.uid)
 
@@ -32,8 +36,9 @@ class Diary_Check : AppCompatActivity() {
                     for (diarySnapshot in snapshot.children) {
                         val date = diarySnapshot.child("date").getValue(String::class.java)
                         val content = diarySnapshot.child("content").getValue(String::class.java)
-                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty()) {
-                            addDiaryEntryToView(date, content)
+                        val diaryId = diarySnapshot.key
+                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
+                            addDiaryEntryToView(date, content, diaryId)
                         }
                     }
                 }
@@ -45,20 +50,36 @@ class Diary_Check : AppCompatActivity() {
         }
     }
 
-    private fun addDiaryEntryToView(date: String, content: String) {
+    private fun addDiaryEntryToView(date: String, content: String, diaryId: String) {
         val dateTextView = TextView(this).apply {
             text = date
             textSize = 18f
             setPadding(0, 10, 0, 0)
+            setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
         }
 
         val contentTextView = TextView(this).apply {
             text = content
             textSize = 16f
             setPadding(0, 5, 0, 10)
+            setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
         }
 
-        diaryContainer.addView(dateTextView)
-        diaryContainer.addView(contentTextView)
+        val diaryEntryLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, 20, 0, 20)
+            addView(dateTextView)
+            addView(contentTextView)
+            //setBackgroundResource(R.drawable.diary_entry_background) // Optional: add background to each entry
+            setOnClickListener {
+                val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java)
+                intent.putExtra("diaryId", diaryId)
+                intent.putExtra("date", date)
+                intent.putExtra("content", content)
+                startActivity(intent)
+            }
+        }
+
+        diaryContainer.addView(diaryEntryLayout)
     }
 }

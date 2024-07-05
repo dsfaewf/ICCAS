@@ -36,6 +36,15 @@
         <activity
             android:name=".ServeGame_NumberActivity"
             android:exported="true" />
+
+        <activity
+            android:name=".ServeGame_samepicture"
+            android:exported="true"/>
+
+        <activity
+            android:name=".ServeGameBaseballActivity"
+            android:exported="true"/>
+
         <activity
             android:name=".gametestActivity"
             android:exported="false" />
