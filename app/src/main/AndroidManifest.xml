@@ -78,6 +78,9 @@
             android:name=".Diary_write_UI"
             android:exported="false" />
         <activity
+            android:name=".DiaryDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".FindIdActivity"
             android:exported="false" />
         <activity
