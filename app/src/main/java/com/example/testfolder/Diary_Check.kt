@@ -20,11 +20,13 @@ class Diary_Check : AppCompatActivity() {
         setContentView(R.layout.activity_diary_check)
 
         diaryContainer = findViewById(R.id.diary_container)
-        auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
+
+        // Singleton을 통해 Firebase 객체 갖고 오게 변경
+        auth = SingletonKotlin.getAuth()
+        val currentUser = SingletonKotlin.getCurrentUser()
 
         if (currentUser != null) {
-            databaseReference = FirebaseDatabase.getInstance().reference
+            databaseReference = SingletonKotlin.getDatabase()
                 .child("diaries")
                 .child(currentUser.uid)
 
