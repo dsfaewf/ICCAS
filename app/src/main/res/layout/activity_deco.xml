@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShopActivity">
+    tools:context=".DecoActivity">
 
     <!-- Top Section - Shop Details -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/shop"
+            android:id="@+id/deco"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -26,7 +26,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/room3"
                 android:scaleType="centerInside"
-                android:id="@+id/shop_frame">
+                android:id="@+id/deco_frame">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -60,16 +60,13 @@
 
                     </LinearLayout>
 
-                    <!-- Placeholder for other content -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
                         android:orientation="horizontal">
-                        <!-- Add your content here -->
                     </LinearLayout>
 
-                    <!-- Gif and Invisible TextViews -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -105,30 +102,6 @@
 
             </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/buy_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="#D6CDB6"
-                android:visibility="gone"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/buy_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/circle_btn_style"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="Buy it now"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
             <Space
                 android:layout_width="match_parent"
                 android:background="#D6CDB6"
@@ -137,7 +110,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/shop_items_recycler_view"
+        android:id="@+id/buy_items_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#D6CDB6"
@@ -158,12 +131,12 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/room_btn"
+            android:id="@+id/room_btn_deco"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
             android:background="@drawable/circle_btn_style"
@@ -172,12 +145,11 @@
             android:text="ROOM"
             android:textSize="20sp"
             android:textStyle="bold" />
-
         <TextView
-            android:id="@+id/deco_btn"
+            android:id="@+id/shop_btn_deco"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
@@ -185,15 +157,14 @@
             android:background="@drawable/circle_btn_style"
             android:clickable="true"
             android:gravity="center"
-            android:text="DECO"
+            android:text="SHOP"
             android:textSize="20sp"
             android:textStyle="bold" />
-
         <TextView
-            android:id="@+id/game_btn"
+            android:id="@+id/save_btn_deco"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
@@ -201,7 +172,7 @@
             android:background="@drawable/circle_btn_style"
             android:clickable="true"
             android:gravity="center"
-            android:text="GAME"
+            android:text="SAVE"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
