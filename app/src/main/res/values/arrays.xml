@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="education_levels">
+        <item>초등학교 졸업 이하</item>
+        <item>중학교 졸업</item>
+        <item>고등학교 졸업</item>
+        <item>대학교 졸업</item>
+        <item>대학원 졸업 이상</item>
+    </string-array>
+
+    <string-array name="residence_areas">
+        <item>대도시</item>
+        <item>중소도시</item>
+        <item>농어촌</item>
+        <item>해외</item>
+    </string-array>
+</resources>

@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -21,7 +20,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private TextView lifeCountText;
 
     private Integer[] comNumber = new Integer[3];
-    private Integer[] userNumber = new Integer[3];
+    private Set<Integer> userNumbers = new HashSet<>(); // 사용자 입력 숫자 중복 체크용 Set
 
     private int lifeCount = 10;
     private int strike = 0;
@@ -41,7 +40,6 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             Button startBtn = findViewById(R.id.start_btn);
             Button answerBtn = findViewById(R.id.answer_btn);
             Button resetBtn = findViewById(R.id.reset_btn);
-            Button backBtn = findViewById(R.id.back_btn); // 뒤로가기 버튼
 
             viewMode("end");
 
@@ -59,8 +57,6 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 reset();
             });
 
-            backBtn.setOnClickListener(view -> finish()); // 뒤로가기 버튼 클릭 리스너 추가
-
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during onCreate", e);
         }
@@ -69,7 +65,6 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private void randomNumber() {
         try {
             Set<Integer> set = new HashSet<>();
-            ArrayList<Integer> list = new ArrayList<>();
             Random random = new Random();
 
             while (set.size() < 3) {
@@ -77,12 +72,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 set.add(randomValue);
             }
 
-            list.addAll(set);
-            java.util.Collections.shuffle(list);
+            comNumber = set.toArray(new Integer[0]);
 
-            for (int i = 0; i < list.size(); i++) {
-                comNumber[i] = list.get(i);
-            }
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during randomNumber", e);
         }
@@ -92,35 +83,25 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         try {
             String inputNumber = requestText.getText().toString();
 
-            if (inputNumber.length() == 3) {
-                // 중복 체크를 위한 HashSet
-                Set<Character> uniqueDigits = new HashSet<>();
+            if (inputNumber.length() == 3 && !hasDuplicate(inputNumber)) {
+                userNumbers.clear(); // 사용자 입력 숫자 초기화
 
-                for (int i = 0; i < 3; i++) {
-                    if (!uniqueDigits.add(inputNumber.charAt(i))) {
-                        toastMessage("중복된 숫자는 입력할 수 없습니다.");
-                        return;
-                    }
-                }
+                userNumbers.add(Integer.parseInt(inputNumber.substring(0, 1)));
+                userNumbers.add(Integer.parseInt(inputNumber.substring(1, 2)));
+                userNumbers.add(Integer.parseInt(inputNumber.substring(2, 3)));
 
-                lifeCount--;
-                lifeCountText.setText("기회: " + lifeCount + " 번");
-
-                userNumber[0] = Integer.parseInt(inputNumber.substring(0, 1));
-                userNumber[1] = Integer.parseInt(inputNumber.substring(1, 2));
-                userNumber[2] = Integer.parseInt(inputNumber.substring(2, 3));
+                strike = 0;
+                ball = 0;
 
                 for (int num = 0; num < 3; num++) {
-                    for (int num2 = 0; num2 < 3; num2++) {
-                        if (comNumber[num].equals(userNumber[num2])) {
-                            if (num == num2) {
-                                strike++;
-                            } else {
-                                ball++;
-                            }
-                        }
+                    if (comNumber[num].equals(Integer.parseInt(inputNumber.substring(num, num + 1)))) {
+                        strike++;
+                    } else if (userNumbers.contains(comNumber[num])) {
+                        ball++;
                     }
                 }
+
+                lifeCount--; // 기회 차감
 
                 if (strike == 3) {
                     toastMessage("성공");
@@ -133,15 +114,28 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                     showResult(inputNumber);
                 }
 
+                lifeCountText.setText("기회: " + lifeCount + " 번");
                 requestText.setText("");
                 strike = 0;
                 ball = 0;
-            } else {
+            } else if (inputNumber.length() != 3) {
                 toastMessage("숫자 3개를 입력해주세요.");
+            } else {
+                toastMessage("같은 숫자는 중복해서 입력할 수 없습니다.");
             }
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during numberCheck", e);
         }
+    }
+
+    private boolean hasDuplicate(String inputNumber) {
+        Set<Character> charSet = new HashSet<>();
+        for (char c : inputNumber.toCharArray()) {
+            if (!charSet.add(c)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showResult(String inputNumber) {

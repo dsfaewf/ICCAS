@@ -11,37 +11,41 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashSet;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Random;
 
 public class ServeGame_NumberActivity extends AppCompatActivity implements View.OnClickListener {
-    RelativeLayout rootView;
-    GridLayout gridLayout;
-    TextView requestText, responseText;
-    Button startBtn, answerBtn, backBtn;
-    String answer = "";
-    int randomNumber;
 
-    int min = 1;
-    int max = 100;
+    private RelativeLayout rootView;
+    private GridLayout gridLayout;
+    private TextView requestText, responseText, coinText;
+    private Button startBtn, answerBtn, backBtn;
+    private Button[] buttons = new Button[10];
+    private String answer = "";
+    private int randomNumber;
 
-    //도전할 횟수 카운트
-    int count = 7;
+    private int min = 1;
+    private int max = 100;
+    private int count = 7;
 
-    HashSet<Character> enteredNumbers = new HashSet<>();
+    private int coinReward = 10;
+    private int maxClearsPerDay = 3;
+
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_number);
 
-        // View 초기화
-        rootView = findViewById(R.id.main);
-        gridLayout = findViewById(R.id.grid_layout);
+        currentUser = SingletonJava.getInstance().getCurrentUser();
 
+        // View 초기화
+        coinText = findViewById(R.id.coin_text);
+        gridLayout = findViewById(R.id.grid_layout);
         requestText = findViewById(R.id.request_text);
         responseText = findViewById(R.id.response_text);
-
         startBtn = findViewById(R.id.start_btn);
         answerBtn = findViewById(R.id.answer_btn);
         backBtn = findViewById(R.id.back_btn);
@@ -49,19 +53,18 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         // 버튼 숨김
         viewMode("end");
 
-        // 시작버튼
+        // 시작 버튼 클릭 이벤트
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 viewMode("start");
-
                 // 랜덤숫자 생성
                 Random random = new Random();
                 randomNumber = random.nextInt(100) + 1; // 1~100
 
                 // 시작 버튼을 누를 때 정답 텍스트 초기화
                 responseText.setText("");
-                requestText.setText("기회 7번");
+                requestText.setText("기회 " + count + "번");
 
                 Toast.makeText(ServeGame_NumberActivity.this, "숫자가 생성되었습니다.",
                         Toast.LENGTH_SHORT).show();
@@ -99,6 +102,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                         Toast.makeText(ServeGame_NumberActivity.this, "정답입니다.", Toast.LENGTH_SHORT).show();
                         viewMode("end");
                         reset();
+                        SingletonJava.getInstance().checkAndRewardCoins(currentUser, maxClearsPerDay, coinReward, coinText, ServeGame_NumberActivity.this);
                     }
 
                     requestText.setText("기회 " + count + "번");
@@ -115,26 +119,24 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 finish(); // 현재 액티비티 종료
             }
         });
+
+        // 사용자 코인 및 초기화 날짜 불러오기
+        SingletonJava.getInstance().checkAndResetDailyClears(currentUser, coinText, this);
+        // 사용자 코인 불러오기
+        SingletonJava.getInstance().loadUserCoins(coinText);
     }
 
     // 버튼 클릭 이벤트
     @Override
     public void onClick(View view) {
         int id = view.getId();
+        Button clickedButton = (Button) view;
+        String buttonText = clickedButton.getText().toString();
 
-        // 숫자 길이 체크
+        // 숫자 길이 체크 및 정답에 숫자 추가
         if (checkLength(answer)) {
-            Button clickedButton = (Button) view;
-            String buttonText = clickedButton.getText().toString();
-
-            // HashSet에 이미 해당 숫자가 있는지 확인하여 중복 방지
-            if (!enteredNumbers.contains(buttonText.charAt(0))) {
-                enteredNumbers.add(buttonText.charAt(0));
-                answer = answer + buttonText;
-                display();
-            } else {
-                Toast.makeText(this, "같은 숫자는 중복해서 입력할 수 없습니다.", Toast.LENGTH_SHORT).show();
-            }
+            answer = answer + buttonText;
+            display();
         }
     }
 
@@ -142,7 +144,6 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     private void resetButtons() {
         answer = "";
         requestText.setText("");
-        enteredNumbers.clear();
     }
 
     // 게임타입
