@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:id="@+id/room_frame"
             android:background="@drawable/room3" >
 
         </FrameLayout>
@@ -151,7 +152,7 @@
             <TextView
                 android:id="@+id/shop_btn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
@@ -167,7 +168,7 @@
             <TextView
                 android:id="@+id/deco_btn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_marginStart="20dp"
@@ -184,7 +185,7 @@
             <TextView
                 android:id="@+id/diary_btn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_marginStart="20dp"
@@ -199,7 +200,7 @@
             <TextView
                 android:id="@+id/game_btn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"

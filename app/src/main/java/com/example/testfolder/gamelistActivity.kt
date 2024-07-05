@@ -4,23 +4,20 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
-class gametestActivity : AppCompatActivity() {
-    @SuppressLint("MissingInflatedId")
+class gamelistActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gametest)
+        setContentView(R.layout.activity_gamelist)
 
-        val btn1 = findViewById<Button>(R.id.btn1)
-        val btn2 = findViewById<Button>(R.id.btn2)
-        val btn3 = findViewById<Button>(R.id.btn3)
-        val btn4 = findViewById<Button>(R.id.btn4)
-        val btn5=findViewById<Button>(R.id.btn5)
-        val btn6=findViewById<Button>(R.id.btn6)
+        val btn1 = findViewById<LinearLayout>(R.id.btn1)
+        val btn2 = findViewById<LinearLayout>(R.id.btn2)
+        val btn3 = findViewById<LinearLayout>(R.id.btn3)
+        val btn4 = findViewById<LinearLayout>(R.id.btn4)
+        val btn5 = findViewById<LinearLayout>(R.id.btn5)
+        val btn6 = findViewById<LinearLayout>(R.id.btn6)
 
         btn1.setOnClickListener {
             val intent = Intent(this, gameLowActivity::class.java)

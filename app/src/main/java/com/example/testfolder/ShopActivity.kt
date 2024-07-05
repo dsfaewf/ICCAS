@@ -1,13 +1,12 @@
 package com.example.testfolder
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +23,9 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
     private lateinit var coinText: TextView
     private lateinit var frame: FrameLayout
     private lateinit var buyBtn: TextView
+    private lateinit var roomBtn: TextView
+    private lateinit var decoBtn: TextView
+    private lateinit var gameBtn: TextView
     private lateinit var buyLayout: LinearLayout
     private lateinit var clickedItem: ShopItem
 
@@ -48,6 +50,9 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         frame = findViewById(R.id.shop_frame)
         buyBtn = findViewById(R.id.buy_button)
         buyLayout = findViewById(R.id.buy_layout)
+        roomBtn = findViewById(R.id.room_btn)
+        decoBtn = findViewById(R.id.deco_btn)
+        gameBtn = findViewById(R.id.game_btn)
         gifDrawable.loopCount = 0 // 무한 반복
 
         recyclerView = findViewById(R.id.shop_items_recycler_view)
@@ -71,6 +76,19 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
         buyBtn.setOnClickListener {
             showPurchaseConfirmationDialog(clickedItem)
+        }
+
+        roomBtn.setOnClickListener {
+            val intent = Intent(this, CatRoomActivity::class.java)
+            startActivity(intent)
+        }
+        decoBtn.setOnClickListener {
+            val intent = Intent(this, DecoActivity::class.java)
+            startActivity(intent)
+        }
+        gameBtn.setOnClickListener {
+            val intent = Intent(this, gamelistActivity::class.java)
+            startActivity(intent)
         }
     }
 
