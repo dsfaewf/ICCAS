@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
     private boolean isProcessing = false;
     private int cardsMatched = 0;
     private List<Integer> matchedButtons = new ArrayList<>();
+    private List<Integer> selectedImages; // 클래스 멤버 변수로 변경
 
     private ProgressBar progressBar;
     private TextView timerTextView;
@@ -63,12 +65,19 @@ public class ServeGame_samepicture extends AppCompatActivity {
             images[i] = imageList.get(i);
         }
 
-        // Select 16 random images from the shuffled list
-        int numCards = 16; // Number of cards to be displayed
-        List<Integer> selectedImages = new ArrayList<>();
+        // Select 8 random images and duplicate them to form 16 cards
+        int numCards = 8; // Number of different pairs
+        selectedImages = new ArrayList<>();
         Random random = new Random();
-        for (int i = 0; i < numCards; i++) {
-            selectedImages.add(images[i]);
+        HashSet<Integer> selectedIndices = new HashSet<>(); // 중복 확인을 위한 Set
+
+        while (selectedImages.size() < numCards * 2) {
+            int imageIndex = random.nextInt(images.length);
+            if (!selectedIndices.contains(imageIndex)) {
+                selectedIndices.add(imageIndex);
+                selectedImages.add(images[imageIndex]);
+                selectedImages.add(images[imageIndex]); // Add the same image twice
+            }
         }
 
         // Assign selected images to buttonIds
@@ -127,7 +136,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                selectedButton.setImageResource(images[index]);
+                selectedButton.setImageResource(selectedImages.get(index));
                 selectedButton.setTag(index); // 해당 버튼에 이미지 인덱스를 태그로 저장
 
                 // 이미지가 설정된 후 다시 alpha 애니메이션 추가
@@ -194,7 +203,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
         int firstIndex = (int) firstSelected.getTag();
         int secondIndex = (int) secondSelected.getTag();
 
-        boolean isMatched = images[firstIndex] == images[secondIndex];
+        boolean isMatched = selectedImages.get(firstIndex).equals(selectedImages.get(secondIndex));
 
         if (isMatched) {
             // 매치되었을 경우 처리
