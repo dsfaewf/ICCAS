@@ -30,7 +30,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
     private ProgressBar progressBar;
     private TextView timerTextView;
-    private int progressStatus = 60; // 초기 값 60으로 설정 (1분 타이머)
+    private int progressStatus = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean gameEnded = false;
     private long startTimeMillis;
@@ -194,15 +194,18 @@ public class ServeGame_samepicture extends AppCompatActivity {
         int firstIndex = (int) firstSelected.getTag();
         int secondIndex = (int) secondSelected.getTag();
 
-        if (images[firstIndex] == images[secondIndex]) {
+        boolean isMatched = images[firstIndex] == images[secondIndex];
+
+        if (isMatched) {
             // 매치되었을 경우 처리
+            Toast.makeText(this, "Matched!", Toast.LENGTH_SHORT).show();
             matchedButtons.add(firstSelected.getId());
             matchedButtons.add(secondSelected.getId());
             cardsMatched += 2;
 
+            // 모든 카드가 매치되었는지 확인
             if (cardsMatched == buttonIds.length) {
-                // 모든 카드가 매치되었을 경우
-                endGame();
+                endGame(); // 게임 종료 처리
             }
         } else {
             // 매치되지 않았을 경우 처리
@@ -280,19 +283,19 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
     private void startTimer() {
         new Thread(() -> {
-            while (progressStatus > 0 && !gameEnded) {  // progressStatus가 0 초과일 때까지 반복
-                progressStatus -= 1; // progressStatus를 감소시킴
+            while (progressStatus < 300 && !gameEnded) {  // 0.2 * 300 = 60초
+                progressStatus += 1;
                 handler.post(() -> {
                     progressBar.setProgress(progressStatus);
                     updateTimerText(); // 타이머 텍스트 업데이트
                 });
                 try {
-                    Thread.sleep(1000);   // 1초 대기
+                    Thread.sleep(200);   // 0.2초 대기
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            if (!gameEnded && progressStatus <= 0) {
+            if (!gameEnded) {
                 handler.post(() -> {
                     endGame(); // 타이머가 종료되었을 때 게임 종료 처리
                 });
