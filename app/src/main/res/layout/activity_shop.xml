@@ -25,7 +25,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:background="@drawable/room3"
-                android:scaleType="centerInside">
+                android:scaleType="centerInside"
+                android:id="@+id/shop_frame">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -104,7 +105,30 @@
 
             </FrameLayout>
 
-            <!-- Space for spacing between shop details and RecyclerView -->
+            <LinearLayout
+                android:id="@+id/buy_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="#D6CDB6"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/buy_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/circle_btn_style"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="Buy it now"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
             <Space
                 android:layout_width="match_parent"
                 android:background="#D6CDB6"
@@ -112,17 +136,17 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- RecyclerView for Shop Items -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shop_items_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="#D6CDB6"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/bottomLayout"
-        tools:listitem="@layout/shop_item_layout" />
+        tools:listitem="@layout/shop_item_layout">
 
-    <!-- Bottom Navigation Buttons -->
+    </androidx.recyclerview.widget.RecyclerView>
+
     <LinearLayout
         android:id="@+id/bottomLayout"
         android:layout_width="0dp"
