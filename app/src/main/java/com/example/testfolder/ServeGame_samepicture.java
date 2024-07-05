@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,10 +34,16 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
     private ProgressBar progressBar;
     private TextView timerTextView;
+    private TextView coinText; // 코인 텍스트뷰 추가
     private int progressStatus = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean gameEnded = false;
     private long startTimeMillis;
+
+    private static final int COIN_REWARD = 30; // 코인 보상 - 게임이 어려운편이므로 보상을 30으로 높게 설정함.
+    private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
+
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,10 @@ public class ServeGame_samepicture extends AppCompatActivity {
         gridLayout = findViewById(R.id.gridLayout);
         progressBar = findViewById(R.id.progressBar1);
         timerTextView = findViewById(R.id.timerTextView);
+        coinText = findViewById(R.id.coin_text); // 코인 텍스트뷰 초기화
+
+        currentUser = SingletonJava.getInstance().getCurrentUser(); // 싱글톤으로 현재 사용자 가져오기
+        SingletonJava.getInstance().loadUserCoins(coinText); // 코인 정보 가져옴
 
         images = new int[]{
                 R.drawable.image1, R.drawable.image2, R.drawable.image3, R.drawable.image4,
@@ -214,6 +226,9 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
             // 모든 카드가 매치되었는지 확인
             if (cardsMatched == buttonIds.length) {
+                // 코인 보상
+                SingletonJava.getInstance().checkAndRewardCoins(currentUser,
+                        MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
                 endGame(); // 게임 종료 처리
             }
         } else {
