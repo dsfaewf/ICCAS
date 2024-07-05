@@ -10,17 +10,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.testfolder.utils.OpenAI
+import com.example.testfolder.utils.PreprocessTexts
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.testfolder.utils.PreprocessTexts
 
 class Diary_write_UI : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
+    //private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +34,13 @@ class Diary_write_UI : AppCompatActivity() {
         val dateTextView = findViewById<TextView>(R.id.date_text_view)
         val errorTextView = findViewById<TextView>(R.id.textview_error)
 
-        // Firebase 데이터베이스 루트 참조 가져오기
-        databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
-        auth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
-        database = FirebaseDatabase.getInstance()
+//        // Firebase 데이터베이스 루트 참조 가져오기
+//        databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
+//        auth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
+//        database = FirebaseDatabase.getInstance()
+        // SingletonKotlin을 통해 Firebase 객체를 불러오도록 수정함
+        auth = SingletonKotlin.getAuth()
+        databaseReference = SingletonKotlin.getDatabase().child("diaries")
 
         // Save 버튼 클릭 시 날짜 표시 및 일기 내용 저장
         saveButton.setOnClickListener {
