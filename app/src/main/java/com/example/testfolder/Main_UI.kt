@@ -40,7 +40,7 @@ class Main_UI : AppCompatActivity() {
         }
 
         gameButton.setOnClickListener {
-            val intent = Intent(this, gametestActivity::class.java)
+            val intent = Intent(this, gamelistActivity::class.java)
             startActivity(intent)
         }
 

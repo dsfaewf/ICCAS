@@ -17,44 +17,41 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".DecoActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
-            android:exported="true" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter> />
-        </activity>
-        <!-- 로그인 액티비티를 메인으로 -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            />
+        </activity> <!-- 로그인 액티비티를 메인으로 -->
         <activity
             android:name=".LoginActivity"
-            android:exported="false">
-        </activity> <!-- 다른 넘들 -->
+            android:exported="false"></activity> <!-- 다른 넘들 -->
         <activity
             android:name=".SurveyActivity"
             android:exported="false" />
         <activity
             android:name=".ServeGame_NumberActivity"
             android:exported="true" />
-
         <activity
             android:name=".CatRoomActivity"
-            android:exported="false"/>
-
+            android:exported="false" />
         <activity
             android:name=".ShopActivity"
-            android:exported="true"/>
-
+            android:exported="true" />
         <activity
             android:name=".ServeGame_samepicture"
-            android:exported="true"/>
-
+            android:exported="true" />
         <activity
             android:name=".ServeGameBaseballActivity"
-            android:exported="true"/>
-
+            android:exported="true" />
         <activity
-            android:name=".gametestActivity"
+            android:name=".gamelistActivity"
             android:exported="false" />
         <activity
             android:name=".gameHighActivity"
