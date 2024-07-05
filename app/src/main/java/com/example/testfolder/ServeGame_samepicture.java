@@ -13,8 +13,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -27,13 +30,20 @@ public class ServeGame_samepicture extends AppCompatActivity {
     private boolean isProcessing = false;
     private int cardsMatched = 0;
     private List<Integer> matchedButtons = new ArrayList<>();
+    private List<Integer> selectedImages; // 클래스 멤버 변수로 변경
 
     private ProgressBar progressBar;
     private TextView timerTextView;
-    private int progressStatus = 60; // 초기 값 60으로 설정 (1분 타이머)
+    private TextView coinText; // 코인 텍스트뷰 추가
+    private int progressStatus = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean gameEnded = false;
     private long startTimeMillis;
+
+    private static final int COIN_REWARD = 30; // 코인 보상 - 게임이 어려운편이므로 보상을 30으로 높게 설정함.
+    private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
+
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +53,10 @@ public class ServeGame_samepicture extends AppCompatActivity {
         gridLayout = findViewById(R.id.gridLayout);
         progressBar = findViewById(R.id.progressBar1);
         timerTextView = findViewById(R.id.timerTextView);
+        coinText = findViewById(R.id.coin_text); // 코인 텍스트뷰 초기화
+
+        currentUser = SingletonJava.getInstance().getCurrentUser(); // 싱글톤으로 현재 사용자 가져오기
+        SingletonJava.getInstance().loadUserCoins(coinText); // 코인 정보 가져옴
 
         images = new int[]{
                 R.drawable.image1, R.drawable.image2, R.drawable.image3, R.drawable.image4,
@@ -63,12 +77,19 @@ public class ServeGame_samepicture extends AppCompatActivity {
             images[i] = imageList.get(i);
         }
 
-        // Select 16 random images from the shuffled list
-        int numCards = 16; // Number of cards to be displayed
-        List<Integer> selectedImages = new ArrayList<>();
+        // Select 8 random images and duplicate them to form 16 cards
+        int numCards = 8; // Number of different pairs
+        selectedImages = new ArrayList<>();
         Random random = new Random();
-        for (int i = 0; i < numCards; i++) {
-            selectedImages.add(images[i]);
+        HashSet<Integer> selectedIndices = new HashSet<>(); // 중복 확인을 위한 Set
+
+        while (selectedImages.size() < numCards * 2) {
+            int imageIndex = random.nextInt(images.length);
+            if (!selectedIndices.contains(imageIndex)) {
+                selectedIndices.add(imageIndex);
+                selectedImages.add(images[imageIndex]);
+                selectedImages.add(images[imageIndex]); // Add the same image twice
+            }
         }
 
         // Assign selected images to buttonIds
@@ -127,7 +148,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animator animator) {
-                selectedButton.setImageResource(images[index]);
+                selectedButton.setImageResource(selectedImages.get(index));
                 selectedButton.setTag(index); // 해당 버튼에 이미지 인덱스를 태그로 저장
 
                 // 이미지가 설정된 후 다시 alpha 애니메이션 추가
@@ -194,15 +215,21 @@ public class ServeGame_samepicture extends AppCompatActivity {
         int firstIndex = (int) firstSelected.getTag();
         int secondIndex = (int) secondSelected.getTag();
 
-        if (images[firstIndex] == images[secondIndex]) {
+        boolean isMatched = selectedImages.get(firstIndex).equals(selectedImages.get(secondIndex));
+
+        if (isMatched) {
             // 매치되었을 경우 처리
+            Toast.makeText(this, "Matched!", Toast.LENGTH_SHORT).show();
             matchedButtons.add(firstSelected.getId());
             matchedButtons.add(secondSelected.getId());
             cardsMatched += 2;
 
+            // 모든 카드가 매치되었는지 확인
             if (cardsMatched == buttonIds.length) {
-                // 모든 카드가 매치되었을 경우
-                endGame();
+                // 코인 보상
+                SingletonJava.getInstance().checkAndRewardCoins(currentUser,
+                        MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
+                endGame(); // 게임 종료 처리
             }
         } else {
             // 매치되지 않았을 경우 처리
@@ -280,19 +307,19 @@ public class ServeGame_samepicture extends AppCompatActivity {
 
     private void startTimer() {
         new Thread(() -> {
-            while (progressStatus > 0 && !gameEnded) {  // progressStatus가 0 초과일 때까지 반복
-                progressStatus -= 1; // progressStatus를 감소시킴
+            while (progressStatus < 300 && !gameEnded) {  // 0.2 * 300 = 60초
+                progressStatus += 1;
                 handler.post(() -> {
                     progressBar.setProgress(progressStatus);
                     updateTimerText(); // 타이머 텍스트 업데이트
                 });
                 try {
-                    Thread.sleep(1000);   // 1초 대기
+                    Thread.sleep(200);   // 0.2초 대기
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            if (!gameEnded && progressStatus <= 0) {
+            if (!gameEnded) {
                 handler.post(() -> {
                     endGame(); // 타이머가 종료되었을 때 게임 종료 처리
                 });

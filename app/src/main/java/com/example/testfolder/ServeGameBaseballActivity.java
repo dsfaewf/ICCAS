@@ -7,43 +7,39 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
 public class ServeGameBaseballActivity extends AppCompatActivity {
-
     private EditText requestText;
     private TextView responseText;
     private TextView resultText;
     private TextView lifeCountText;
     private TextView coinText;
     private FirebaseUser currentUser;
+
     private Integer[] comNumber = new Integer[3];
-    private Integer[] userNumber = new Integer[3];
+    private Set<Integer> userNumbers = new HashSet<>(); // 사용자 입력 숫자 중복 체크용 Set
 
     private int lifeCount = 10;
     private int strike = 0;
     private int ball = 0;
-    private int coinReward = 10; // 지급되는 보상은 10코인으로 설정
-    private int maxClearsPerDay = 3; // 하루 최대 보상 횟수를 3으로 지정
+
+    private static final int COIN_REWARD = 10; // 코인 보상
+    private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_baseball);
-        coinText = findViewById(R.id.coin_text); // coinText 초기화 추가
 
         currentUser = SingletonJava.getInstance().getCurrentUser();
+        coinText = findViewById(R.id.coin_text);
 
         try {
             requestText = findViewById(R.id.request_text);
@@ -84,7 +80,6 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private void randomNumber() {
         try {
             Set<Integer> set = new HashSet<>();
-            ArrayList<Integer> list = new ArrayList<>();
             Random random = new Random();
 
             while (set.size() < 3) {
@@ -92,14 +87,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 set.add(randomValue);
             }
 
-            list.addAll(set);
-            java.util.Collections.shuffle(list);
+            comNumber = set.toArray(new Integer[0]);
 
-            for (int i = 0; i < list.size(); i++) {
-                comNumber[i] = list.get(i);
-            }
-
-            responseText.setText("컴퓨터 숫자: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during randomNumber", e);
         }
@@ -107,31 +96,33 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
 
     private void numberCheck() {
         try {
-            lifeCount--;
-            lifeCountText.setText("기회: " + lifeCount + " 번");
             String inputNumber = requestText.getText().toString();
 
-            if (inputNumber.length() == 3) {
-                userNumber[0] = Integer.parseInt(inputNumber.substring(0, 1));
-                userNumber[1] = Integer.parseInt(inputNumber.substring(1, 2));
-                userNumber[2] = Integer.parseInt(inputNumber.substring(2, 3));
+            if (inputNumber.length() == 3 && !hasDuplicate(inputNumber)) {
+                userNumbers.clear(); // 사용자 입력 숫자 초기화
+
+                userNumbers.add(Integer.parseInt(inputNumber.substring(0, 1)));
+                userNumbers.add(Integer.parseInt(inputNumber.substring(1, 2)));
+                userNumbers.add(Integer.parseInt(inputNumber.substring(2, 3)));
+
+                strike = 0;
+                ball = 0;
 
                 for (int num = 0; num < 3; num++) {
-                    for (int num2 = 0; num2 < 3; num2++) {
-                        if (comNumber[num].equals(userNumber[num2])) {
-                            if (num == num2) {
-                                strike++;
-                            } else {
-                                ball++;
-                            }
-                        }
+                    if (comNumber[num].equals(Integer.parseInt(inputNumber.substring(num, num + 1)))) {
+                        strike++;
+                    } else if (userNumbers.contains(comNumber[num])) {
+                        ball++;
                     }
                 }
+
+                lifeCount--; // 기회 차감
 
                 if (strike == 3) {
                     toastMessage("성공");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
-                    SingletonJava.getInstance().checkAndRewardCoins(currentUser, maxClearsPerDay, coinReward, coinText, ServeGameBaseballActivity.this);
+                    // 코인 보상
+                    SingletonJava.getInstance().checkAndRewardCoins(currentUser, MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
                 } else if (lifeCount == 0) {
                     toastMessage("실패");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
@@ -140,15 +131,28 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                     showResult(inputNumber);
                 }
 
+                lifeCountText.setText("기회: " + lifeCount + " 번");
                 requestText.setText("");
                 strike = 0;
                 ball = 0;
-            } else {
+            } else if (inputNumber.length() != 3) {
                 toastMessage("숫자 3개를 입력해주세요.");
+            } else {
+                toastMessage("같은 숫자는 중복해서 입력할 수 없습니다.");
             }
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during numberCheck", e);
         }
+    }
+
+    private boolean hasDuplicate(String inputNumber) {
+        Set<Character> charSet = new HashSet<>();
+        for (char c : inputNumber.toCharArray()) {
+            if (!charSet.add(c)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showResult(String inputNumber) {
