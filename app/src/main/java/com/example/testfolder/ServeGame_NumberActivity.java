@@ -1,5 +1,6 @@
 package com.example.testfolder;
 
+import android.content.Intent; // 추가된 import 구문
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -101,6 +102,10 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                     //초기화
                     reset();
                     resetButtons(); //버튼 초기화
+
+                    // 게임 종료 후 이동
+                    navigateToGameList();
+
                 } else {
                     //입력숫자
                     int inputNumber = Integer.parseInt(requestText.getText().toString());
@@ -130,6 +135,9 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                         //초기화
                         reset();
                         resetButtons(); //버튼 초기화
+
+                        // 게임 종료 후 이동
+                        navigateToGameList();
                     }
 
                     //입력창 초기화
@@ -145,6 +153,13 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         SingletonJava.getInstance().checkAndResetDailyClears(currentUser, coinText, this);
         // 사용자 코인 불러오기
         SingletonJava.getInstance().loadUserCoins(coinText);
+    }
+
+    // 게임 종료 시 이동을 위한 메서드 추가
+    private void navigateToGameList() {
+        Intent intent = new Intent(this, gamelistActivity.class);
+        startActivity(intent);
+        finish(); // 현재 Activity 종료
     }
 
     // 버튼 클릭 이벤트
