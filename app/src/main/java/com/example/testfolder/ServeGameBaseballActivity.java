@@ -1,5 +1,6 @@
 package com.example.testfolder;
 
+import android.content.Intent; // 추가된 import 구문
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -123,9 +124,13 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
                     // 코인 보상
                     SingletonJava.getInstance().checkAndRewardCoins(currentUser, MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
+                    // 게임 종료 후 이동
+                    navigateToGameList();
                 } else if (lifeCount == 0) {
                     toastMessage("실패");
                     responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    // 게임 종료 후 이동
+                    navigateToGameList();
                 } else {
                     responseText.setText("Strike: " + strike + ", Ball: " + ball);
                     showResult(inputNumber);
@@ -207,5 +212,12 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
 
     private void toastMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    // 추가된 메서드: 게임 종료 후 이동
+    private void navigateToGameList() {
+        Intent intent = new Intent(this, gamelistActivity.class);
+        startActivity(intent);
+        finish(); // 현재 Activity 종료
     }
 }
