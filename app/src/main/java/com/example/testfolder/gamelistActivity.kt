@@ -32,15 +32,15 @@ class gamelistActivity : AppCompatActivity() {
             startActivity(intent)
         }
         btn4.setOnClickListener {
-            val intent = Intent(this, ServeGame_NumberActivity::class.java)
+            val intent = Intent(this, MinigameDescriptionNumberActivity::class.java)
             startActivity(intent)
         }
         btn5.setOnClickListener {
-            val intent = Intent(this, ServeGameBaseballActivity::class.java)
+            val intent = Intent(this, MinigameDescriptionBaseballActivity::class.java)
             startActivity(intent)
         }
         btn6.setOnClickListener {
-            val intent = Intent(this, ServeGame_samepicture::class.java)
+            val intent = Intent(this, MinigameDescriptionSamepictureActivity::class.java)
             startActivity(intent)
         }
 
