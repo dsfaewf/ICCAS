@@ -37,8 +37,7 @@ class CatRoomActivity : AppCompatActivity() {
         roomframe = findViewById(R.id.room_frame)
 
         // 기본 배경 설정 -> 유저가 저장한 배경이 있으면 해당 배경으로 없으면 기본 배경으로
-        roomframe.setBackgroundResource(R.drawable.room3)
-
+        SingletonKotlin.loadUserBackground(roomframe)
 
         // 사용자 코인 불러오기
         try {

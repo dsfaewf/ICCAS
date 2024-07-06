@@ -8,7 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ShopItemsAdapter(private val shopItems: List<ShopItem>, private val context: Context, private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<ShopItemsAdapter.ShopItemViewHolder>() {
+class ShopItemsAdapter(
+    private val shopItems: List<ShopItem>,
+    private val context: Context,
+    private val itemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<ShopItemsAdapter.ShopItemViewHolder>() { //보기 불편해서 코드 좀 내립니다. - 우석
 
     // Define the listener interface
     interface OnItemClickListener {
@@ -24,7 +28,7 @@ class ShopItemsAdapter(private val shopItems: List<ShopItem>, private val contex
         val shopItem = shopItems[position]
         holder.itemImage.setImageResource(shopItem.imageResource)
         holder.itemName.text = shopItem.name
-        holder.itemPrice.text = shopItem.price
+        holder.itemPrice.text = "${shopItem.price} coins"  // Int를 String으로 변환했습니다요
 
         // Set click listener
         holder.itemView.setOnClickListener {
