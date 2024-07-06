@@ -40,7 +40,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
     private boolean gameEnded = false;
     private long startTimeMillis;
 
-    private static final int COIN_REWARD = 30; // 코인 보상 - 게임이 어려운편이므로 보상을 30으로 높게 설정함.
+    private static final int COIN_REWARD = 10; // 코인 보상 - 어려운 편이 아니었네 ㅎ 오류 수정후 다시 보상을 10으로 조정
     private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
 
     private FirebaseUser currentUser;

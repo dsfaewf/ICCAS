@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.GifImageView
 
-class DecoActivity : AppCompatActivity(),ShopItemsAdapter.OnItemClickListener {
+class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ShopItemsAdapter
-    private lateinit var buyItemList: List<ShopItem>
+    private lateinit var buyItemList: MutableList<ShopItem>
     private lateinit var coinText: TextView
     private lateinit var frame: FrameLayout
     private lateinit var roomBtn: TextView
@@ -37,16 +37,22 @@ class DecoActivity : AppCompatActivity(),ShopItemsAdapter.OnItemClickListener {
         gifDrawable.loopCount = 0 // 무한 반복
 
         recyclerView = findViewById(R.id.buy_items_recycler_view)
-        recyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-        // db에서 불러오는 방법으로 수정해야할 것 같아요
-        buyItemList = listOf(
-            ShopItem(R.drawable.room01, "Item 1", "$0"),
-        )
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        buyItemList = mutableListOf()
         adapter = ShopItemsAdapter(buyItemList, this, this)
         recyclerView.adapter = adapter
 
+        // 현재 장착중인 배경으로 배경 설정
+        SingletonKotlin.loadUserBackground(frame)
+
+        // 사용자 코인 불러오기
+        SingletonKotlin.loadUserCoins(coinText)
+
+        // 기본 배경을 품목에 무조건 추가하도록 설정 //이거 필요함!! 없애면 안 돼유 ㅠㅠ
+        buyItemList.add(ShopItem(R.drawable.room3, "Default Room", 0))
+
+        // 사용자가 구매한 아이템 불러오기
+        SingletonKotlin.loadPurchasedItems(buyItemList, adapter)
 
         roomBtn.setOnClickListener {
             val intent = Intent(this, CatRoomActivity::class.java)
@@ -57,7 +63,8 @@ class DecoActivity : AppCompatActivity(),ShopItemsAdapter.OnItemClickListener {
             startActivity(intent)
         }
         saveBtn.setOnClickListener {
-            // db 저장
+            // 선택된 배경을 db에 저장하도록 싱글톤 구현
+            SingletonKotlin.saveUserBackground(clickedItem.name)
             showConfirmationDialog() // 팝업 띄우고 확인 누르면 룸 이동
         }
     }
@@ -80,5 +87,4 @@ class DecoActivity : AppCompatActivity(),ShopItemsAdapter.OnItemClickListener {
             }
             .show()
     }
-
 }

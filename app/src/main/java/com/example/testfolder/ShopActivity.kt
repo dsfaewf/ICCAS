@@ -36,16 +36,11 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
 
-//        auth = FirebaseAuth.getInstance()
-//        database = FirebaseDatabase.getInstance().reference
-//        SingletonKotlin.initialize(auth, database)
-//        아직 페이지에서 직접적인 사용이 없으므로 주석처리하겠음.
-//        auth = SingletonKotlin.getAuth()
-//        database = SingletonKotlin.getDatabase()
+        auth = SingletonKotlin.getAuth()
+        database = SingletonKotlin.getDatabase() //파이어베이스 객체 가져오기
 
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
-        // GIF 반복 설정
         val gifDrawable = catGif.drawable as GifDrawable
         frame = findViewById(R.id.shop_frame)
         buyBtn = findViewById(R.id.buy_button)
@@ -58,24 +53,26 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         recyclerView = findViewById(R.id.shop_items_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         shopItemList = listOf(
-            ShopItem(R.drawable.room01, "Item 1", "$0"),
-            ShopItem(R.drawable.room02, "Item 2", "$0"),
-            ShopItem(R.drawable.room03, "Item 3", "$0"),
-            ShopItem(R.drawable.room04, "Item 4", "$0"),
-            ShopItem(R.drawable.room05, "Item 5", "$0"),
-            ShopItem(R.drawable.room06, "Item 6", "$0"),
-            ShopItem(R.drawable.room07, "Item 7", "$0"),
-            ShopItem(R.drawable.room08, "Item 8", "$0"),
+            ShopItem(R.drawable.room01, "Room 1", 10),
+            ShopItem(R.drawable.room02, "Room 2", 30),
+            ShopItem(R.drawable.room03, "Room 3", 50),
+            ShopItem(R.drawable.room04, "Room 4", 70),
+            ShopItem(R.drawable.room05, "Room 5", 90),
+            ShopItem(R.drawable.room06, "Room 6", 100),
+            ShopItem(R.drawable.room07, "Room 7", 150),
+            ShopItem(R.drawable.room08, "Room 8", 200), //DB에 구매 가격을 불러올 수 있도록 INT형으로 가격 타입을 변경함 - 우석.
         )
 
         adapter = ShopItemsAdapter(shopItemList, this, this)
         recyclerView.adapter = adapter
 
-        // 사용자 코인 불러오기 - 싱글톤으로 수정!
         SingletonKotlin.loadUserCoins(coinText)
 
+        // 현재 장착중인 배경으로 배경 설정
+        SingletonKotlin.loadUserBackground(frame)
+
         buyBtn.setOnClickListener {
-            showPurchaseConfirmationDialog(clickedItem)
+            checkItemAlreadyPurchased(clickedItem)
         }
 
         roomBtn.setOnClickListener {
@@ -97,6 +94,38 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         frame.setBackgroundResource(clickedItem.imageResource)
         buyBtn.visibility = View.VISIBLE
         buyLayout.visibility = View.VISIBLE
+    }
+
+    private fun checkItemAlreadyPurchased(clickedItem: ShopItem) { //구매했는지를 확인하는 함수
+        val currentUser = auth.currentUser
+        currentUser?.let {
+            val userItemsRef = database.child("user_rooms").child(it.uid).child(clickedItem.name) //USER_ROOMS 태그에대해 비교
+            userItemsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) { //SNAPSHOT을 통해 DB에 존재하는지를 비교하여 확인
+                    if (snapshot.exists()) {
+                        // 이미 아이템을 구매한 경우 - DIALOG 표시
+                        showAlreadyPurchasedDialog()
+                    } else {
+                        // 아이템을 구매하지 않은 경우 - 구매할건지 물음
+                        showPurchaseConfirmationDialog(clickedItem)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // 에러 처리
+                }
+            })
+        }
+    }
+
+    private fun showAlreadyPurchasedDialog() { //이미 구매한 건 경고메시지 알려주기
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Item Already Purchased")
+            .setMessage("You have already purchased this item.")
+            .setPositiveButton("OK") { dialog, which ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun showPurchaseConfirmationDialog(clickedItem: ShopItem) {
@@ -123,7 +152,7 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
     }
 
     private fun handlePurchase(clickedItem: ShopItem) {
-        val itemPrice = clickedItem.price.substring(1).toInt()  // 가격 문자열에서 "$" 제거 후 정수로 변환
+        val itemPrice = clickedItem.price  // 가격을 직접 사용
         val userCoins = coinText.text.toString().toInt()  // 사용자 보유 코인 가져오기
 
         if (userCoins < itemPrice) {
@@ -134,15 +163,29 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
             // 구매 후 코인 차감 예시
             val remainingCoins = userCoins - itemPrice
-            coinText.text = remainingCoins.toString()  // 화면에 남은 코인을 업데이트 -> DB 업데이트 해야해용
+            coinText.text = remainingCoins.toString()  // 화면에 남은 코인을 업데이트
 
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Purchase Successful")
-                .setMessage("You bought ${clickedItem.name} for ${clickedItem.price}.")
-                .setPositiveButton("OK") { dialog, which ->
-                    dialog.dismiss()
-                }
-                .show()
+            val currentUser = auth.currentUser //현재 유저 로그인 정보르르 불러오고
+            currentUser?.let { //이상 없이 유저 존재한다면
+                val userRef = database.child("users").child(it.uid) //UID 불러와서
+                userRef.child("coins").setValue(remainingCoins) // DB에 코인 업데이트
+
+                val userItemsRef = database.child("user_rooms").child(it.uid).child(clickedItem.name)
+                val purchaseData = mapOf( //아이템을 구매했는지 여부와 가격을 저장하도록 함.
+                    "purchased" to true,
+                    "price" to itemPrice
+                )
+                userItemsRef.setValue(purchaseData) // 아이템 구매 정보 및 가격 저장
+
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Purchase Successful")
+                    .setMessage("You bought ${clickedItem.name} for ${clickedItem.price} coins.")
+                    .setPositiveButton("OK") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
         }
     }
+
 }
