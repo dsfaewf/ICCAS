@@ -59,11 +59,11 @@ class DiaryDetailActivity : AppCompatActivity() {
 
             diaryRef.setValue(diaryEntryMap)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "일기가 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Diary has been modified.", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { exception ->
-                    Toast.makeText(this, "일기 수정 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to modify diary: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -78,11 +78,11 @@ class DiaryDetailActivity : AppCompatActivity() {
 
             diaryRef.removeValue() //db에서도 삭제 가능하도록!
                 .addOnSuccessListener {
-                    Toast.makeText(this, "일기가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Diary has been deleted.", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { exception ->
-                    Toast.makeText(this, "일기 삭제 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to delete diary: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
         }
     }

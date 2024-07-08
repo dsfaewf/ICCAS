@@ -60,21 +60,21 @@ class Main_UI : AppCompatActivity() {
                     showSurveyDialog()
                 }
             }.addOnFailureListener { exception ->
-                Toast.makeText(this, "데이터를 가져오는 데 실패했습니다: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to get data: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun showSurveyDialog() {
         AlertDialog.Builder(this)
-            .setTitle("설문조사 요청")
-            .setMessage("어? 저희 어플 사용이 처음이시네요. 간단한 설문에 응해주세요!")
-            .setPositiveButton("설문 응하기") { dialog, which ->
+            .setTitle("Request for a survey")
+            .setMessage("Oh? It's your first time using our app. Please take a brief survey!")
+            .setPositiveButton("Go to Survey") { dialog, which ->
                 val intent = Intent(this, SurveyActivity::class.java)
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("나중에 하기", null)
+            .setNegativeButton("Do it Later", null)
             .show()
     }
 }

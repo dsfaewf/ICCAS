@@ -95,7 +95,7 @@ class RegisterActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 // 데이터베이스에 사용자 정보 추가 실패
-                Toast.makeText(this, "데이터베이스에 사용자 정보 추가 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to add user information to database: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
