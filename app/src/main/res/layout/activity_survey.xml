@@ -9,172 +9,76 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- 성별 선택 -->
+        <!-- 가장 기억에 남는 어린시절 기억 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="성별을 선택해 주세요." />
-        <RadioGroup
-            android:id="@+id/radioGroupGender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioMale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="남성" />
-            <RadioButton
-                android:id="@+id/radioFemale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="여성" />
-            <RadioButton
-                android:id="@+id/radioOther"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="기타" />
-        </RadioGroup>
-
-        <!-- 출생 연도 입력 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="출생 연도를 입력해 주세요. (예: 1980)" />
+            android:text="Please describe your most memorable childhood memory." />
         <EditText
-            android:id="@+id/editTextBirthYear"
+            android:id="@+id/editTextChildhoodMemory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="textMultiLine" />
 
-        <!-- 출생지 입력 -->
+        <!-- 가장 좋아하던 과목 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="출생지를 입력해 주세요. (예: 서울특별시)" />
+            android:text="What was your favorite school subject?" />
         <EditText
-            android:id="@+id/editTextBirthPlace"
+            android:id="@+id/editTextFavoriteSubject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- 알츠하이머병 진단 여부 -->
+        <!-- 현재 취미-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="가족 중에 알츠하이머병을 진단받은 분이 있나요?" />
-        <RadioGroup
-            android:id="@+id/radioGroupAlzheimer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioAlzheimerYes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="예" />
-            <RadioButton
-                android:id="@+id/radioAlzheimerNo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="아니오" />
-            <RadioButton
-                android:id="@+id/radioAlzheimerUnknown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="모르겠음" />
-        </RadioGroup>
-
-        <!-- 교육 수준 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="현재 교육 수준을 선택해 주세요." />
-        <Spinner
-            android:id="@+id/spinnerEducation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/education_levels" />
-
-        <!-- 어머니 출생 연도 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="어머니의 출생 연도를 입력해 주세요. (예: 1955)" />
+            android:text="What is your current hobby?" />
         <EditText
-            android:id="@+id/editTextMotherBirthYear"
+            android:id="@+id/editTextHobby"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:layout_height="wrap_content" />
 
-        <!-- 아버지 출생 연도 -->
+        <!-- 가장 기억에 남는 여행 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="아버지의 출생 연도를 입력해 주세요. (예: 1953)" />
+            android:text="Please describe your most memorable trip." />
         <EditText
-            android:id="@+id/editTextFatherBirthYear"
+            android:id="@+id/editTextMemorableTrip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="textMultiLine" />
 
-        <!-- 형제자매 여부 -->
+        <!-- 어린 시절 꿈 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="형제자매가 있나요?" />
-        <RadioGroup
-            android:id="@+id/radioGroupSiblings"
+            android:text="What was your childhood dream?" />
+        <EditText
+            android:id="@+id/editTextChildhoodDream"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioSiblingsYes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="예" />
-            <RadioButton
-                android:id="@+id/radioSiblingsNo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="아니오" />
-        </RadioGroup>
+            android:layout_height="wrap_content" />
 
-        <!-- 거주 지역 -->
+        <!-- 가장 자랑스러운 순간 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="어릴 적 거주 지역을 선택해 주세요." />
-        <Spinner
-            android:id="@+id/spinnerResidence"
+            android:text="Please describe your proudest moment in life." />
+        <EditText
+            android:id="@+id/editTextProudestMoment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/residence_areas" />
+            android:inputType="textMultiLine" />
 
-        <!-- 유전자 검사 여부 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="유전자 검사를 받아본 적이 있나요?" />
-        <RadioGroup
-            android:id="@+id/radioGroupGeneticTest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/radioGeneticTestYes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="예" />
-            <RadioButton
-                android:id="@+id/radioGeneticTestNo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="아니오" />
-        </RadioGroup>
-
-        <!-- 제출 버튼 -->
+        <!-- 제출 -->
         <Button
             android:id="@+id/submitBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="제출" />
+            android:text="Submit" />
 
     </LinearLayout>
 </ScrollView>

@@ -9,84 +9,57 @@ import com.google.firebase.database.FirebaseDatabase
 
 class SurveyActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_survey)
+        setContentView(R.layout.activity_survey) // 여기서 activity_survey 레이아웃 파일을 사용.
 
-        auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
+        // 싱글톤 초기화
+        val auth = FirebaseAuth.getInstance()
+        val database = FirebaseDatabase.getInstance().reference
+        SingletonKotlin.initialize(auth, database)
 
-        val radioGroupGender = findViewById<RadioGroup>(R.id.radioGroupGender)
-        val editTextBirthYear = findViewById<EditText>(R.id.editTextBirthYear)
-        val editTextBirthPlace = findViewById<EditText>(R.id.editTextBirthPlace)
-        val radioGroupAlzheimer = findViewById<RadioGroup>(R.id.radioGroupAlzheimer)
-        val spinnerEducation = findViewById<Spinner>(R.id.spinnerEducation)
-        val editTextMotherBirthYear = findViewById<EditText>(R.id.editTextMotherBirthYear)
-        val editTextFatherBirthYear = findViewById<EditText>(R.id.editTextFatherBirthYear)
-        val radioGroupSiblings = findViewById<RadioGroup>(R.id.radioGroupSiblings)
-        val spinnerResidence = findViewById<Spinner>(R.id.spinnerResidence)
-        val radioGroupGeneticTest = findViewById<RadioGroup>(R.id.radioGroupGeneticTest)
+        val editTextChildhoodMemory = findViewById<EditText>(R.id.editTextChildhoodMemory)
+        val editTextFavoriteSubject = findViewById<EditText>(R.id.editTextFavoriteSubject)
+        val editTextHobby = findViewById<EditText>(R.id.editTextHobby)
+        val editTextMemorableTrip = findViewById<EditText>(R.id.editTextMemorableTrip)
+        val editTextChildhoodDream = findViewById<EditText>(R.id.editTextChildhoodDream)
+        val editTextProudestMoment = findViewById<EditText>(R.id.editTextProudestMoment)
         val submitBtn = findViewById<Button>(R.id.submitBtn)
 
         submitBtn.setOnClickListener {
-            val gender = when (radioGroupGender.checkedRadioButtonId) {
-                R.id.radioMale -> "남성"
-                R.id.radioFemale -> "여성"
-                else -> "기타"
-            }
-            val birthYear = editTextBirthYear.text.toString()
-            val birthPlace = editTextBirthPlace.text.toString()
-            val alzheimer = when (radioGroupAlzheimer.checkedRadioButtonId) {
-                R.id.radioAlzheimerYes -> "예"
-                R.id.radioAlzheimerNo -> "아니오"
-                else -> "모르겠음"
-            }
-            val education = spinnerEducation.selectedItem.toString()
-            val motherBirthYear = editTextMotherBirthYear.text.toString()
-            val fatherBirthYear = editTextFatherBirthYear.text.toString()
-            val siblings = when (radioGroupSiblings.checkedRadioButtonId) {
-                R.id.radioSiblingsYes -> "예"
-                else -> "아니오"
-            }
-            val residence = spinnerResidence.selectedItem.toString()
-            val geneticTest = when (radioGroupGeneticTest.checkedRadioButtonId) {
-                R.id.radioGeneticTestYes -> "예"
-                else -> "아니오"
-            }
+            val childhoodMemory = editTextChildhoodMemory.text.toString()
+            val favoriteSubject = editTextFavoriteSubject.text.toString()
+            val hobby = editTextHobby.text.toString()
+            val memorableTrip = editTextMemorableTrip.text.toString()
+            val childhoodDream = editTextChildhoodDream.text.toString()
+            val proudestMoment = editTextProudestMoment.text.toString()
 
-            val userSurvey = hashMapOf(
-                "gender" to gender,
-                "birthYear" to birthYear,
-                "birthPlace" to birthPlace,
-                "alzheimer" to alzheimer,
-                "education" to education,
-                "motherBirthYear" to motherBirthYear,
-                "fatherBirthYear" to fatherBirthYear,
-                "siblings" to siblings,
-                "residence" to residence,
-                "geneticTest" to geneticTest
+            val userSurvey = hashMapOf(             //내용들 변경
+                "childhoodMemory" to childhoodMemory,
+                "favoriteSubject" to favoriteSubject,
+                "hobby" to hobby,
+                "memorableTrip" to memorableTrip,
+                "childhoodDream" to childhoodDream,
+                "proudestMoment" to proudestMoment
             )
 
-            val userId = auth.currentUser?.uid
+            val userId = SingletonKotlin.getCurrentUser()?.uid
             if (userId != null) {
-                val userRef = database.reference.child("surveys").child(userId)
+                val userRef = SingletonKotlin.getDatabase().child("surveys").child(userId)
                 userRef.setValue(userSurvey)
                     .addOnSuccessListener {
-                        val userMetaRef = database.reference.child("users").child(userId)
+                        val userMetaRef = SingletonKotlin.getDatabase().child("users").child(userId)
                         userMetaRef.child("surveyCompleted").setValue(true)
-                        Toast.makeText(this, "설문이 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Survey saved successfully.", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this@SurveyActivity, Main_UI::class.java)
                         startActivity(intent)
                         finish()
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(this, "설문 저장에 실패했습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Failed to save survey: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                Toast.makeText(this, "사용자 ID를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to get user ID.", Toast.LENGTH_SHORT).show()
             }
         }
     }
