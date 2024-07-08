@@ -146,23 +146,23 @@ class LoginActivity : AppCompatActivity() {
                                 signInWithEmail(email, password)
                             } else {
                                 hideLoading() //로딩없애기 처리
-                                Toast.makeText(this@LoginActivity, "아이디에 해당하는 이메일을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "No email corresponding to the ID was found.", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
                         hideLoading() //로딩 없애기 처리
-                        Toast.makeText(this@LoginActivity, "등록되지 않은 아이디입니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "This ID is not registered.", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
                     hideLoading() //로딩 없애기 처리
-                    Toast.makeText(this@LoginActivity, "데이터베이스 오류: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "Database ERROR: ${databaseError.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         } else {
             hideLoading() //로딩 없애기 처리
-            Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please enter your ID and password.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -216,14 +216,14 @@ class LoginActivity : AppCompatActivity() {
                         checkUserExistsAndLogin(userId)
                     } else {
                         hideLoading() //로딩 없애기 처리
-                        Toast.makeText(this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Failed to login.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     hideLoading() //로딩 없애기 처리
                     val errorMessage = when (task.exception) {
-                        is FirebaseAuthInvalidUserException -> "등록되지 않은 계정입니다."
-                        is FirebaseAuthInvalidCredentialsException -> "잘못된 아이디 또는 비밀번호입니다."
-                        else -> "로그인에 실패했습니다."
+                        is FirebaseAuthInvalidUserException -> "This account is not registered"
+                        is FirebaseAuthInvalidCredentialsException -> "Wrong ID or Wrong PW"
+                        else -> "Failed to login."
                     }
                     Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
                 }
@@ -248,7 +248,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }.addOnFailureListener { exception ->
-            Toast.makeText(this, "데이터베이스 접근 실패. 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Database access failed. Login failed.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -267,7 +267,7 @@ class LoginActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 // 데이터베이스에 사용자 정보 추가 실패
-                Toast.makeText(this, "데이터베이스에 사용자 정보 추가 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to add user information to database: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 

@@ -21,9 +21,9 @@ class CatRoomActivity : AppCompatActivity() {
         setContentView(R.layout.activity_cat_room)
 
         try {
-            currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("사용자 인증이 필요합니다.")
+            currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
         } catch (e: IllegalStateException) {
-            Toast.makeText(this, "SingletonKotlin이 초기화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -43,7 +43,7 @@ class CatRoomActivity : AppCompatActivity() {
         try {
             SingletonKotlin.loadUserCoins(coinText)
         } catch (e: IllegalStateException) {
-            Toast.makeText(this, "SingletonKotlin이 초기화되지 않았습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "SingletonKotlin is not initialized", Toast.LENGTH_SHORT).show()
             finish()
         }
 

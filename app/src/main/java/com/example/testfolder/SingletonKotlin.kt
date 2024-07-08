@@ -42,7 +42,7 @@ object SingletonKotlin {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(coinText.context, "데이터베이스 오류", Toast.LENGTH_SHORT).show()
+                Toast.makeText(coinText.context, "Database ERROR", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -62,7 +62,7 @@ object SingletonKotlin {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(frame.context, "데이터베이스 오류", Toast.LENGTH_SHORT).show()
+                Toast.makeText(frame.context, "Database ERROR", Toast.LENGTH_SHORT).show()
             }
         })
     }

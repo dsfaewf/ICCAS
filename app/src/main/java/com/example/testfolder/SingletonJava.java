@@ -69,7 +69,7 @@ public class SingletonJava {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(coinText.getContext(), "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+                Toast.makeText(coinText.getContext(), "Database ERROR", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -94,7 +94,7 @@ public class SingletonJava {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Database ERROR", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -107,9 +107,9 @@ public class SingletonJava {
         userRef.updateChildren(updates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 loadUserCoins(coinText);
-                Toast.makeText(context, "반갑습니다! 오늘도 총 3번 서브게임 보상을 받을 수 있습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Nice to meet you! You can get a total of 3 subgame rewards today as well.", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(context, "보상 시스템 기회 업데이트 오류", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Compensation system update error", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -127,13 +127,13 @@ public class SingletonJava {
                 if (dailyClears < maxClearsPerDay) {
                     rewardCoins(userRef, dailyClears, coinReward, coinText, context);
                 } else {
-                    Toast.makeText(context, "오늘은 더 이상 보상을 받을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "You can't get any more compensation today.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Database ERROR", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -153,20 +153,20 @@ public class SingletonJava {
                     Long finalCoins = coins;
                     userRef.updateChildren(updates).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(context, "정답입니다. " + coinReward + " 코인이 지급되었습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Correct! " + coinReward + " Here is your Rewards!", Toast.LENGTH_SHORT).show();
                             coinText.setText(String.valueOf(finalCoins)); // 코인 텍스트 업데이트
                         } else {
-                            Toast.makeText(context, "코인 지급 오류", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Coin Reward ERROR", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
-                    Toast.makeText(context, "코인 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Could not retrieve coin information.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "데이터베이스 오류", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Database ERROR", Toast.LENGTH_SHORT).show();
             }
         });
     }
