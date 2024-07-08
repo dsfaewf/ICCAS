@@ -1,22 +1,39 @@
 [versions]
 agp = "8.3.2"
+coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
+ktorClientAndroid = "2.2.4"
 material = "1.11.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
+kotlin = "2.0.0-RC2"
+okhttp = "4.9.1"
+openaiClient = "3.0.0"
+opennlpTools = "1.9.4"
+smileNlp = "2.6.0"
 
 [libraries]
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+openai-client = { module = "com.aallam.openai:openai-client", version.ref = "openaiClient" }
+opennlp-tools = { module = "org.apache.opennlp:opennlp-tools", version.ref = "opennlpTools" }
+smile-core = { module = "com.github.haifengl:smile-core", version.ref = "smileNlp" }
+smile-nlp = { module = "com.github.haifengl:smile-nlp", version.ref = "smileNlp" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
