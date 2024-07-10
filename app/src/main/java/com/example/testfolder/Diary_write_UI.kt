@@ -4,26 +4,37 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.testfolder.utils.LoadingAnimation
 import com.example.testfolder.utils.OpenAI
-import com.example.testfolder.utils.PreprocessTexts
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.testfolder.utils.PreprocessTexts
+import com.example.testfolder.viewmodels.ApiKeyViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class Diary_write_UI : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
-    //private lateinit var database: FirebaseDatabase
+    private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val apiKeyViewModel = ViewModelProvider(this).get(ApiKeyViewModel::class.java)
+        Log.d("Open AI", "Open AI Class is being created")
+        val myOpenAI = OpenAI(this, apiKeyViewModel)
+
         setContentView(R.layout.activity_write_diary)
 
         val saveButton = findViewById<Button>(R.id.my_button6)
@@ -33,17 +44,20 @@ class Diary_write_UI : AppCompatActivity() {
         val characterCountTextView = findViewById<TextView>(R.id.character_count_text_view)
         val dateTextView = findViewById<TextView>(R.id.date_text_view)
         val errorTextView = findViewById<TextView>(R.id.textview_error)
+        val loadingBackgroundLayout = findViewById<ConstraintLayout>(R.id.loading_background_layout)
+        val loadingImage = findViewById<ImageView>(R.id.loading_image)
+        val loadingText = findViewById<TextView>(R.id.loading_text)
 
-//        // Firebase 데이터베이스 루트 참조 가져오기
-//        databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
-//        auth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
-//        database = FirebaseDatabase.getInstance()
-        // SingletonKotlin을 통해 Firebase 객체를 불러오도록 수정함
-        auth = SingletonKotlin.getAuth()
-        databaseReference = SingletonKotlin.getDatabase().child("diaries")
+        // Firebase 데이터베이스 루트 참조 가져오기
+        databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
+        auth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
+        database = FirebaseDatabase.getInstance()
 
         // Save 버튼 클릭 시 날짜 표시 및 일기 내용 저장
         saveButton.setOnClickListener {
+            val loadingAnimation = LoadingAnimation(this,
+                loadingBackgroundLayout, loadingImage, loadingText)
+
             // 현재 날짜를 가져오기
             val currentDate = getCurrentDate()
             // 날짜를 TextView에 설정
@@ -73,10 +87,20 @@ class Diary_write_UI : AppCompatActivity() {
                     errorTextView.visibility = TextView.VISIBLE
                 }
                 else {
+                    loadingAnimation.showLoading()
+
                     errorTextView.text = ""
                     errorTextView.visibility = TextView.INVISIBLE
-                    val myOpenAI = OpenAI()
-                    myOpenAI.generate_OX_quiz_and_save(diaryContent, numOfQuestions, dateTextView.text.toString())
+
+                    // Observe the LiveData
+                    apiKeyViewModel.apiKey.observe(this) {
+                        myOpenAI.generate_OX_quiz_and_save(
+                            loadingAnimation,
+                            diaryContent,
+                            numOfQuestions,
+                            dateTextView.text.toString())
+                    }
+                    myOpenAI.fetchApiKey()
                 }
 
             } else {
