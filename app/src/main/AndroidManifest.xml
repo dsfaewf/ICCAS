@@ -17,6 +17,9 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".GameRecordActivity"
+            android:exported="false" />
+        <activity
             android:name=".MinigameDescriptionSamepictureActivity"
             android:exported="false" />
         <activity
@@ -24,9 +27,6 @@
             android:exported="false" />
         <activity
             android:name=".MinigameDescriptionNumberActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GamedescriptionHighActivity"
             android:exported="false" />
         <activity
             android:name=".DecoActivity"
