@@ -1,12 +1,13 @@
 package com.example.testfolder.utils
 
+import android.content.Context
 import android.util.Log
-import com.example.testfolder.BuildConfig
+import android.widget.Toast
+import com.example.testfolder.viewmodels.ApiKeyViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.google.firebase.functions.FirebaseFunctions
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -20,12 +21,63 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class OpenAI {
-    private val apiKey = BuildConfig.API_KEY
+class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
+//    private val apiKey = BuildConfig.API_KEY
+    private lateinit var apiKey: String
+    private lateinit var loadingAnimation: LoadingAnimation
+    private var context: Context
+    private var viewModel: ApiKeyViewModel
     val model = "gpt-3.5-turbo-0125"
 
-    fun generate_OX_quiz_and_save(diary: String, numOfQuestions: Int, date: String) {
+    init {
+//        firebaseFunctions = Firebase.functions
+//        apiKey = getOpenaiApiKey(firebaseFunctions).toString()
+        this.context = context
+        this.viewModel = viewModel
+//        val remoteConfig = Firebase.remoteConfig
+//        remoteConfig.fetchAndActivate()
+//            .addOnCompleteListener(this) { task ->
+//                if (task.isSuccessful)
+//            }
+//        Log.i("Firebase", "API key: $apiKey")
+    }
+
+    fun fetchApiKey() {
+        getOpenaiApiKey().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                this.apiKey = task.result
+                viewModel.setApiKey(this.apiKey)
+                // Use the API key
+                Log.d("API_KEY", apiKey)
+            } else {
+                Log.e("API_KEY_ERROR", "Error fetching API key", task.exception)
+            }
+        }
+    }
+
+    private fun getOpenaiApiKey(): Task<String> {
+        val functions = FirebaseFunctions.getInstance()
+
+        return functions
+            .getHttpsCallable("getOpenaiApiKey")
+            .call()
+            .continueWith { task ->
+                if (!task.isSuccessful) {
+                    throw task.exception ?: Exception("Unknown error occurred")
+                }
+
+                val resultData = task.result?.data as? Map<*, *>
+                    ?: throw Exception("Invalid response format")
+                val apiKey = resultData["apiKey"] as? String
+                    ?: throw Exception("API key not found in response")
+//                Log.d("API_KEY", apiKey)
+                apiKey
+            }
+    }
+
+    fun generate_OX_quiz_and_save(loadingAnimation: LoadingAnimation, diary: String, numOfQuestions: Int, date: String) {
         val prompt = get_prompt_OX_quiz(diary, numOfQuestions)
+        this.loadingAnimation = loadingAnimation
         get_response_and_save(prompt, date)
     }
 
@@ -39,7 +91,7 @@ class OpenAI {
 
     private fun get_response_and_save(prompt: String, date: String) {
         // Using coroutines to run this block in backgroud thread
-        CoroutineScope(Dispatchers.IO).launch {
+//        CoroutineScope(Dispatchers.IO).launch {
             val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
             val okHttpClient = OkHttpClient()
             val messages = JSONArray()
@@ -89,7 +141,7 @@ class OpenAI {
                     Log.i("GPT", "onFailure: ")
                 }
             })
-        }
+//        }
     }
     private fun save_OX_data(response: String, date: String) {
         val database: FirebaseDatabase = FirebaseDatabase.getInstance()
@@ -115,7 +167,9 @@ class OpenAI {
                 )
                 dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
+                    this.loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
+                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
             }
         }
