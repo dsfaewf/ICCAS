@@ -2,7 +2,6 @@ package com.example.testfolder.utils
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.example.testfolder.viewmodels.ApiKeyViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -22,7 +21,10 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
-    //    private val apiKey = BuildConfig.API_KEY
+    companion object {
+        const val PROB_TYPE_MCQ = "MCQ"
+        const val PROB_TYPE_OX  = "OX"
+    }
     private lateinit var apiKey: String
     private lateinit var loadingAnimation: LoadingAnimation
     private var context: Context
@@ -30,16 +32,8 @@ class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
     val model = "gpt-3.5-turbo-0125"
 
     init {
-//        firebaseFunctions = Firebase.functions
-//        apiKey = getOpenaiApiKey(firebaseFunctions).toString()
         this.context = context
         this.viewModel = viewModel
-//        val remoteConfig = Firebase.remoteConfig
-//        remoteConfig.fetchAndActivate()
-//            .addOnCompleteListener(this) { task ->
-//                if (task.isSuccessful)
-//            }
-//        Log.i("Firebase", "API key: $apiKey")
     }
 
     fun fetchApiKey() {
@@ -48,7 +42,7 @@ class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
                 this.apiKey = task.result
                 viewModel.setApiKey(this.apiKey)
                 // Use the API key
-                Log.d("API_KEY", apiKey)
+//                Log.d("API_KEY", apiKey)
             } else {
                 Log.e("API_KEY_ERROR", "Error fetching API key", task.exception)
             }
@@ -76,9 +70,11 @@ class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
     }
 
     fun generate_OX_quiz_and_save(loadingAnimation: LoadingAnimation, diary: String, numOfQuestions: Int, date: String) {
-        val prompt = get_prompt_OX_quiz(diary, numOfQuestions)
         this.loadingAnimation = loadingAnimation
-        get_response_and_save(prompt, date)
+        var prompt = get_prompt_OX_quiz(diary, numOfQuestions)
+        get_response_and_save(prompt, date, PROB_TYPE_OX)
+        prompt = get_prompt_MCQ_quiz(diary, numOfQuestions)
+        get_response_and_save(prompt, date, PROB_TYPE_MCQ)
     }
 
     private fun get_prompt_OX_quiz(diary: String, numOfQuestions: Int): String {
@@ -89,7 +85,18 @@ class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
         return prompt_OX
     }
 
-    private fun get_response_and_save(prompt: String, date: String) {
+    private fun get_prompt_MCQ_quiz(diary: String, numOfQuestions: Int): String {
+        val prompt_OX = "Generate $numOfQuestions multiple choice quiz based on the following diary." +
+                "\nDiary: $diary" +
+                "\nExample answer: " +
+                "{\"question\": \"What did you have for lunch?\", " +
+                "\"choices\": [\"pasta\", \"pizza\", \"sandwich\", \"burger\"], " +
+                "\"answer\": \"pizza\"}" +
+                "Each answer should be separated by \"\\n\", and don't add any introduction to your response."
+        return prompt_OX
+    }
+
+    private fun get_response_and_save(prompt: String, date: String, probType: String) {
         // Using coroutines to run this block in backgroud thread
 //        CoroutineScope(Dispatchers.IO).launch {
         val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
@@ -128,7 +135,17 @@ class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
                         val result = jsonArray.getJSONObject(0).getJSONObject("message").getString("content").trim()
                         Log.i("GPT", "response: "+result.trim())
                         // Save the response to DB
-                        save_OX_data(result, date)
+                        when (probType) {
+                            PROB_TYPE_OX -> {
+                                save_OX_data(result, date)
+                            }
+                            PROB_TYPE_MCQ -> {
+                                save_MCQ_data(result, date)
+                            }
+                            else -> {
+                                throw Exception("Wrong problem type specified")
+                            }
+                        }
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
@@ -167,9 +184,43 @@ class OpenAI(context: Context, viewModel: ApiKeyViewModel) {
                 )
                 dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
-                    this.loadingAnimation.hideLoading()
+//                    this.loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
-                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun save_MCQ_data(response: String, date: String) {
+        val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+        val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
+        val currentUser = auth.currentUser
+        val uid = currentUser?.uid
+        if(uid != null) {
+            var ref = database.reference.child("mcq_quiz").child(uid).child(date)
+            var dbTask = ref.removeValue()
+            dbTask.addOnSuccessListener {
+                Log.i("DB", "Data Deleted successfully.")
+            }
+
+            val quizList = response.split("\n")
+            quizList.forEachIndexed { index, quiz ->
+                ref = database.reference.child("mcq_quiz").child(uid).child(date).child(index.toString())
+                val jsonObject = JSONObject(quiz)
+                val question = jsonObject.getString("question")
+                val choices = jsonObject.getString("choices")
+                val answer = jsonObject.getString("answer")
+                val recordMap = mapOf(
+                    "question" to question,
+                    "choices" to choices,
+                    "answer" to answer
+                )
+                dbTask = ref.setValue(recordMap)
+                dbTask.addOnSuccessListener {
+//                    this.loadingAnimation.hideLoading()
+                    Log.i("DB", "Data saved successfully")
+//                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
             }
         }
