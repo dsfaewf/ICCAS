@@ -51,7 +51,9 @@
                     <ImageView
                         android:id="@+id/imageView2"
                         android:layout_width="match_parent"
-                        android:layout_height="120dp"
+                        android:layout_height="110dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
                         android:scaleType="centerInside"
                         app:srcCompat="@drawable/gameox" />
 
@@ -81,6 +83,8 @@
                         android:id="@+id/imageView4"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
                         android:scaleType="centerInside"
                         app:srcCompat="@drawable/gamebtn4" />
 
@@ -131,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:layout_marginBottom="10dp"
-                android:text="Mini(?) Game"
+                android:text="Mini Game"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -155,7 +159,10 @@
                         android:id="@+id/imageView5"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
-                        tools:srcCompat="@tools:sample/avatars" />
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:scaleType="centerInside"
+                        app:srcCompat="@drawable/gameupdown" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -165,7 +172,7 @@
                         android:layout_margin="5dp"
                         android:textSize="18sp"
                         android:background="@drawable/white_style"
-                        android:text="number" />
+                        android:text="up&amp;down\n number" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -183,7 +190,9 @@
                         android:id="@+id/imageView6"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
-                        tools:srcCompat="@tools:sample/avatars" />
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        app:srcCompat="@drawable/gamebaseball" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -193,7 +202,7 @@
                         android:layout_margin="5dp"
                         android:textSize="18sp"
                         android:background="@drawable/white_style"
-                        android:text="baseball" />
+                        android:text="baseball\n number" />
 
                 </LinearLayout>
 
@@ -211,9 +220,11 @@
                     <ImageView
                         android:id="@+id/imageView7"
                         android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:scaleType="centerInside"
-                        android:background="@drawable/gamesame" />
+                        android:layout_height="110dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/gamesame"
+                        android:scaleType="centerInside" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
