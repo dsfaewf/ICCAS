@@ -29,16 +29,20 @@ class GameRecordActivity : AppCompatActivity() {
         val gameTypeGroups = results.groupBy { it["gameType"] as String }
 
         val charts = gameTypeGroups.map { (gameType, gameResults) ->
-            val correctAnswersData = gameResults.groupBy { it["timestamp"] as Long }.map { (timestamp, dailyResults) ->
-                val correctAnswers = dailyResults.sumOf { it["correctAnswers"] as Long }
-                val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(timestamp))
-                "['$date', $correctAnswers]"
+            val dailyResults = gameResults.groupBy {
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(it["timestamp"] as Long))
+            }
+
+            val correctAnswersData = dailyResults.map { (date, dailyGames) ->
+                val totalCorrectAnswers = dailyGames.sumOf { it["correctAnswers"] as Long }
+                val avgCorrectAnswers = totalCorrectAnswers.toFloat() / dailyGames.size //같은 날 여러번 게임하면 그래프가 난잡해짐
+                "['$date', $avgCorrectAnswers]"                                     //따라서 평균으로 바꾸어 그래프 표현하기로 함
             }.joinToString(",\n")
 
-            val totalTimeData = gameResults.groupBy { it["timestamp"] as Long }.map { (timestamp, dailyResults) ->
-                val totalTime = dailyResults.sumOf { it["totalTime"] as Long }
-                val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(timestamp))
-                "['$date', ${totalTime / 1000}]"
+            val totalTimeData = dailyResults.map { (date, dailyGames) ->
+                val totalTime = dailyGames.sumOf { it["totalTime"] as Long }
+                val avgTotalTime = totalTime.toFloat() / dailyGames.size / 1000 // '초'단위로 변환
+                "['$date', $avgTotalTime]"
             }.joinToString(",\n")
 
             """
@@ -49,17 +53,17 @@ class GameRecordActivity : AppCompatActivity() {
                 <script type="text/javascript">
                     google.charts.setOnLoadCallback(function() {
                         var correctAnswersData = google.visualization.arrayToDataTable([
-                            ['Date', 'Correct Answers'],
+                            ['Date', 'Average Correct Answers'],
                             $correctAnswersData
                         ]);
 
                         var totalTimeData = google.visualization.arrayToDataTable([
-                            ['Date', 'Total Time (seconds)'],
+                            ['Date', 'Average Total Time (seconds)'],
                             $totalTimeData
                         ]);
 
                         var correctAnswersOptions = {
-                            title: '$gameType - Correct Answers by Date',
+                            title: '$gameType - Average Correct Answers by Date',
                             hAxis: { title: 'Date', titleTextStyle: { color: '#333' } },
                             vAxis: { minValue: 0 },
                             curveType: 'function',
@@ -67,7 +71,7 @@ class GameRecordActivity : AppCompatActivity() {
                         };
 
                         var totalTimeOptions = {
-                            title: '$gameType - Total Time by Date',
+                            title: '$gameType - Average Total Time by Date',
                             hAxis: { title: 'Date', titleTextStyle: { color: '#333' } },
                             vAxis: { minValue: 0 },
                             curveType: 'function',
