@@ -61,16 +61,21 @@ dependencies {
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.auth.ktx) //비밀번호 인증
     // Also add the dependency for the Google Play services library and specify its version
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.play.services.auth)
+    implementation(platform(libs.firebase.bom))
+    // Add the dependency for the Cloud Functions library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation(libs.firebase.functions)
+
+    implementation(libs.firebase.analytics)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.core.ktx)
 //    implementation("androidx.core:core-ktx:+")
-    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.19")
+    implementation (libs.android.gif.drawable)
+    implementation(libs.firebase.config.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
