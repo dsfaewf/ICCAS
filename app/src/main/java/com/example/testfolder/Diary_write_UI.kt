@@ -65,6 +65,8 @@ class Diary_write_UI : AppCompatActivity() {
 
             // 일기 내용을 Firebase 데이터베이스에 업로드
             val diaryContent = diaryEditText.text.toString().trim()
+            // 일기 내용을 가져온 후, EditText 내용 Clear
+            diaryEditText.text.clear()
             // 현재 로그인된 사용자의 UID 가져오기
             val currentUser = auth.currentUser
             val userId = currentUser?.uid
@@ -75,7 +77,10 @@ class Diary_write_UI : AppCompatActivity() {
                     "date" to currentDate,
                     "content" to diaryContent
                 )
-                userDiaryRef.push().setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
+                val dbTask = userDiaryRef.push().setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
+                dbTask.addOnSuccessListener {
+                    Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                }
             }
 
             // TEST
@@ -87,7 +92,7 @@ class Diary_write_UI : AppCompatActivity() {
                     errorTextView.visibility = TextView.VISIBLE
                 }
                 else {
-                    loadingAnimation.showLoading()
+//                    loadingAnimation.showLoading()
 
                     errorTextView.text = ""
                     errorTextView.visibility = TextView.INVISIBLE
