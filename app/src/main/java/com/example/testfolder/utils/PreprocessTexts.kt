@@ -6,23 +6,16 @@ import opennlp.tools.tokenize.SimpleTokenizer
 //import smile.nlp.tokenizer.SimpleTokenizer
 import java.util.StringTokenizer
 
-//fun main(){
-//    val test_diary = "I like an apple. He likes apples."
-//    val numOfTokens = PreprocessTexts.get_num_of_tokens(test_diary)
-//    println(numOfTokens/5)
-//}
-
 class PreprocessTexts {
     companion object {
         fun getNumOfTokens(corpus: String): Int {
             val myStringTokenizer = StringTokenizer(corpus)
             // Step 3: Lowercase the text
             val lowercasedTexts = myStringTokenizer.toList().map {it.toString().lowercase()}
-//            println(lowercasedTexts)
 
             // Step 4: Remove punctuation
             val noPunctuationTexts = lowercasedTexts.map { it.replace(Regex("[^\\w\\s]"), "") }
-//            println(noPunctuationTexts)
+
             // Initialize tokenizer, stemmer, and stop words
             val tokenizer = SimpleTokenizer.INSTANCE
             val stemmer = PorterStemmer()
@@ -36,10 +29,18 @@ class PreprocessTexts {
                     .joinToString(" ")
             }
             processedTexts = processedTexts.toSet().toList()
-//            println(processedTexts)
-//            println(processedTexts.size)
 
             return processedTexts.size
+        }
+
+        fun stringToStringArray(stringLookingLikeArray: String): List<String> {
+            // Convert string looking like a string array to real string array
+            var _stringLookingLikeArray = stringLookingLikeArray
+            _stringLookingLikeArray = _stringLookingLikeArray.replace("[", "")
+            _stringLookingLikeArray = _stringLookingLikeArray.replace("]", "")
+            _stringLookingLikeArray = _stringLookingLikeArray.replace("\"", "") // 자꾸 오류나서 따옴표 제거 추가합니다-우석
+            val stringArray = _stringLookingLikeArray.split(",").map { it.trim() }
+            return stringArray
         }
     }
 

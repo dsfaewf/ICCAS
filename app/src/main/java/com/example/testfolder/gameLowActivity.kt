@@ -28,9 +28,9 @@ class gameLowActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_low)
         progressBar = findViewById(R.id.progressBar1)
-        var questionTextView = findViewById<TextView>(R.id.qeustionbox) // 질문텍스트
-        var obutton = findViewById<Button>(R.id.o_btn)  // o 버튼
-        var xbutton = findViewById<Button>(R.id.x_btn)  // x 버튼
+        val questionTextView = findViewById<TextView>(R.id.qeustionbox) // 질문텍스트
+        val obutton = findViewById<Button>(R.id.o_btn)  // O버튼
+        val xbutton = findViewById<Button>(R.id.x_btn) // X버튼
         coinText = findViewById(R.id.coin_text)
 
         try {
@@ -67,7 +67,6 @@ class gameLowActivity : AppCompatActivity() {
         xbutton.setOnClickListener {
             handleAnswer("X", questionTextView)
         }
-
         startTime = System.currentTimeMillis()
         startProgressBar(questionTextView)
     }
@@ -81,14 +80,12 @@ class gameLowActivity : AppCompatActivity() {
     private fun displayQuestion(questionTextView: TextView) {
         if (currentRound < selectedQuizzes.size) {
             val quizItem = selectedQuizzes[currentRound]
-            questionTextView.text = "${quizItem.date} diary:\n${quizItem.question}"
+            questionTextView.text = "Date: ${quizItem.date}\n\n${quizItem.question}" //4지선다랑 형식 통일화
         } else {
             val totalTime = System.currentTimeMillis() - startTime
             SingletonKotlin.saveGameResult("OX", correctAnswers, totalTime) // 게임 유형 추가
-            questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTime / 1000} seconds"
+            questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTime / 1000} seconds\nReturning to game selection screen in 5 seconds..."
             handler.postDelayed({
-               // val intent = Intent(this@gameLowActivity, gamelistActivity::class.java) //이건 추가하면 오류가 있음...
-                //startActivity(intent)
                 finish() //그냥 이전 화면으로 돌아가기
             }, 5000) // 나가기 전에 5 seconds 딜레이
         }
