@@ -345,7 +345,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="80dp"
         android:background="@color/purple_50"
-        android:text="시작"
+        android:text="start"
         android:textSize="25sp" />
 
     <Button
@@ -356,7 +356,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="80dp"
         android:background="@color/purple_50"
-        android:text="정답"
+        android:text="answer"
         android:textSize="25sp" />
 
 </RelativeLayout>

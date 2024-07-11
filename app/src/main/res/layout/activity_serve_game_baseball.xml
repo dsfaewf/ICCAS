@@ -82,7 +82,7 @@
             android:id="@+id/request_text"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="숫자를 입력해 주세요"
+            android:hint="Please enter a number"
             android:inputType="number"
             android:maxLength="3"
             android:textSize="25sp"
@@ -102,7 +102,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@android:color/holo_green_light"
-                android:text="시작"
+                android:text="start"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
 
@@ -113,7 +113,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@android:color/holo_green_light"
-                android:text="정답"
+                android:text="answer"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
 
@@ -124,7 +124,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@android:color/holo_green_light"
-                android:text="초기화"
+                android:text="reset"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
         </LinearLayout>
