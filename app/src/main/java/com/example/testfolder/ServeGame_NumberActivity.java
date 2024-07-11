@@ -19,7 +19,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     GridLayout gridLayout;
     TextView requestText, responseText, coinText; //coinText 추가
     Button startBtn, answerBtn;
-    Button[] buttons = new Button[10];
+    Button[] buttons = new Button[11]; // Del 버튼 추가를 위해 배열 크기 증가
     String answer = "";
     int randomNumber;
 
@@ -58,12 +58,25 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         startBtn = findViewById(R.id.start_btn);
 
         //버튼 초기화
-        for (int i = 0; i < buttons.length; i++) {
+        for (int i = 0; i < buttons.length - 1; i++) { // 배열 크기만큼 반복
             String buttonID = "btn" + i;
             int resourceID = getResources().getIdentifier(buttonID, "id", getPackageName());
             buttons[i] = findViewById(resourceID);
             buttons[i].setOnClickListener(this);
         }
+
+
+        // Del 버튼 설정
+        Button btnDelete = findViewById(R.id.btn_delete);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (answer.length() > 0) {
+                    answer = answer.substring(0, answer.length() - 1);
+                    display();
+                }
+            }
+        });
 
         //버튼 숨김
         viewMode("end");
@@ -81,7 +94,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                 // 시작 버튼을 누를 때 정답 텍스트 초기화
                 responseText.setText("");
 
-                Toast.makeText(ServeGame_NumberActivity.this, "숫자가 생성되었습니다.",
+                Toast.makeText(ServeGame_NumberActivity.this, "Number has been generated.",
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -94,7 +107,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
 
                 //도전횟수가 7번일 때
                 if (count == 7) {
-                    Toast.makeText(ServeGame_NumberActivity.this, "도전 횟수를 초과했습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ServeGame_NumberActivity.this, "You have exceeded the number of attempts.", Toast.LENGTH_SHORT).show();
 
                     //버튼 숨김
                     viewMode("end");
@@ -127,7 +140,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                     //입력값이랑 랜덤수가 같다면 ( 정답 )
                     else if (inputNumber == randomNumber) {
                         SingletonJava.getInstance().checkAndRewardCoins(currentUser, maxClearsPerDay, coinReward, coinText, ServeGame_NumberActivity.this);
-                        Toast.makeText(ServeGame_NumberActivity.this, "정답입니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ServeGame_NumberActivity.this, "Correct!", Toast.LENGTH_SHORT).show();
 
                         //버튼 숨김
                         viewMode("end");
@@ -196,7 +209,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
         else {
             gridLayout.setVisibility(View.INVISIBLE); //번호 비활성화
             startBtn.setEnabled(true); //시작버튼 활성화
-            answerBtn.setEnabled(false); //정답버튼 비활성화
+            answerBtn.setEnabled(false); //정답버튼 비활화
         }
     }
 
@@ -219,7 +232,7 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
 
         //숫자는 10의 자리까지만
         if (number.length() == 2) {
-            Toast.makeText(this, "입력불가", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cannot enter more.", Toast.LENGTH_SHORT).show();
             result = false;
         } else {
             result = true;
