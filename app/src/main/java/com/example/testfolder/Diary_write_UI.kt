@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -7,6 +8,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -27,7 +29,6 @@ class Diary_write_UI : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,21 +48,37 @@ class Diary_write_UI : AppCompatActivity() {
         val loadingBackgroundLayout = findViewById<ConstraintLayout>(R.id.loading_background_layout)
         val loadingImage = findViewById<ImageView>(R.id.loading_image)
         val loadingText = findViewById<TextView>(R.id.loading_text)
+        var calendarBtn = findViewById<ImageButton>(R.id.calBtn)
+        var calendar = Calendar.getInstance()
+        var year = calendar.get(Calendar.YEAR)
+        var month = calendar.get(Calendar.MONTH)
+        var day = calendar.get(Calendar.DAY_OF_MONTH)
 
         // Firebase 데이터베이스 루트 참조 가져오기
         databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
         auth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
         database = FirebaseDatabase.getInstance()
 
+
+        // 현재 날짜를 가져오기
+        val currentDate = getCurrentDate()
+        // 날짜를 TextView에 설정
+        dateTextView.text = currentDate
+
+        // calendar Button 클릭 시
+        calendarBtn.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(this, { _, year, month, day
+                ->
+                dateTextView.text =
+                    year.toString() + "/" + (month + 1).toString() + "/" + day.toString()
+            }, year, month, day)
+            datePickerDialog.show()
+        }
+
         // Save 버튼 클릭 시 날짜 표시 및 일기 내용 저장
         saveButton.setOnClickListener {
             val loadingAnimation = LoadingAnimation(this,
                 loadingBackgroundLayout, loadingImage, loadingText)
-
-            // 현재 날짜를 가져오기
-            val currentDate = getCurrentDate()
-            // 날짜를 TextView에 설정
-            dateTextView.text = currentDate
 
             // 일기 내용을 Firebase 데이터베이스에 업로드
             val diaryContent = diaryEditText.text.toString().trim()
