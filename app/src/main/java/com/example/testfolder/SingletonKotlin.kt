@@ -1,11 +1,14 @@
 package com.example.testfolder
 
+import android.util.Log
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.example.testfolder.utils.PreprocessTexts //진영이가 만들어준 매서드 가져다 쓰기 위해 추가
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import org.json.JSONObject
 
 object SingletonKotlin {
 
@@ -28,8 +31,6 @@ object SingletonKotlin {
         }
     }
 
-    // 사용자 코인을 불러오는 메서드
-    // 주어진 TextView에 사용자 코인 수를 표시
     fun loadUserCoins(coinText: TextView) {
         checkInitialization()
         val currentUser = auth.currentUser ?: return
@@ -47,8 +48,30 @@ object SingletonKotlin {
         })
     }
 
-    // 사용자 배경 이미지를 불러오는 메서드
-    // 주어진 FrameLayout에 사용자 배경 이미지를 설정
+    fun updateUserCoins(coinsToAdd: Long, coinText: TextView) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val userRef = database.child("users").child(currentUser.uid)
+
+        userRef.child("coins").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val currentCoins = snapshot.getValue(Long::class.java) ?: 0L
+                val newCoins = currentCoins + coinsToAdd
+                userRef.child("coins").setValue(newCoins).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        coinText.text = newCoins.toString()
+                    } else {
+                        Toast.makeText(coinText.context, "Failed to update coins", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(coinText.context, "Database ERROR", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     fun loadUserBackground(frame: FrameLayout) {
         checkInitialization()
         val currentUser = auth.currentUser ?: return
@@ -67,8 +90,6 @@ object SingletonKotlin {
         })
     }
 
-    // 사용자 배경 이미지를 저장하는 메서드
-    // 사용자가 선택한 배경 이미지를 Firebase 데이터베이스에 저장
     fun saveUserBackground(itemName: String) {
         checkInitialization()
         val currentUser = auth.currentUser ?: return
@@ -76,18 +97,12 @@ object SingletonKotlin {
         userRef.child("selectedBackground").setValue(itemName)
     }
 
-    // 사용자가 구매한 아이템을 불러오는 메서드
-    // 사용자에게 구매한 아이템을 MutableList에 추가하고, 어댑터를 통해 RecyclerView에 표시
     fun loadPurchasedItems(buyItemList: MutableList<ShopItem>, adapter: ShopItemsAdapter) {
         checkInitialization()
         val currentUser = auth.currentUser ?: return
         val userItemsRef = database.child("user_rooms").child(currentUser.uid)
-        // 아니 기본 배경 왜 추가 안 되냐고!@#!#!@#
-        // -> 밖에서 수동적으로 추가하는 방식으로 노선 변경
-        // // //buyItemList.add(ShopItem(R.drawable.room3, "Default Room", 0)) // 이 녀석을 직접 페이지에 코드 추가하자
         userItemsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                // 기본 배경을 제외한 나머지 아이템들을 추가
                 for (itemSnapshot in snapshot.children) {
                     val itemName = itemSnapshot.key
                     val itemPrice = itemSnapshot.child("price").getValue(Int::class.java) ?: 0
@@ -108,8 +123,6 @@ object SingletonKotlin {
         })
     }
 
-    // 아이템 이름에 따라 이미지 리소스를 반환하는 함수
-    // db에 저장된 아이템 이름에 해당하는 이미지를 반환
     private fun getImageResourceByName(itemName: String?): Int {
         return when (itemName) {
             "Room 1" -> R.drawable.room01
@@ -125,18 +138,155 @@ object SingletonKotlin {
         }
     }
 
-    fun getAuth(): FirebaseAuth { //파이어베이스 객체 반환
+    fun getAuth(): FirebaseAuth {
         checkInitialization()
         return auth
     }
 
-    fun getDatabase(): DatabaseReference { //데이터베이스레퍼런스 객체 반환
+    fun getDatabase(): DatabaseReference {
         checkInitialization()
         return database
     }
 
-    fun getCurrentUser(): FirebaseUser? { //현재 로그인된 유저 정보 객체 반환
+    fun getCurrentUser(): FirebaseUser? {
         checkInitialization()
         return auth.currentUser
     }
+
+    // ==========여기서 부터는 퀴즈 처리를 위한 용도==========
+
+    // OX 퀴즈를 불러오는 매서드
+    data class QuizItem(val question: String, val answer: String, val date: String)
+    fun loadOXQuizData(callback: (List<QuizItem>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return //인증되지 않은 경우 종료
+        val uid = currentUser.uid // 사용자 고유 ID
+        val quizRef = database.child("ox_quiz").child(uid) // 데이터베이스 객체에서 현재 사용자의 ox_quiz 데이터를 참조
+
+        //경로를 찾아 거기서 데이터를 한번 가져와야...?
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                val quizList = mutableListOf<QuizItem>() // 퀴즈 데이터 저장할 리스트 초기화
+                for (yearSnapshot in snapshot.children) { // year 데이터 가져옴
+                    val year = yearSnapshot.key ?: continue // year의 키를 가져옴. 없을 경우 continue로 다시 for
+                    for (monthSnapshot in yearSnapshot.children) { // 연도 하위에서 month 데이터
+                        val month = monthSnapshot.key ?: continue // month의 키가 없으면 다음 for 루프
+                        for (daySnapshot in monthSnapshot.children) { // 동일
+                            val day = daySnapshot.key ?: continue // ㄷㅇ
+                            for (quizSnapshot in daySnapshot.children) { // 우리 db 형식으로는 이제 여기에 question과 answer가 있음.
+                                val question = quizSnapshot.child("question").getValue(String::class.java) ?: "" // 퀴즈의 질문 가져옴. 질문이 없으면 빈 문자열
+                                val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: "" // 퀴즈의 답... 없으면 빈 문자열
+                                val date = "$year-$month-$day" // 퀴즈가 작성된 날짜를 "년-월-일" 형식의 문자열로 만듬
+                                quizList.add(QuizItem(question, answer, date)) // 퀴즈 데이터를 리스트에 추가
+                            }
+                        }
+                    }
+                }
+                callback(quizList) // 콜백 함수 호출, 퀴즈 데이터 반환
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // 에러 처리
+                callback(emptyList()) // 에러 발생 시 빈 리스트 반환
+            }
+        })
+    }
+
+
+    // 사지선다 - 객관식 퀴즈 불러오는 매서드 //기본 형식은 ox와 동일
+    data class MultipleChoiceQuizItem(val question: String, val choices: List<String>, val answer: String, val date: String)
+
+    fun loadMultipleChoiceQuizData(callback: (List<MultipleChoiceQuizItem>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val quizRef = database.child("mcq_quiz").child(uid)
+
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val quizList = mutableListOf<MultipleChoiceQuizItem>()
+                for (yearSnapshot in snapshot.children) {
+                    val year = yearSnapshot.key ?: continue
+                    for (monthSnapshot in yearSnapshot.children) {
+                        val month = monthSnapshot.key ?: continue
+                        for (daySnapshot in monthSnapshot.children) {
+                            val day = daySnapshot.key ?: continue
+                            for (quizSnapshot in daySnapshot.children) {
+                                val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
+                                val optionsJson = quizSnapshot.child("choices").getValue(String::class.java) ?: ""
+                                val options = PreprocessTexts.stringToStringArray(optionsJson) //진영이가 만든 매서드 활용
+                                if (options.size < 4) {
+                                    Log.e("Firebase", "Not enough options for question: $question")
+                                    continue
+                                }
+
+                                val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
+                                val date = "$year-$month-$day"
+                                quizList.add(MultipleChoiceQuizItem(question, options, answer, date))
+                            }
+                        }
+                    }
+                }
+                if (quizList.isEmpty()) {
+                    Log.e("Firebase", "No quiz data found")
+                }
+                callback(quizList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
+            }
+        })
+    }
+
+    // 게임 결과를 저장하는 메서드
+    fun saveGameResult(gameType: String, correctAnswers: Int, totalTime: Long) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val resultRef = database.child("game_results").child(uid).push()
+
+        val resultData = mapOf(
+            "gameType" to gameType, // 게임 유형 추가 - OX, 4 Choice, Short Answer, miniNum, miniBaseball, miniSame별로 각각 지정해줄 수 있으려나?
+            "correctAnswers" to correctAnswers,
+            "totalTime" to totalTime,
+            "timestamp" to System.currentTimeMillis()
+        )
+
+        resultRef.setValue(resultData).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // 데이터 저장 성공
+            } else {
+                // 데이터 저장 실패
+            }
+        }
+    }
+
+    //게임 결과를 불러오는 매서드를 만들어 놓자.
+    fun loadGameResults(callback: (List<Map<String, Any>>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val resultsRef = database.child("game_results").child(uid)
+
+        resultsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val resultsList = mutableListOf<Map<String, Any>>()
+                for (resultSnapshot in snapshot.children) {
+                    val result = resultSnapshot.value as? Map<String, Any>
+                    if (result != null) { //대응하는 값이 있다면 리스트에 저장함
+                        resultsList.add(result)
+                    }
+                }
+                callback(resultsList) //해당 리스트를 CALLBACK
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
+            }
+        })
+    }
+
 }

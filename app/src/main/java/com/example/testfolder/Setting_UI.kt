@@ -9,16 +9,20 @@ import androidx.appcompat.app.AppCompatActivity
 class Setting_UI : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_setting)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_setting)
 
-        val imageButton1 = findViewById<View>(R.id.my_button6) as Button
+        val backButton = findViewById<View>(R.id.back_button) as Button
+        val viewGameRecordButton = findViewById<View>(R.id.gameRecord) as Button
 
-
-        imageButton1.setOnClickListener {
+        backButton.setOnClickListener {
             val intent = Intent(applicationContext, Main_UI::class.java)
             startActivity(intent)
         }
 
+        viewGameRecordButton.setOnClickListener {
+            val intent = Intent(applicationContext, GameRecordActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

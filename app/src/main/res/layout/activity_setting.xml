@@ -17,7 +17,7 @@
             android:id="@+id/textview2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/volume"
+            android:text="Volume"
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginBottom="10dp" />
@@ -41,7 +41,7 @@
             android:id="@+id/textview3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/music_setting"
+            android:text="Music Setting"
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginBottom="10dp" />
@@ -54,19 +54,19 @@
                 android:id="@+id/radioButton9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/music_sound1" />
+                android:text="Music Sound 1" />
 
             <RadioButton
                 android:id="@+id/radioButton10"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/music_sound2" />
+                android:text="Music Sound 2" />
 
             <RadioButton
                 android:id="@+id/radioButton11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/music_sound3" />
+                android:text="Music Sound 3" />
         </RadioGroup>
 
     </LinearLayout>
@@ -81,11 +81,11 @@
         android:padding="10dp">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button5"
+            android:id="@+id/gameRecord"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/gray"
-            android:text="@string/game_record_view"
+            android:text="View Game Record"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -104,11 +104,11 @@
             android:layout_weight="1"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button6"
+            android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/gray"
-            android:text="@string/back_button"
+            android:text="Back"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginEnd="10dp"/>
