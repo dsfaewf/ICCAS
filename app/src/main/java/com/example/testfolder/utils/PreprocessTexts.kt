@@ -38,6 +38,7 @@ class PreprocessTexts {
             var _stringLookingLikeArray = stringLookingLikeArray
             _stringLookingLikeArray = _stringLookingLikeArray.replace("[", "")
             _stringLookingLikeArray = _stringLookingLikeArray.replace("]", "")
+            _stringLookingLikeArray = _stringLookingLikeArray.replace("\"", "") // 자꾸 오류나서 따옴표 제거 추가합니다-우석
             val stringArray = _stringLookingLikeArray.split(",").map { it.trim() }
             return stringArray
         }

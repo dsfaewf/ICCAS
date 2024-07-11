@@ -1,8 +1,10 @@
 package com.example.testfolder
 
+import android.util.Log
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.example.testfolder.utils.PreprocessTexts //진영이가 만들어준 매서드 가져다 쓰기 위해 추가
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -151,9 +153,10 @@ object SingletonKotlin {
         return auth.currentUser
     }
 
-    // 여기서부터는 퀴즈 처리를 위한 용도
-    data class QuizItem(val question: String, val answer: String, val date: String)
+    // ==========여기서 부터는 퀴즈 처리를 위한 용도==========
 
+    // OX 퀴즈를 불러오는 매서드
+    data class QuizItem(val question: String, val answer: String, val date: String)
     fun loadOXQuizData(callback: (List<QuizItem>) -> Unit) {
         checkInitialization()
         val currentUser = auth.currentUser ?: return //인증되지 않은 경우 종료
@@ -187,6 +190,53 @@ object SingletonKotlin {
             override fun onCancelled(error: DatabaseError) {
                 // 에러 처리
                 callback(emptyList()) // 에러 발생 시 빈 리스트 반환
+            }
+        })
+    }
+
+
+    // 사지선다 - 객관식 퀴즈 불러오는 매서드 //기본 형식은 ox와 동일
+    data class MultipleChoiceQuizItem(val question: String, val choices: List<String>, val answer: String, val date: String)
+
+    fun loadMultipleChoiceQuizData(callback: (List<MultipleChoiceQuizItem>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val quizRef = database.child("mcq_quiz").child(uid)
+
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val quizList = mutableListOf<MultipleChoiceQuizItem>()
+                for (yearSnapshot in snapshot.children) {
+                    val year = yearSnapshot.key ?: continue
+                    for (monthSnapshot in yearSnapshot.children) {
+                        val month = monthSnapshot.key ?: continue
+                        for (daySnapshot in monthSnapshot.children) {
+                            val day = daySnapshot.key ?: continue
+                            for (quizSnapshot in daySnapshot.children) {
+                                val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
+                                val optionsJson = quizSnapshot.child("choices").getValue(String::class.java) ?: ""
+                                val options = PreprocessTexts.stringToStringArray(optionsJson) //진영이가 만든 매서드 활용
+                                if (options.size < 4) {
+                                    Log.e("Firebase", "Not enough options for question: $question")
+                                    continue
+                                }
+
+                                val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
+                                val date = "$year-$month-$day"
+                                quizList.add(MultipleChoiceQuizItem(question, options, answer, date))
+                            }
+                        }
+                    }
+                }
+                if (quizList.isEmpty()) {
+                    Log.e("Firebase", "No quiz data found")
+                }
+                callback(quizList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
             }
         })
     }
