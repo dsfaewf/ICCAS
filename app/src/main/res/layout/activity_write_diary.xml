@@ -104,6 +104,8 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="#FF0000"
+            android:padding="5dp"
+            android:background="@drawable/rectangle_btn_style2"
             android:visibility="gone"/>
 
     </LinearLayout>
