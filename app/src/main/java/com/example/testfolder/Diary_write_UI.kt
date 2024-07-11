@@ -2,6 +2,7 @@ package com.example.testfolder
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +25,8 @@ import com.example.testfolder.viewmodels.ApiKeyViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.testfolder.viewmodels.DiaryWriteViewModel
 import com.example.testfolder.viewmodels.FirebaseViewModel
+import io.ktor.util.date.toDate
+import java.text.SimpleDateFormat
 
 class Diary_write_UI : AppCompatActivity() {
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
@@ -61,6 +64,9 @@ class Diary_write_UI : AppCompatActivity() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+        // Initialize date
+        dateTextView.text = getCurrentDate()
+
         Log.d("Open AI", "Open AI Class is being created")
         val myOpenAI = OpenAI(this, apiKeyViewModel, firebaseViewModel)
 
@@ -89,8 +95,8 @@ class Diary_write_UI : AppCompatActivity() {
 
         // Save 버튼 클릭 시 날짜 표시 및 일기 내용 저장
         saveButton.setOnClickListener {
-        // Prevent double click the button
-        val currentTime = System.currentTimeMillis()
+            // Prevent double click the button
+            val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickTime >= interval) {
                 lastClickTime = currentTime
                 Log.d("SAVE_BUTTON", "Diary save button clicked.")
@@ -116,7 +122,7 @@ class Diary_write_UI : AppCompatActivity() {
             val datePickerDialog = DatePickerDialog(this, { _, year, month, day
                 ->
                 // 날짜를 TextView에 설정
-                dateTextView.text = String.format("%s/%s/%s", year, month+1, day)
+                dateTextView.text = String.format("%02d/%02d/%04d", day, month+1, year)
             }, year, month, day)
             datePickerDialog.show()
         }
@@ -137,12 +143,15 @@ class Diary_write_UI : AppCompatActivity() {
             // 일기 내용을 Firebase 데이터베이스에 업로드
             // 사용자별로 데이터 저장하기
             uid?.let {
-                val userDiaryRef = database.reference.child("diaries").child(it) // 사용자별 레퍼런스 생성
+                val date = dateTextView.text.toString().replace("/", " ")
+                val userDiaryRef = database.reference
+                    .child("diaries")
+                    .child(uid)
+                    .child(date) // 사용자별 레퍼런스 생성
                 val diaryEntryMap = mapOf(
-                    "date" to dateTextView.text,
                     "content" to diaryContent
                 )
-                val dbTask = userDiaryRef.push().setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
+                val dbTask = userDiaryRef.setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
                 dbTask.addOnSuccessListener {
                     Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
@@ -150,20 +159,13 @@ class Diary_write_UI : AppCompatActivity() {
 
             // TEST
             if (uid != null) {
-//                    loadingAnimation.showLoading()
-
-                errorTextView.visibility = TextView.INVISIBLE
-
                 // Observe the LiveData
                 apiKeyViewModel.apiKey.observe(this) {
                     myOpenAI.generate_OX_quiz_and_save(
-                        loadingAnimation,
                         this.diaryContent,
                         this.numOfQuestions)
                 }
                 myOpenAI.fetchApiKey()
-
-
             } else {
                 Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
             }
@@ -192,10 +194,22 @@ class Diary_write_UI : AppCompatActivity() {
         }
     }
 
-//    // 현재 날짜를 가져오는 함수
-//    private fun getCurrentDate(): String {
-//        val calendar = Calendar.getInstance()
-//        val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
-//        return dateFormat.format(calendar.time)
-//    }
+    // 현재 날짜를 가져오는 함수
+    private fun getCurrentDate(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
+    // change String to Date object
+    private fun stringToDateObject(stringDate: String): Date {
+        val (day, month, year) = stringDate.split("/").map { it -> it.toInt() }
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.MONTH, month - 1) // Month is 0-based in Calendar
+            set(Calendar.YEAR, year)
+        }
+        val specificDate = calendar.time
+        return specificDate
+    }
 }

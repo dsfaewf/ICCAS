@@ -31,7 +31,6 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
         const val PROB_TYPE_BLANK  = 2
     }
     private lateinit var apiKey: String
-    private lateinit var loadingAnimation: LoadingAnimation
     private lateinit var date: String
     private lateinit var response_gpt_OX: String
     private lateinit var response_gpt_MCQ: String
@@ -52,7 +51,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
     }
 
     fun updateDate(date: String) {
-        this.date = date
+        this.date = date.replace("/", " ")
     }
 
     fun fetchApiKey() {
@@ -88,8 +87,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
             }
     }
 
-    fun generate_OX_quiz_and_save(loadingAnimation: LoadingAnimation, diary: String, numOfQuestions: Int) {
-        this.loadingAnimation = loadingAnimation
+    fun generate_OX_quiz_and_save(diary: String, numOfQuestions: Int) {
         val prompt_OX = get_prompt_OX_quiz(diary, numOfQuestions)
         val prompt_MCQ = get_prompt_MCQ_quiz(diary, numOfQuestions)
         val prompt_blank = get_prompt_blank_quiz(diary, numOfQuestions/2)
@@ -234,7 +232,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
             Log.i("GPT-OX", "response: " + this.response_gpt_OX)
             val quizList = this.response_gpt_OX.split("\n")
             quizList.forEachIndexed { index, quiz ->
-                val ref = database.reference.child("ox_quiz").child(uid).child(date)
+                val ref = database.reference.child("ox_quiz").child(uid).child(this.date)
                     .child(index.toString())
                 val jsonObject = JSONObject(quiz)
                 val question = jsonObject.getString("question")
@@ -245,7 +243,6 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                 )
                 val dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
-//                    this.loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
 //                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
@@ -258,7 +255,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
             Log.i("GPT-MCQ", "response: " + this.response_gpt_MCQ)
             val quizList = this.response_gpt_MCQ.split("\n")
             quizList.forEachIndexed { index, quiz ->
-                val ref = database.reference.child("mcq_quiz").child(uid).child(date)
+                val ref = database.reference.child("mcq_quiz").child(uid).child(this.date)
                     .child(index.toString())
                 val jsonObject = JSONObject(quiz)
                 val question = jsonObject.getString("question")
@@ -271,7 +268,6 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                 )
                 val dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
-//                    this.loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
 //                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
@@ -284,7 +280,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
             Log.i("GPT-BLANK", "response: " + this.response_gpt_blank)
             val quizList = this.response_gpt_blank.split("\n")
             quizList.forEachIndexed { index, quiz ->
-                val ref = database.reference.child("blank_quiz").child(uid).child(date)
+                val ref = database.reference.child("blank_quiz").child(uid).child(this.date)
                     .child(index.toString())
                 val jsonObject = JSONObject(quiz)
                 val question = jsonObject.getString("question")
@@ -295,7 +291,6 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                 )
                 val dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
-//                    this.loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
 //                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
