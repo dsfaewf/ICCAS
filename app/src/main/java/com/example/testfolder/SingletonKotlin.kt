@@ -241,6 +241,43 @@ object SingletonKotlin {
         })
     }
 
+    // 주관식 퀴즈 불러오는 매서드
+    data class BlankQuizItem(val question: String, val answer: String, val date: String)
+
+    fun loadBlankQuizData(callback: (List<BlankQuizItem>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val quizRef = database.child("blank_quiz").child(uid)
+
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val quizList = mutableListOf<BlankQuizItem>()
+                for (yearSnapshot in snapshot.children) {
+                    val year = yearSnapshot.key ?: continue
+                    for (monthSnapshot in yearSnapshot.children) {
+                        val month = monthSnapshot.key ?: continue
+                        for (daySnapshot in monthSnapshot.children) {
+                            val day = daySnapshot.key ?: continue
+                            for (quizSnapshot in daySnapshot.children) {
+                                val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
+                                val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
+                                val date = "$year-$month-$day"
+                                quizList.add(BlankQuizItem(question, answer, date))
+                            }
+                        }
+                    }
+                }
+                callback(quizList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
+            }
+        })
+    }
+
+
     // 게임 결과를 저장하는 메서드
     fun saveGameResult(gameType: String, correctAnswers: Int, totalTime: Long) {
         checkInitialization()
