@@ -5,46 +5,69 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Main_UI">
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="180dp"
-        android:layout_marginEnd="4dp"
-        android:gravity="center_horizontal"
+    <FrameLayout
+        android:layout_width="194dp"
+        android:layout_height="100dp"
+        android:background="@drawable/cat1"
+        android:id="@+id/frame1"
+        app:layout_constraintBottom_toTopOf="@+id/layout1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.326"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints">
+        app:layout_constraintVertical_bias="1.0">
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/my_button2"
             android:layout_width="180dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/rectangle_style"
             android:gravity="center"
             android:text="Diary"
             android:textSize="24dp" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button3"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="My Cat"
+            android:textSize="24dp" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="4dp"
-        android:gravity="center_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-        tools:ignore="MissingConstraints">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_game"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="Game"
+            android:textSize="24dp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/my_button4"
             android:layout_width="180dp"
             android:layout_height="50dp"
+            android:layout_margin="20dp"
             android:background="@drawable/rectangle_style"
             android:gravity="center"
             android:text="@string/setting"
@@ -52,52 +75,15 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="4dp"
-        android:gravity="center_horizontal"
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/catframe2"
+        android:layout_width="383dp"
+        android:layout_height="151dp"
+        android:background="@drawable/cat"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        tools:ignore="MissingConstraints">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button3"
-            android:layout_width="180dp"
-            android:layout_height="50dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="My Cat"
-            android:textSize="24dp" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="4dp"
-        android:gravity="center_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:ignore="MissingConstraints">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_game"
-            android:layout_width="180dp"
-            android:layout_height="50dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="Game"
-            android:textSize="24dp" />
-
-
-    </LinearLayout>
-
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
