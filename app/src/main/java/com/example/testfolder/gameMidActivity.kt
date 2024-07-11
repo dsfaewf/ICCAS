@@ -101,10 +101,10 @@ class gameMidActivity : AppCompatActivity() {
             } else {
                 val totalTime = System.currentTimeMillis() - startTime
                 SingletonKotlin.saveGameResult("4 Choice", correctAnswers, totalTime)
-                questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTime / 1000} seconds\nReturning to game selection screen in 3 seconds..."
+                questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTime / 1000} seconds\nReturning to game selection screen in 5 seconds..."
                 handler.postDelayed({
                     finish()
-                }, 3000)
+                }, 5000)
             }
         }
     }

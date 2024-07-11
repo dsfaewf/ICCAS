@@ -115,8 +115,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="333dp"
                 android:padding="20dp">
-
+<!-- id항목을 추가함 - 우석 -->
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/answer_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
