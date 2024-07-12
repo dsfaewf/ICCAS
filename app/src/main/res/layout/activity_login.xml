@@ -20,6 +20,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/imageView9"
+                android:layout_width="300dp"
+                android:layout_height="150dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/logo1" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

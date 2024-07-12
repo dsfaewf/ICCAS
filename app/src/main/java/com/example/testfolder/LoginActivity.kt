@@ -41,7 +41,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var rotateAnimation: Animation
     private val handler = Handler(Looper.getMainLooper())
 
-
     companion object {
         private const val RC_SIGN_IN = 9001
         private const val TAG = "LoginActivity"
@@ -95,7 +94,6 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-
         // 로그인 버튼 클릭 시
         loginBtn.setOnClickListener {
             loginUser(inputId.text.toString().trim(), inputPw.text.toString().trim())
@@ -130,10 +128,7 @@ class LoginActivity : AppCompatActivity() {
         if (userId.isNotEmpty() && password.isNotEmpty()) {
 
             // 로딩 이미지와 텍스트 표시
-            loadingImage.visibility = View.VISIBLE
-            loadingText.visibility = View.VISIBLE
-            loadingImage.startAnimation(rotateAnimation)
-            startLoadingTextAnimation()
+            showLoading() //만들어두고 왜 안썼었지 ㅋㅋ...
 
             // 사용자 아이디로 이메일 찾기
             val userRef = FirebaseDatabase.getInstance().reference.child("users")
@@ -220,12 +215,17 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     hideLoading() //로딩 없애기 처리
-                    val errorMessage = when (task.exception) {
-                        is FirebaseAuthInvalidUserException -> "This account is not registered"
-                        is FirebaseAuthInvalidCredentialsException -> "Wrong ID or Wrong PW"
-                        else -> "Failed to login."
+                    //이렇게 하면 이상하에 gmail 로그인 시에도 Wrong ID OR PW 경고가 나타남
+//                    val errorMessage = when (task.exception) {
+//                        is FirebaseAuthInvalidUserException -> "This account is not registered"
+//                        is FirebaseAuthInvalidCredentialsException -> "Wrong ID or Wrong PW"
+//                        else -> "Failed to login."
+//                    }
+                    // 여기서 구글 로그인으로 로그인된 경우 토스트 메시지를 표시하지 않도록 처리
+                    if (task.exception !is FirebaseAuthInvalidUserException && task.exception !is FirebaseAuthInvalidCredentialsException) {
+                        val errorMessage = "Failed to login."
+                        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
                     }
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -248,6 +248,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }.addOnFailureListener { exception ->
+            hideLoading() //로딩 없애기 처리
             Toast.makeText(this, "Database access failed. Login failed.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -255,8 +256,8 @@ class LoginActivity : AppCompatActivity() {
     private fun addUserToDatabase(userId: String, email: String) {
         val userRef = FirebaseDatabase.getInstance().reference.child("users").child(userId)
         val userData = hashMapOf(
-            "email" to email
-            // 다른 사용자 정보도 추가할 수 있음
+            "email" to email,
+            "userId" to userId // 로그인 방식 추가
         )
         userRef.setValue(userData)
             .addOnSuccessListener {
@@ -266,6 +267,7 @@ class LoginActivity : AppCompatActivity() {
                 finish()
             }
             .addOnFailureListener { exception ->
+                hideLoading() //로딩 없애기 처리
                 // 데이터베이스에 사용자 정보 추가 실패
                 Toast.makeText(this, "Failed to add user information to database: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
@@ -299,5 +301,4 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
 }

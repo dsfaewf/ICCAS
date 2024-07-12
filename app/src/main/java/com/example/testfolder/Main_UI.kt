@@ -1,6 +1,7 @@
 package com.example.testfolder
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -14,6 +15,7 @@ class Main_UI : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
+    private lateinit var mediaPlayer: MediaPlayer   //효과음 재생용 변수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,7 @@ class Main_UI : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
+        mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
 
         checkFirstLogin()
 
@@ -35,6 +38,10 @@ class Main_UI : AppCompatActivity() {
         }
 
         diaryButton.setOnClickListener {
+            // 효과음 재생 테스트
+            mediaPlayer.start()
+
+            // Diary_write_UI 액티비티로 이동
             val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
         }
@@ -48,6 +55,11 @@ class Main_UI : AppCompatActivity() {
             val intent = Intent(this, CatRoomActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
     }
 
     private fun checkFirstLogin() {
