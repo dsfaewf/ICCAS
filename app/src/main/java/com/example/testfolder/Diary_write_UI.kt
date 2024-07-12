@@ -2,6 +2,7 @@ package com.example.testfolder
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,25 +17,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.testfolder.utils.LoadingAnimation
 import com.example.testfolder.utils.OpenAI
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.auth.FirebaseAuth
-import java.text.SimpleDateFormat
 import java.util.*
 import com.example.testfolder.utils.PreprocessTexts
 import com.example.testfolder.viewmodels.ApiKeyViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.testfolder.viewmodels.DiaryWriteViewModel
+import com.example.testfolder.viewmodels.FirebaseViewModel
+import io.ktor.util.date.toDate
+import java.text.SimpleDateFormat
 
 class Diary_write_UI : AppCompatActivity() {
-    private lateinit var databaseReference: DatabaseReference
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
+    val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
+    val currentUser = auth.currentUser
+    val uid = currentUser?.uid // 현재 로그인된 사용자의 UID 가져오기
+    private val interval: Long = 1000
+    private var lastClickTime: Long = 0
+    private var numOfQuestions: Int = 0
+    private var numOfTokens: Int = 0
+    private lateinit var diaryContent: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val apiKeyViewModel = ViewModelProvider(this).get(ApiKeyViewModel::class.java)
-        Log.d("Open AI", "Open AI Class is being created")
-        val myOpenAI = OpenAI(this, apiKeyViewModel)
+        val firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
+        val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)
 
         setContentView(R.layout.activity_write_diary)
 
@@ -48,83 +58,114 @@ class Diary_write_UI : AppCompatActivity() {
         val loadingBackgroundLayout = findViewById<ConstraintLayout>(R.id.loading_background_layout)
         val loadingImage = findViewById<ImageView>(R.id.loading_image)
         val loadingText = findViewById<TextView>(R.id.loading_text)
-        var calendarBtn = findViewById<ImageButton>(R.id.calBtn)
-        var calendar = Calendar.getInstance()
-        var year = calendar.get(Calendar.YEAR)
-        var month = calendar.get(Calendar.MONTH)
-        var day = calendar.get(Calendar.DAY_OF_MONTH)
+        val calendarBtn = findViewById<ImageButton>(R.id.calBtn)
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        // Firebase 데이터베이스 루트 참조 가져오기
-        databaseReference = FirebaseDatabase.getInstance().reference.child("diaries")
-        auth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
-        database = FirebaseDatabase.getInstance()
+        // Initialize date
+        dateTextView.text = getCurrentDate()
 
+        Log.d("Open AI", "Open AI Class is being created")
+        val myOpenAI = OpenAI(this, apiKeyViewModel, firebaseViewModel)
 
-        // 현재 날짜를 가져오기
-        val currentDate = getCurrentDate()
-        // 날짜를 TextView에 설정
-        dateTextView.text = currentDate
+//        // UI 상 date가 바뀔 때마다 동작하는 함수
+//        diaryWriteViewModel.liveDataDate.observe(this) {
+//            myOpenAI.updateDate(dateTextView.text.toString())
+//        }
+
+        // Once a DB table whose date is the same as selected date is delete
+        // Save new data from ChatGPT
+        firebaseViewModel.OX_table_deleted.observe(this) {
+            myOpenAI.save_OX_data()
+        }
+
+        // Once a DB table whose date is the same as selected date is delete
+        // Save new data from ChatGPT
+        firebaseViewModel.MCQ_table_deleted.observe(this) {
+            myOpenAI.save_MCQ_data()
+        }
+
+        // Once a DB table whose date is the same as selected date is delete
+        // Save new data from ChatGPT
+        firebaseViewModel.blank_table_deleted.observe(this) {
+            myOpenAI.save_blank_quiz_data()
+        }
+
+        // Save 버튼 클릭 시 날짜 표시 및 일기 내용 저장
+        saveButton.setOnClickListener {
+            // Prevent double click the button
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime >= interval) {
+                lastClickTime = currentTime
+                Log.d("SAVE_BUTTON", "Diary save button clicked.")
+                // Update class variable with the current diary content
+                this.diaryContent = diaryEditText.text.toString().trim()
+                this.numOfTokens = PreprocessTexts.getNumOfTokens(diaryContent)
+                this.numOfQuestions = numOfTokens/5
+                // If the diary is too short, don't run
+                if (numOfQuestions < 1){
+                    errorTextView.text = "The diary is too short"
+                    errorTextView.visibility = TextView.VISIBLE
+                }
+                // Run only if the diary is long enough
+                else {
+                    errorTextView.visibility = TextView.INVISIBLE
+                    diaryWriteViewModel.onButtonClick()
+                }
+            }
+        }
 
         // calendar Button 클릭 시
         calendarBtn.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, { _, year, month, day
                 ->
-                dateTextView.text =
-                    year.toString() + "/" + (month + 1).toString() + "/" + day.toString()
+                // 날짜를 TextView에 설정
+                dateTextView.text = String.format("%02d/%02d/%04d", day, month+1, year)
             }, year, month, day)
             datePickerDialog.show()
         }
 
-        // Save 버튼 클릭 시 날짜 표시 및 일기 내용 저장
-        saveButton.setOnClickListener {
+        diaryWriteViewModel.buttonClickEvent.observe(this){
             val loadingAnimation = LoadingAnimation(this,
                 loadingBackgroundLayout, loadingImage, loadingText)
 
-            // 일기 내용을 Firebase 데이터베이스에 업로드
-            val diaryContent = diaryEditText.text.toString().trim()
-            // 일기 내용을 가져온 후, EditText 내용 Clear
+//            ViewModel에 있는 date 값을 담고있는 LiveData를 update
+//            diaryWriteViewModel.setDate(dateTextView.text.toString())
+
+            // EditText 내용 Clear
             diaryEditText.text.clear()
-            // 현재 로그인된 사용자의 UID 가져오기
-            val currentUser = auth.currentUser
-            val userId = currentUser?.uid
+            Log.d("Date", dateTextView.text.toString())
+            // OpenAI 인스턴스의 date도 함께 update
+            myOpenAI.updateDate(dateTextView.text.toString())
+
+            // 일기 내용을 Firebase 데이터베이스에 업로드
             // 사용자별로 데이터 저장하기
-            userId?.let {
-                val userDiaryRef = databaseReference.child(it) // 사용자별 레퍼런스 생성
+            uid?.let {
+                val date = dateTextView.text.toString().replace("/", " ")
+                val userDiaryRef = database.reference
+                    .child("diaries")
+                    .child(uid)
+                    .child(date) // 사용자별 레퍼런스 생성
                 val diaryEntryMap = mapOf(
-                    "date" to currentDate,
                     "content" to diaryContent
                 )
-                val dbTask = userDiaryRef.push().setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
+                val dbTask = userDiaryRef.setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
                 dbTask.addOnSuccessListener {
                     Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
             }
 
             // TEST
-            if (userId != null) {
-                val numOfTokens = PreprocessTexts.getNumOfTokens(diaryContent)
-                val numOfQuestions = numOfTokens/5
-                if (numOfQuestions < 1){
-                    errorTextView.text = "The diary is too short"
-                    errorTextView.visibility = TextView.VISIBLE
+            if (uid != null) {
+                // Observe the LiveData
+                apiKeyViewModel.apiKey.observe(this) {
+                    myOpenAI.generate_OX_quiz_and_save(
+                        this.diaryContent,
+                        this.numOfQuestions)
                 }
-                else {
-//                    loadingAnimation.showLoading()
-
-                    errorTextView.text = ""
-                    errorTextView.visibility = TextView.INVISIBLE
-
-                    // Observe the LiveData
-                    apiKeyViewModel.apiKey.observe(this) {
-                        myOpenAI.generate_OX_quiz_and_save(
-                            loadingAnimation,
-                            diaryContent,
-                            numOfQuestions,
-                            dateTextView.text.toString())
-                    }
-                    myOpenAI.fetchApiKey()
-                }
-
+                myOpenAI.fetchApiKey()
             } else {
                 Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
             }
@@ -156,7 +197,19 @@ class Diary_write_UI : AppCompatActivity() {
     // 현재 날짜를 가져오는 함수
     private fun getCurrentDate(): String {
         val calendar = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return dateFormat.format(calendar.time)
+    }
+
+    // change String to Date object
+    private fun stringToDateObject(stringDate: String): Date {
+        val (day, month, year) = stringDate.split("/").map { it -> it.toInt() }
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.MONTH, month - 1) // Month is 0-based in Calendar
+            set(Calendar.YEAR, year)
+        }
+        val specificDate = calendar.time
+        return specificDate
     }
 }

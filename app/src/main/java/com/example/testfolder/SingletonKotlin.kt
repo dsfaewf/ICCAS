@@ -159,78 +159,20 @@ object SingletonKotlin {
     data class QuizItem(val question: String, val answer: String, val date: String)
     fun loadOXQuizData(callback: (List<QuizItem>) -> Unit) {
         checkInitialization()
-        val currentUser = auth.currentUser ?: return //인증되지 않은 경우 종료
-        val uid = currentUser.uid // 사용자 고유 ID
-        val quizRef = database.child("ox_quiz").child(uid) // 데이터베이스 객체에서 현재 사용자의 ox_quiz 데이터를 참조
-
-        //경로를 찾아 거기서 데이터를 한번 가져와야...?
-        quizRef.addListenerForSingleValueEvent(object : ValueEventListener
-        {
-            override fun onDataChange(snapshot: DataSnapshot)
-            {
-                val quizList = mutableListOf<QuizItem>() // 퀴즈 데이터 저장할 리스트 초기화
-                for (yearSnapshot in snapshot.children) { // year 데이터 가져옴
-                    val year = yearSnapshot.key ?: continue // year의 키를 가져옴. 없을 경우 continue로 다시 for
-                    for (monthSnapshot in yearSnapshot.children) { // 연도 하위에서 month 데이터
-                        val month = monthSnapshot.key ?: continue // month의 키가 없으면 다음 for 루프
-                        for (daySnapshot in monthSnapshot.children) { // 동일
-                            val day = daySnapshot.key ?: continue // ㄷㅇ
-                            for (quizSnapshot in daySnapshot.children) { // 우리 db 형식으로는 이제 여기에 question과 answer가 있음.
-                                val question = quizSnapshot.child("question").getValue(String::class.java) ?: "" // 퀴즈의 질문 가져옴. 질문이 없으면 빈 문자열
-                                val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: "" // 퀴즈의 답... 없으면 빈 문자열
-                                val date = "$year-$month-$day" // 퀴즈가 작성된 날짜를 "년-월-일" 형식의 문자열로 만듬
-                                quizList.add(QuizItem(question, answer, date)) // 퀴즈 데이터를 리스트에 추가
-                            }
-                        }
-                    }
-                }
-                callback(quizList) // 콜백 함수 호출, 퀴즈 데이터 반환
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // 에러 처리
-                callback(emptyList()) // 에러 발생 시 빈 리스트 반환
-            }
-        })
-    }
-
-
-    // 사지선다 - 객관식 퀴즈 불러오는 매서드 //기본 형식은 ox와 동일
-    data class MultipleChoiceQuizItem(val question: String, val choices: List<String>, val answer: String, val date: String)
-
-    fun loadMultipleChoiceQuizData(callback: (List<MultipleChoiceQuizItem>) -> Unit) {
-        checkInitialization()
         val currentUser = auth.currentUser ?: return
         val uid = currentUser.uid
-        val quizRef = database.child("mcq_quiz").child(uid)
+        val quizRef = database.child("ox_quiz").child(uid)
 
         quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val quizList = mutableListOf<MultipleChoiceQuizItem>()
-                for (yearSnapshot in snapshot.children) {
-                    val year = yearSnapshot.key ?: continue
-                    for (monthSnapshot in yearSnapshot.children) {
-                        val month = monthSnapshot.key ?: continue
-                        for (daySnapshot in monthSnapshot.children) {
-                            val day = daySnapshot.key ?: continue
-                            for (quizSnapshot in daySnapshot.children) {
-                                val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
-                                val optionsJson = quizSnapshot.child("choices").getValue(String::class.java) ?: ""
-                                val options = PreprocessTexts.stringToStringArray(optionsJson) //진영이가 만든 매서드 활용
-                                if (options.size < 4) {
-                                    Log.e("Firebase", "Not enough options for question: $question")
-                                    continue
-                                }
-
-                                val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
-                                val date = "$year-$month-$day"
-                                quizList.add(MultipleChoiceQuizItem(question, options, answer, date))
-                            }
-                        }
+                val quizList = mutableListOf<QuizItem>()
+                for (dateSnapshot in snapshot.children) {   //이제 date만 비교하면 될거임.
+                    val date = dateSnapshot.key ?: continue
+                    for (quizSnapshot in dateSnapshot.children) {
+                        val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
+                        val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
+                        quizList.add(QuizItem(question, answer, date)) // 퀴즈 작성 날짜 그냥 가져다 쓰면 됨
                     }
-                }
-                if (quizList.isEmpty()) {
-                    Log.e("Firebase", "No quiz data found")
                 }
                 callback(quizList)
             }
@@ -240,6 +182,70 @@ object SingletonKotlin {
             }
         })
     }
+
+    // 사지선다 - 객관식 퀴즈 불러오는 매서드
+    data class MultipleChoiceQuizItem(val question: String, val choices: List<String>, val answer: String, val date: String)
+    fun loadMultipleChoiceQuizData(callback: (List<MultipleChoiceQuizItem>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val quizRef = database.child("mcq_quiz").child(uid)
+
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val quizList = mutableListOf<MultipleChoiceQuizItem>()
+                for (dateSnapshot in snapshot.children) {
+                    val date = dateSnapshot.key ?: continue
+                    for (quizSnapshot in dateSnapshot.children) {
+                        val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
+                        val optionsJson = quizSnapshot.child("choices").getValue(String::class.java) ?: ""
+                        val options = PreprocessTexts.stringToStringArray(optionsJson)
+                        if (options.size < 4) {
+                            Log.e("Firebase", "Not enough options for question: $question")
+                            continue
+                        }
+                        val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
+                        // data 도 이제 " $year - $month-$day" 형식 불필요함.
+                        quizList.add(MultipleChoiceQuizItem(question, options, answer, date)) //그냥 가져다 쓰면 됨
+                    }
+                }
+                callback(quizList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
+            }
+        })
+    }
+
+    // 주관식 퀴즈 불러오는 매서드
+    data class BlankQuizItem(val question: String, val answer: String, val date: String)
+    fun loadBlankQuizData(callback: (List<BlankQuizItem>) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val quizRef = database.child("blank_quiz").child(uid)
+
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val quizList = mutableListOf<BlankQuizItem>()
+                for (dateSnapshot in snapshot.children) {
+                    val date = dateSnapshot.key ?: continue
+                    for (quizSnapshot in dateSnapshot.children) {
+                        val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
+                        val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
+                        quizList.add(BlankQuizItem(question, answer, date)) //그냥 가져다 쓰면 됨
+                    }
+                }
+                callback(quizList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
+            }
+        })
+    }
+
 
     // 게임 결과를 저장하는 메서드
     fun saveGameResult(gameType: String, correctAnswers: Int, totalTime: Long) {

@@ -2,6 +2,7 @@ package com.example.testfolder
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -34,7 +35,9 @@ class Diary_Check : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     diaryContainer.removeAllViews()
                     for (diarySnapshot in snapshot.children) {
-                        val date = diarySnapshot.child("date").getValue(String::class.java)
+                        var date = diarySnapshot.key
+                        date = date?.replace(" ", "/")
+                        Log.d("DIARY_LIST", "date: $date")
                         val content = diarySnapshot.child("content").getValue(String::class.java)
                         val diaryId = diarySnapshot.key
                         if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
