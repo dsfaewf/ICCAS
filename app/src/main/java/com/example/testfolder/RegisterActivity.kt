@@ -9,7 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -20,7 +23,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         auth = FirebaseAuth.getInstance()
-        val inputId = findViewById<TextInputEditText>(R.id.input_ID) //ID 필드 추가
+        val inputId = findViewById<TextInputEditText>(R.id.input_ID) // ID 필드 추가
         val inputEmail = findViewById<TextInputEditText>(R.id.input_email)
         val inputPassword = findViewById<TextInputEditText>(R.id.input_pw)
         val inputPasswordConfirm = findViewById<TextInputEditText>(R.id.input_pw_confirm)
@@ -28,61 +31,85 @@ class RegisterActivity : AppCompatActivity() {
         val textViewError = findViewById<TextView>(R.id.textview_error)
 
         registerBtn.setOnClickListener {
-            val userId = inputId.text.toString().trim() //ID 추가
+            val userId = inputId.text.toString().trim() // ID 추가
             val email = inputEmail.text.toString().trim()
             val password = inputPassword.text.toString().trim()
             val passwordConfirm = inputPasswordConfirm.text.toString().trim()
-
+//아이디 중복 기능을 추가했음 // 로그인은 아이디로 하는 것을 구현해놓고 이걸 추가 안했었음...
             if (userId.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && passwordConfirm.isNotEmpty()) {
                 if (password == passwordConfirm) {
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this) { task ->
-                            if (task.isSuccessful) {
-                                val firebaseUserId = auth.currentUser?.uid
-                                if (firebaseUserId != null) {
-                                    addUserToDatabase(firebaseUserId, userId, email) //파라미터 하나 늘어남
-                                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this, LoginActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
-                                } else {
-                                    val error_msg = "Failed: Cannot bring User ID."
-                                    textViewError.text = error_msg
-                                    textViewError.visibility = TextView.VISIBLE
-//                                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
-                                }
+                    // 사용자 아이디 중복 확인
+                    val userRef = FirebaseDatabase.getInstance().reference.child("users")
+                    userRef.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(object :
+                        ValueEventListener {
+                      override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.exists()) {    //아이디 중복을 일단 확인하고
+                                val error_msg = "This ID is already taken."
+                                textViewError.text = error_msg
+                                textViewError.visibility = TextView.VISIBLE
                             } else {
-                                try {
-                                    throw task.exception!!
-                                } catch (e: FirebaseAuthUserCollisionException) {
-                                    val error_msg = "The email already exists."
-                                    textViewError.text = error_msg
-                                    textViewError.visibility = TextView.VISIBLE
-//                                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
-                                } catch (e: Exception) {
-                                    val error_msg = "Failed: ${task.exception?.message}"
-                                    textViewError.text = error_msg
-                                    textViewError.visibility = TextView.VISIBLE
-//                                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
-                                }
+                                // 아이디가 중복되지 않으면 회원가입 진행
+                                auth.createUserWithEmailAndPassword(email, password)
+                                    .addOnCompleteListener(this@RegisterActivity) { task ->
+                                        if (task.isSuccessful) {
+                                            val firebaseUserId = auth.currentUser?.uid
+                                            if (firebaseUserId != null) {
+                                                auth.currentUser?.sendEmailVerification()
+                                                    ?.addOnCompleteListener { verificationTask ->
+                                                        if (verificationTask.isSuccessful) {
+                                                            addUserToDatabase(firebaseUserId, userId, email) // 파라미터 하나 늘어남
+                                                            Toast.makeText(this@RegisterActivity, "Registration successful. Please check your email for verification.", Toast.LENGTH_SHORT).show()
+                                                            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                                                            startActivity(intent)
+                                                            finish()
+                                                        } else {
+                                                            val error_msg = "Failed to send verification email: ${verificationTask.exception?.message}"
+                                                            textViewError.text = error_msg
+                                                            textViewError.visibility = TextView.VISIBLE
+                                                        }
+                                                    }
+                                            } else {
+                                                val error_msg = "Failed: Cannot bring User ID."
+                                                textViewError.text = error_msg
+                                                textViewError.visibility = TextView.VISIBLE
+                                            }
+                                        } else {
+                                            try {
+                                                throw task.exception!!
+                                            } catch (e: FirebaseAuthUserCollisionException) {
+                                                val error_msg = "The email already exists."
+                                                textViewError.text = error_msg
+                                                textViewError.visibility = TextView.VISIBLE
+                                            } catch (e: Exception) {
+                                                val error_msg = "Failed: ${task.exception?.message}"
+                                                textViewError.text = error_msg
+                                                textViewError.visibility = TextView.VISIBLE
+                                            }
+                                        }
+                                    }
                             }
                         }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            val error_msg = "Database ERROR: ${databaseError.message}"
+                            textViewError.text = error_msg
+                            textViewError.visibility = TextView.VISIBLE
+                        }
+                    })
                 } else {
                     val error_msg = "Passwords do not match."
                     textViewError.text = error_msg
                     textViewError.visibility = TextView.VISIBLE
-//                    Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
                 }
             } else {
                 val error_msg = "All fields are required."
                 textViewError.text = error_msg
                 textViewError.visibility = TextView.VISIBLE
-//                Toast.makeText(this, error_msg, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun addUserToDatabase(firebaseUserId: String, userId: String, email: String) { //파라미터 늘어남
+    private fun addUserToDatabase(firebaseUserId: String, userId: String, email: String) { // 파라미터 늘어남
         val userRef = FirebaseDatabase.getInstance().reference.child("users").child(firebaseUserId)
         val userData = hashMapOf(
             "userId" to userId,
