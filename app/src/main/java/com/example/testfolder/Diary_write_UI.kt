@@ -2,6 +2,7 @@ package com.example.testfolder
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -38,6 +39,9 @@ class Diary_write_UI : AppCompatActivity() {
     private var numOfQuestions: Int = 0
     private var numOfTokens: Int = 0
     private lateinit var diaryContent: String
+    private lateinit var mediasave: MediaPlayer   //효과음 재생용 변수
+    private lateinit var mediafail: MediaPlayer   //효과음 재생용 변수
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +67,8 @@ class Diary_write_UI : AppCompatActivity() {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
-
+        mediasave = MediaPlayer.create(this, R.raw.book_close)
+        mediafail = MediaPlayer.create(this, R.raw.ding)
         // Initialize date
         dateTextView.text = getCurrentDate()
 
@@ -107,10 +112,12 @@ class Diary_write_UI : AppCompatActivity() {
                 // If the diary is too short, don't run
                 if (numOfQuestions < 1){
                     errorTextView.text = "The diary is too short"
+                    mediafail.start()
                     errorTextView.visibility = TextView.VISIBLE
                 }
                 // Run only if the diary is long enough
                 else {
+                    mediasave.start() //효과음 재생 추가 - 우석
                     errorTextView.visibility = TextView.INVISIBLE
                     diaryWriteViewModel.onButtonClick()
                 }

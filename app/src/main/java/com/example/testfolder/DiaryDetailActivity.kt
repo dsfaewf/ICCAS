@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -26,6 +27,9 @@ class DiaryDetailActivity : AppCompatActivity() {
     private var lastClickTime: Long = 0
     private val interval: Long = 1000
     private lateinit var newContent: String
+    private lateinit var mediaEandS: MediaPlayer   //효과음 재생용 변수
+    private lateinit var mediafail: MediaPlayer   //효과음 재생용 변수
+    private lateinit var mediadelete: MediaPlayer   //효과음 재생용 변수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +39,9 @@ class DiaryDetailActivity : AppCompatActivity() {
         val firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
         val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)
         val myOpenAI = OpenAI(this, apiKeyViewModel, firebaseViewModel)
-
+        mediaEandS = MediaPlayer.create(this, R.raw.paper_flip)
+        mediafail = MediaPlayer.create(this,R.raw.ding)
+        mediadelete = MediaPlayer.create(this,R.raw.sad_meow)
         // Once a DB table whose date is the same as selected date is delete
         // Save new data from ChatGPT
         firebaseViewModel.OX_table_deleted.observe(this) {
@@ -84,11 +90,13 @@ class DiaryDetailActivity : AppCompatActivity() {
                 this.numOfQuestions = numOfTokens/5
                 // If the diary is too short, don't run
                 if (numOfQuestions < 1){
+                    mediafail.start()
                     errorTextView.text = "The diary is too short"
                     errorTextView.visibility = TextView.VISIBLE
                 }
                 // Run only if the diary is long enough
                 else {
+                    mediaEandS.start()
                     errorTextView.visibility = TextView.INVISIBLE
                     // Update diary
                     updateDiaryEntry()
@@ -113,6 +121,7 @@ class DiaryDetailActivity : AppCompatActivity() {
 
         deleteButton.setOnClickListener {
             if (diaryId != null) {
+                mediadelete.start()
                 deleteDiaryEntry()
                 deleteQuizData("ox_quiz")
                 deleteQuizData("mcq_quiz")
@@ -154,7 +163,7 @@ class DiaryDetailActivity : AppCompatActivity() {
 
             diaryRef.removeValue() //db에서도 삭제 가능하도록!
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Diary has been deleted.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Diary has been deleted. (ﾐ ᵕ̣̣̣̣̣̣ ﻌ ᵕ̣̣̣̣̣̣ ﾐ)", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { exception ->
@@ -172,7 +181,7 @@ class DiaryDetailActivity : AppCompatActivity() {
 
             oxQuizRef.removeValue() //db에서도 삭제 가능하도록!
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Diary has been deleted.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Diary has been deleted. (ﾐ ᵕ̣̣̣̣̣̣ ﻌ ᵕ̣̣̣̣̣̣ ﾐ)", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { exception ->
