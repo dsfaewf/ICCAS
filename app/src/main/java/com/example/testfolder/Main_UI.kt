@@ -80,7 +80,7 @@ class Main_UI : AppCompatActivity() {
     private fun showSurveyDialog() {
         AlertDialog.Builder(this)
             .setTitle("Request for a survey")
-            .setMessage("Oh? It's your first time using our app. Please take a brief survey!")
+            .setMessage("Oh? You haven't filled out the survey yet! Please take a brief survey!") //수정
             .setPositiveButton("Go to Survey") { dialog, which ->
                 val intent = Intent(this, SurveyActivity::class.java)
                 startActivity(intent)
