@@ -1,6 +1,6 @@
 package com.example.testfolder;
 
-import android.content.Intent; // 추가된 import 구문
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -25,14 +25,14 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private Integer[] comNumber = new Integer[3];
-    private Set<Integer> userNumbers = new HashSet<>(); // 사용자 입력 숫자 중복 체크용 Set
+    private Set<Integer> userNumbers = new HashSet<>(); // Set for checking duplicate user input numbers
 
     private int lifeCount = 10;
     private int strike = 0;
     private int ball = 0;
 
-    private static final int COIN_REWARD = 10; // 코인 보상
-    private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
+    private static final int COIN_REWARD = 10;
+    private static final int MAX_CLEARS_PER_DAY = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +56,14 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
 
             startBtn.setOnClickListener(view -> {
                 randomNumber();
-                toastMessage("게임 시작");
+                toastMessage("Game started");
                 viewMode("start");
             });
 
             answerBtn.setOnClickListener(view -> numberCheck());
 
             resetBtn.setOnClickListener(view -> {
-                toastMessage("초기화");
+                toastMessage("Reset");
                 viewMode("end");
                 reset();
             });
@@ -72,9 +72,9 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             Log.e("ServeGameBaseballActivity", "Error during onCreate", e);
         }
 
-        // 사용자 코인 및 초기화 날짜 불러오기
+        // Load user coins and daily reset check
         SingletonJava.getInstance().checkAndResetDailyClears(currentUser, coinText, this);
-        // 사용자 코인 불러오기
+        // Load user coins
         SingletonJava.getInstance().loadUserCoins(coinText);
     }
 
@@ -84,7 +84,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             Random random = new Random();
 
             while (set.size() < 3) {
-                int randomValue = random.nextInt(9) + 1; // 1~9 범위로 변경
+                int randomValue = random.nextInt(9) + 1; // Range changed to 1~9
                 set.add(randomValue);
             }
 
@@ -100,7 +100,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             String inputNumber = requestText.getText().toString();
 
             if (inputNumber.length() == 3 && !hasDuplicate(inputNumber)) {
-                userNumbers.clear(); // 사용자 입력 숫자 초기화
+                userNumbers.clear(); // Clear user input numbers
 
                 userNumbers.add(Integer.parseInt(inputNumber.substring(0, 1)));
                 userNumbers.add(Integer.parseInt(inputNumber.substring(1, 2)));
@@ -117,33 +117,33 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                     }
                 }
 
-                lifeCount--; // 기회 차감
+                lifeCount--; // Decrease life count
 
                 if (strike == 3) {
-                    toastMessage("성공");
-                    responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
-                    // 코인 보상
+                    toastMessage("Success");
+                    responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    // Reward coins
                     SingletonJava.getInstance().checkAndRewardCoins(currentUser, MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
-                    // 게임 종료 후 이동
+                    // Navigate to game list after game ends
                     navigateToGameList();
                 } else if (lifeCount == 0) {
-                    toastMessage("실패");
-                    responseText.setText("정답: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
-                    // 게임 종료 후 이동
+                    toastMessage("Failure");
+                    responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    // Navigate to game list after game ends
                     navigateToGameList();
                 } else {
                     responseText.setText("Strike: " + strike + ", Ball: " + ball);
                     showResult(inputNumber);
                 }
 
-                lifeCountText.setText("기회: " + lifeCount + " 번");
+                lifeCountText.setText("Life: " + lifeCount);
                 requestText.setText("");
                 strike = 0;
                 ball = 0;
             } else if (inputNumber.length() != 3) {
-                toastMessage("숫자 3개를 입력해주세요.");
+                toastMessage("Please enter 3 numbers.");
             } else {
-                toastMessage("같은 숫자는 중복해서 입력할 수 없습니다.");
+                toastMessage("You cannot enter duplicate numbers.");
             }
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during numberCheck", e);
@@ -172,7 +172,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private void reset() {
         try {
             lifeCount = 10;
-            lifeCountText.setText("기회: " + lifeCount + " 번");
+            lifeCountText.setText("Life: " + lifeCount);
             responseText.setText("");
             resultText.setText("");
         } catch (Exception e) {
@@ -214,10 +214,9 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    // 추가된 메서드: 게임 종료 후 이동
     private void navigateToGameList() {
         Intent intent = new Intent(this, gamelistActivity.class);
         startActivity(intent);
-        finish(); // 현재 Activity 종료
+        finish(); // Finish current Activity
     }
 }

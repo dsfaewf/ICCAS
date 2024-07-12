@@ -128,14 +128,14 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
                         //입력값을 최대값에 넣는다.
                         max = inputNumber;
 
-                        responseText.setText(count + " 번째 " + min + " ~ " + max);
+                        responseText.setText(count + " attempt : " + min + " ~ " + max);
                     }
                     //입력값이 랜덤수보다 작으면
                     else if (inputNumber < randomNumber) {
                         //입력값을 최초값에 넣는다.
                         min = inputNumber;
 
-                        responseText.setText(count + " 번째 " + min + " ~ " + max);
+                        responseText.setText(count + " attempt : " + min + " ~ " + max);
                     }
                     //입력값이랑 랜덤수가 같다면 ( 정답 )
                     else if (inputNumber == randomNumber) {
