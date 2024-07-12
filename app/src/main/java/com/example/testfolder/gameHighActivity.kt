@@ -69,7 +69,10 @@ class gameHighActivity : AppCompatActivity() {
     private fun displayQuestion(questionTextView: TextView, answerEditText: EditText) {
         if (currentQuestionIndex < quizList.size) {
             val quizItem = quizList[currentQuestionIndex]
-            questionTextView.text = "Date: ${quizItem.date}\n\n${quizItem.question}"
+            val answerLength = quizItem.answer.length
+            val question = quizItem.question.replace("<blank>", "_".repeat(answerLength))
+
+            questionTextView.text = "Date: ${quizItem.date}\n\n${question}"
             answerEditText.text.clear()
         }
     }
