@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class Main_UI : AppCompatActivity() {
+class Main_UI : BaseActivity()  {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -20,7 +20,7 @@ class Main_UI : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        applyFontSize() // 폰트 크기 적용
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)

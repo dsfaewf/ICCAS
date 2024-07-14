@@ -18,7 +18,7 @@ import com.example.testfolder.viewmodels.FirebaseViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class DiaryDetailActivity : AppCompatActivity() {
+class DiaryDetailActivity : BaseActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var newDate: String
@@ -34,7 +34,7 @@ class DiaryDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_detail)
-
+        applyFontSize() // 폰트 크기 적용
         val apiKeyViewModel = ViewModelProvider(this).get(ApiKeyViewModel::class.java)
         val firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
         val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)

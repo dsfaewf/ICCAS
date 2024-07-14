@@ -29,7 +29,7 @@ import com.example.testfolder.viewmodels.FirebaseViewModel
 import io.ktor.util.date.toDate
 import java.text.SimpleDateFormat
 
-class Diary_write_UI : AppCompatActivity() {
+class Diary_write_UI : BaseActivity() {
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
     val currentUser = auth.currentUser
@@ -49,7 +49,7 @@ class Diary_write_UI : AppCompatActivity() {
         val apiKeyViewModel = ViewModelProvider(this).get(ApiKeyViewModel::class.java)
         val firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
         val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)
-
+        applyFontSize() // 폰트 크기 적용
         setContentView(R.layout.activity_write_diary)
 
         val saveButton = findViewById<Button>(R.id.my_button6)
