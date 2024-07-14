@@ -190,5 +190,10 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
             }
         }
     }
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, Main_UI::class.java)
+        startActivity(intent)
+        finish()
+    }
 }

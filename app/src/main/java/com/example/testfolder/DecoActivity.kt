@@ -90,4 +90,10 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
             }
             .show()
     }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, CatRoomActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }
