@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -127,5 +128,11 @@ class GameRecordActivity : AppCompatActivity() {
             </body>
             </html>
         """.trimIndent()
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, Main_UI::class.java)
+        startActivity(intent)
+        finish()
     }
 }

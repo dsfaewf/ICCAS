@@ -31,6 +31,7 @@ class Main_UI : AppCompatActivity() {
         val diaryButton = findViewById<View>(R.id.my_button2) as Button
         val catRoomButton = findViewById<View>(R.id.my_button3) as Button
         val gameButton = findViewById<Button>(R.id.btn_game)
+        val gameRecodeBtn = findViewById<View>(R.id.my_button5) as Button
 
         imageButton1.setOnClickListener {
             val intent = Intent(applicationContext, Setting_UI::class.java)
@@ -56,6 +57,11 @@ class Main_UI : AppCompatActivity() {
 
         catRoomButton.setOnClickListener {
             val intent = Intent(this, CatRoomActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        gameRecodeBtn.setOnClickListener {
+            val intent = Intent(applicationContext, GameRecordActivity::class.java)
             startActivity(intent)
             finish()
         }
