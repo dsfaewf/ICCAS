@@ -221,4 +221,10 @@ class Diary_write_UI : AppCompatActivity() {
         val specificDate = calendar.time
         return specificDate
     }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, Main_UI::class.java)
+        startActivity(intent)
+        finish()
+    }
 }

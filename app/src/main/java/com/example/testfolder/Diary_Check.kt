@@ -96,5 +96,4 @@ class Diary_Check : AppCompatActivity() {
         super.onBackPressed()
         navigateToDiaryWriteUI() // 이전 화면으로 돌아갈 때 Diary_write_UI로 이동
     }
-
 }
