@@ -1,8 +1,10 @@
 package com.example.testfolder.utils
 
 import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
-import com.example.testfolder.viewmodels.ApiKeyViewModel
+import com.example.testfolder.viewmodels.OpenAIViewModel
 import com.example.testfolder.viewmodels.FirebaseViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -24,30 +26,45 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, firebaseViewModel: FirebaseViewModel) {
+class OpenAI(lifecycleOwner: LifecycleOwner,
+             context: AppCompatActivity,
+             openAIViewModel: OpenAIViewModel,
+             firebaseViewModel: FirebaseViewModel,
+             loadingAnimation: LoadingAnimation) {
     companion object {
         const val PROB_TYPE_OX  = 0
         const val PROB_TYPE_MCQ = 1
         const val PROB_TYPE_BLANK  = 2
+        const val PROB_TYPE_HINT  = 3
+        const val NULL_STRING = "NULL"
     }
     private lateinit var apiKey: String
     private lateinit var date: String
     private lateinit var response_gpt_OX: String
     private lateinit var response_gpt_MCQ: String
     private lateinit var response_gpt_blank: String
+    private lateinit var response_gpt_hint: String
+    private lateinit var diary: String
     private var lifecycleOwner: LifecycleOwner
-    private var apiKeyViewModel: ApiKeyViewModel
+    private var context: AppCompatActivity
+    private var openAIViewModel: OpenAIViewModel
     private var firebaseViewModel: FirebaseViewModel
+    private var loadingAnimation: LoadingAnimation
     val model = "gpt-3.5-turbo-0125"
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
     val currentUser = auth.currentUser
     val uid = currentUser?.uid
+    var savedOX    = false
+    var savedMCQ   = false
+    var savedBlank = false
 
     init {
         this.lifecycleOwner = lifecycleOwner
-        this.apiKeyViewModel = apiKeyViewModel
+        this.context = context
+        this.openAIViewModel = openAIViewModel
         this.firebaseViewModel = firebaseViewModel
+        this.loadingAnimation = loadingAnimation
     }
 
     fun updateDate(date: String) {
@@ -55,14 +72,18 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
     }
 
     fun fetchApiKey() {
-        getOpenaiApiKey().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                this.apiKey = task.result
-                apiKeyViewModel.setApiKey(this.apiKey)
-                // Use the API key
-                Log.d("API_KEY", "Received API Key successfully")
-            } else {
-                Log.e("API_KEY_ERROR", "Error fetching API key", task.exception)
+        if (this::apiKey.isInitialized && apiKey.isNotEmpty()) {
+            openAIViewModel.setApiKey(this.apiKey)
+        } else {
+            getOpenaiApiKey().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    this.apiKey = task.result
+                    openAIViewModel.setApiKey(this.apiKey)
+                    // Use the API key
+                    Log.d("API_KEY", "Received API Key successfully")
+                } else {
+                    Log.e("API_KEY_ERROR", "Error fetching API key", task.exception)
+                }
             }
         }
     }
@@ -91,9 +112,19 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
         val prompt_OX = get_prompt_OX_quiz(diary, numOfQuestions)
         val prompt_MCQ = get_prompt_MCQ_quiz(diary, numOfQuestions)
         val prompt_blank = get_prompt_blank_quiz(diary, numOfQuestions/2)
-        get_response_and_save(prompt_OX, PROB_TYPE_OX)
-        get_response_and_save(prompt_MCQ, PROB_TYPE_MCQ)
-        get_response_and_save(prompt_blank, PROB_TYPE_BLANK)
+        this.diary = diary
+        get_response(prompt_OX, PROB_TYPE_OX)
+        get_response(prompt_MCQ, PROB_TYPE_MCQ)
+        get_response(prompt_blank, PROB_TYPE_BLANK)
+    }
+
+    fun generate_hint() {
+        val prompt_hint = get_prompt_for_hint()
+        get_response(prompt_hint, PROB_TYPE_HINT,
+            sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets" +
+                    "\nDictionary format: {\"hint\": \"~\"}"
+        )
+//        get_response_and_save(prompt_hint, PROB_TYPE_HINT)
     }
 
     private fun get_prompt_OX_quiz(diary: String, numOfQuestions: Int): String {
@@ -121,14 +152,32 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                 "\nExample answer: " +
                 "{\"question\": \"I had <blank> for lunch.\", " +
                 "\"answer\": \"pizza\"}" +
-                "Don't generate time related quiz. Each question must have only one <blank> which has to match one word." +
-                "Each answer should be separated by \"\\n\", and don't add any introduction to your response."
+                "\nEach question must have only one <blank> that has to match one word." +
+                "\nEach question must be one sentence." +
+                "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
     }
 
-    private fun get_response_and_save(prompt: String, probType: Int) {
-        // Using coroutines to run this block in backgroud thread
-        CoroutineScope(Dispatchers.Main).launch {
+    private fun get_prompt_for_hint(): String {
+//        val prompt_hint = "Generate a hint for each question by referring to the following example." +
+//                "\nExample: {\"question\": \"I had <blank> for lunch\", \"answer\": \"pizza\", \"hint\": \"It is an Italian food.\"}" +
+//                "\nTarget Question: ${this.response_gpt_blank}" +
+//                "\nAnswer format: {\"hint\": \"\"}" +
+//                "\nEach answer should be separated by \"\\n\""
+        val prompt_hint =
+                "You're a bot generating hint for answers that should be filled in the blank. Hint should be generated based on the given diary." +
+                "\nDiary: ${this.diary}" +
+                "\nGenerate hint for each question by referring to the following example." +
+                "\nExample: {\"question\": \"I had <blank> for lunch\", \"answer\": \"pizza\", \"hint\": \"I went to an Italian restaurant\"}" +
+                "\nTarget questions: ${this.response_gpt_blank}" +
+                "\nEach answer should be separated by \"\\n\""
+        Log.d("PROMPT_HINT", prompt_hint)
+        return prompt_hint
+    }
+
+    private fun get_response(prompt: String, probType: Int, sysMsg: String = NULL_STRING) {
+        // Using coroutines to run this block in background thread
+        CoroutineScope(Dispatchers.IO).launch {
             val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
             val okHttpClient = OkHttpClient()
             val messages = JSONArray()
@@ -137,7 +186,11 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
             val json = JSONObject()
             // system message that is gonna be contained in the final json object
             systemMsg.put("role", "system")
-            systemMsg.put("content", "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets")
+            if(sysMsg == NULL_STRING) {
+                systemMsg.put("content", "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets")
+            } else {
+                systemMsg.put("content", sysMsg)
+            }
             // user message that is gonna be contained in the final json object
             userMsg.put("role", "user")
             userMsg.put("content", prompt)
@@ -185,6 +238,14 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                                 PROB_TYPE_BLANK -> {
                                     // update response
                                     response_gpt_blank = result
+                                    openAIViewModel.setGotResponseForBlankLiveData(true)
+                                    // Delete existing diary for the day first
+//                                    delete_data("blank_quiz", PROB_TYPE_BLANK)
+                                }
+
+                                PROB_TYPE_HINT -> {
+                                    // update response
+                                    response_gpt_hint = result
                                     // Delete existing diary for the day first
                                     delete_data("blank_quiz", PROB_TYPE_BLANK)
                                 }
@@ -218,6 +279,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                     PROB_TYPE_OX -> firebaseViewModel.set_OX_table_deleted(true)
                     PROB_TYPE_MCQ -> firebaseViewModel.set_MCQ_table_deleted(true)
                     PROB_TYPE_BLANK -> firebaseViewModel.set_blank_table_deleted(true)
+                    PROB_TYPE_HINT -> firebaseViewModel.set_hint_table_deleted(true)
                     else -> throw Exception("Got a wrong problem type to trigger the LiveData")
                 }
 
@@ -243,8 +305,16 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                 )
                 val dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
+                    this.savedOX = true
+                    if(savedOX && savedMCQ && savedBlank) {
+                        loadingAnimation.hideLoading()
+                        Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                        this.savedOX = false
+                        this.savedMCQ = false
+                        this.savedBlank = false
+                        firebaseViewModel.setAllQuizSaved(true)
+                    }
                     Log.i("DB", "Data saved successfully")
-//                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -268,6 +338,15 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
                 )
                 val dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {
+                    this.savedMCQ = true
+                    if(savedOX && savedMCQ && savedBlank) {
+                        loadingAnimation.hideLoading()
+                        Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                        this.savedOX = false
+                        this.savedMCQ = false
+                        this.savedBlank = false
+                        firebaseViewModel.setAllQuizSaved(true)
+                    }
                     Log.i("DB", "Data saved successfully")
 //                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
@@ -277,17 +356,49 @@ class OpenAI(lifecycleOwner: LifecycleOwner, apiKeyViewModel: ApiKeyViewModel, f
 
     fun save_blank_quiz_data() {
         if(uid != null) {
-            Log.i("GPT-BLANK", "response: " + this.response_gpt_blank)
-            val quizList = this.response_gpt_blank.split("\n")
+            Log.i("GPT-BLANK", "response: " + this.response_gpt_hint)
+            val quizList = this.response_gpt_hint.split("\n")
             quizList.forEachIndexed { index, quiz ->
                 val ref = database.reference.child("blank_quiz").child(uid).child(this.date)
                     .child(index.toString())
                 val jsonObject = JSONObject(quiz)
                 val question = jsonObject.getString("question")
                 val answer = jsonObject.getString("answer")
+                val hint = jsonObject.getString("hint")
                 val recordMap = mapOf(
                     "question" to question,
-                    "answer" to answer
+                    "answer" to answer,
+                    "hint" to hint
+                )
+                val dbTask = ref.setValue(recordMap)
+                dbTask.addOnSuccessListener {
+                    this.savedBlank = true
+                    if(savedOX && savedMCQ && savedBlank) {
+                        loadingAnimation.hideLoading()
+                        Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                        this.savedOX = false
+                        this.savedMCQ = false
+                        this.savedBlank = false
+                        firebaseViewModel.setAllQuizSaved(true)
+                    }
+                    Log.i("DB", "Data saved successfully")
+//                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    fun save_hint_data() {
+        if(uid != null) {
+            Log.i("GPT-HINT", "response: " + this.response_gpt_hint)
+            val quizList = this.response_gpt_hint.split("\n")
+            quizList.forEachIndexed { index, quiz ->
+                val ref = database.reference.child("hint_for_blank").child(uid).child(this.date)
+                    .child(index.toString())
+                val jsonObject = JSONObject(quiz)
+                val hint = jsonObject.getString("hint")
+                val recordMap = mapOf(
+                    "hint" to hint,
                 )
                 val dbTask = ref.setValue(recordMap)
                 dbTask.addOnSuccessListener {

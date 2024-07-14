@@ -5,14 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.testfolder.utils.LoadingAnimation
 import com.example.testfolder.utils.OpenAI
 import com.example.testfolder.utils.PreprocessTexts
-import com.example.testfolder.viewmodels.ApiKeyViewModel
+import com.example.testfolder.viewmodels.OpenAIViewModel
 import com.example.testfolder.viewmodels.DiaryWriteViewModel
 import com.example.testfolder.viewmodels.FirebaseViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -26,6 +27,10 @@ class DiaryDetailActivity : BaseActivity() {
     private var numOfTokens: Int = 0
     private var lastClickTime: Long = 0
     private val interval: Long = 1000
+    var deletedDiary = false
+    var deletedOX = false
+    var deletedMCQ = false
+    var deletedBlank = false
     private lateinit var newContent: String
     private lateinit var mediaEandS: MediaPlayer   //효과음 재생용 변수
     private lateinit var mediafail: MediaPlayer   //효과음 재생용 변수
@@ -35,32 +40,52 @@ class DiaryDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_detail)
         applyFontSize() // 폰트 크기 적용
-        val apiKeyViewModel = ViewModelProvider(this).get(ApiKeyViewModel::class.java)
+        val loadingBackgroundLayout = findViewById<ConstraintLayout>(R.id.loading_background_layout)
+        val loadingImage = findViewById<ImageView>(R.id.loading_image)
+        val loadingText = findViewById<TextView>(R.id.loading_text)
+        val loadingTextDetail = findViewById<TextView>(R.id.loading_text_detail)
+        val loadingTextDetail2 = findViewById<TextView>(R.id.loading_text_detail2)
+        val openAIViewModel = ViewModelProvider(this).get(OpenAIViewModel::class.java)
         val firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
         val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)
-        val myOpenAI = OpenAI(this, apiKeyViewModel, firebaseViewModel)
+        val loadingAnimation = LoadingAnimation(this,
+            loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Generating Quiz")
+        val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation)
         mediaEandS = MediaPlayer.create(this, R.raw.paper_flip)
         mediafail = MediaPlayer.create(this,R.raw.ding)
         mediadelete = MediaPlayer.create(this,R.raw.sad_meow)
+
+        // Attach observers
         // Once a DB table whose date is the same as selected date is delete
         // Save new data from ChatGPT
         firebaseViewModel.OX_table_deleted.observe(this) {
-            Log.d("DB", "Now save the new data")
             myOpenAI.save_OX_data()
+            firebaseViewModel.OX_table_deleted.removeObservers(this)
         }
 
         // Once a DB table whose date is the same as selected date is delete
         // Save new data from ChatGPT
         firebaseViewModel.MCQ_table_deleted.observe(this) {
-            Log.d("DB", "Now save the new data")
             myOpenAI.save_MCQ_data()
+            firebaseViewModel.MCQ_table_deleted.removeObservers(this)
+        }
+
+        openAIViewModel.gotResponseForBlankLiveData.observe(this) {
+            myOpenAI.generate_hint()
+            openAIViewModel.gotResponseForBlankLiveData.removeObservers(this)
         }
 
         // Once a DB table whose date is the same as selected date is delete
         // Save new data from ChatGPT
         firebaseViewModel.blank_table_deleted.observe(this) {
-            Log.d("DB", "Now save the new data")
             myOpenAI.save_blank_quiz_data()
+            firebaseViewModel.blank_table_deleted.removeObservers(this)
+        }
+
+        firebaseViewModel.allQuizSaved.observe(this) {
+//            Toast.makeText(this, "Diary has been modified.", Toast.LENGTH_SHORT).show()
+            finish()
+            firebaseViewModel.allQuizSaved.removeObservers(this)
         }
 
         auth = FirebaseAuth.getInstance()
@@ -107,16 +132,19 @@ class DiaryDetailActivity : BaseActivity() {
         }
 
         diaryWriteViewModel.buttonClickEvent.observe(this){
+            loadingAnimation.showLoading()
             // Update date, a member of OpenAI's instance
             myOpenAI.updateDate(dateTextView.text.toString())
             // Observe the LiveData
             // Once the api key is fetched, generate new 3 types of quiz
-            apiKeyViewModel.apiKey.observe(this) {
+            openAIViewModel.apiKey.observe(this) {
                 myOpenAI.generate_OX_quiz_and_save(
                     this.newContent,
                     this.numOfQuestions)
+                openAIViewModel.apiKey.removeObservers(this)
             }
             myOpenAI.fetchApiKey()
+            diaryWriteViewModel.buttonClickEvent.removeObservers(this)
         }
 
         deleteButton.setOnClickListener {
@@ -144,8 +172,7 @@ class DiaryDetailActivity : BaseActivity() {
 
             diaryRef.setValue(diaryEntryMap)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Diary has been modified.", Toast.LENGTH_SHORT).show()
-                    finish()
+                    Log.d("DB", "Diary has been modified.")
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, "Failed to modify diary: ${exception.message}", Toast.LENGTH_SHORT).show()
@@ -163,8 +190,11 @@ class DiaryDetailActivity : BaseActivity() {
 
             diaryRef.removeValue() //db에서도 삭제 가능하도록!
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Diary has been deleted. (ﾐ ᵕ̣̣̣̣̣̣ ﻌ ᵕ̣̣̣̣̣̣ ﾐ)", Toast.LENGTH_SHORT).show()
-                    finish()
+                    this.deletedDiary = true
+                    if(deletedDiary && deletedOX && deletedMCQ && deletedBlank) {
+                        Toast.makeText(this, "Diary has been deleted. (ﾐ ᵕ̣̣̣̣̣̣ ﻌ ᵕ̣̣̣̣̣̣ ﾐ)", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, "Failed to delete diary: ${exception.message}", Toast.LENGTH_SHORT).show()
@@ -181,8 +211,16 @@ class DiaryDetailActivity : BaseActivity() {
 
             oxQuizRef.removeValue() //db에서도 삭제 가능하도록!
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Diary has been deleted. (ﾐ ᵕ̣̣̣̣̣̣ ﻌ ᵕ̣̣̣̣̣̣ ﾐ)", Toast.LENGTH_SHORT).show()
-                    finish()
+                    when(tableName) {
+                        "ox_quiz" -> this.deletedOX = true
+                        "mcq_quiz" -> this.deletedMCQ = true
+                        "blank_quiz" -> this.deletedBlank = true
+                        else -> throw Exception("Got a wrong DB table name to delete.")
+                    }
+                    if(deletedDiary && deletedOX && deletedMCQ && deletedBlank) {
+                        Toast.makeText(this, "Diary has been deleted. (ﾐ ᵕ̣̣̣̣̣̣ ﻌ ᵕ̣̣̣̣̣̣ ﾐ)", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this, "Failed to delete diary: ${exception.message}", Toast.LENGTH_SHORT).show()
