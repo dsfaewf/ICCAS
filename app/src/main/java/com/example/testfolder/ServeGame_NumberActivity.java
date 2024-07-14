@@ -171,9 +171,11 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     // 게임 종료 시 이동을 위한 메서드 추가
     private void navigateToGameList() {
         Intent intent = new Intent(this, gamelistActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish(); // 현재 Activity 종료
     }
+
 
     // 버튼 클릭 이벤트
     @Override

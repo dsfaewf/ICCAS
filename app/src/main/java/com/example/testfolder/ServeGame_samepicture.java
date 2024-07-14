@@ -2,6 +2,7 @@ package com.example.testfolder;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.Intent; // 추가된 import 구문
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -339,15 +340,19 @@ public class ServeGame_samepicture extends AppCompatActivity {
     private void endGame() {
         gameEnded = true;
         Toast.makeText(this, "Time's up! Game Over.", Toast.LENGTH_LONG).show();
-        // 게임 종료에 필요한 추가적인 처리를 여기에 추가할 수 있습니다.
+        navigateToGameList(); // 게임 종료 시 게임 목록으로 이동
+    }
 
-        // 이전 화면으로 돌아가기
-        onBackPressed();
+    private void navigateToGameList() {
+        Intent intent = new Intent(this, gamelistActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish(); // 현재 액티비티 종료
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        // 이전 화면으로 돌아갈 때 추가적인 작업이 필요하다면 여기에 추가할 수 있습니다.
+        navigateToGameList(); // 이전 화면으로 돌아갈 때 게임 목록으로 이동
     }
 }
