@@ -21,7 +21,10 @@ class gameMidActivity : AppCompatActivity() {
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var startTime = 0L
+    private var totalTime = 0L
     private val totalRounds = 5
+    private val roundTime = 60 * 1000 // 60초
+    private var progressBarThread: Thread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +58,7 @@ class gameMidActivity : AppCompatActivity() {
                 quizList = quizData.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
                 startTime = System.currentTimeMillis()
                 displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
+                startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
             } else {
                 questionTextView.text = "No quiz available."
             }
@@ -64,8 +68,6 @@ class gameMidActivity : AppCompatActivity() {
         btn2.setOnClickListener { handleAnswer(btn2.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
         btn3.setOnClickListener { handleAnswer(btn3.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
         btn4.setOnClickListener { handleAnswer(btn4.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
-
-        startProgressBar(questionTextView)
     }
 
     private fun displayQuestion(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
@@ -80,13 +82,14 @@ class gameMidActivity : AppCompatActivity() {
             } else {
                 questionTextView.text = "Error: Not enough options available for this question."
             }
+        } else {
+            endQuiz(questionTextView)
         }
     }
 
     private fun handleAnswer(userAnswer: String, questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
         if (currentQuestionIndex < quizList.size) {
             val quizItem = quizList[currentQuestionIndex]
-            // 정답 판별을 위해 Log로 확인
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
             if (userAnswer == quizItem.answer) {
                 correctAnswers++
@@ -95,36 +98,63 @@ class gameMidActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
             }
+            totalTime += System.currentTimeMillis() - startTime
             currentQuestionIndex++
             if (currentQuestionIndex < quizList.size) {
+                startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
                 displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
+                startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
             } else {
-                val totalTime = System.currentTimeMillis() - startTime
-                SingletonKotlin.saveGameResult("4 Choice", correctAnswers, totalTime)
-                questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTime / 1000} seconds\nReturning to game selection screen in 5 seconds..."
-                handler.postDelayed({
-                    finish()
-                }, 5000)
+                endQuiz(questionTextView)
             }
         }
     }
 
-    private fun startProgressBar(questionTextView: TextView) {
-        Thread {
-            while (progressStatus < 300) {  // 0.2 * 300 = 60 seconds
+    private fun endQuiz(questionTextView: TextView) {
+        val totalTimeSeconds = totalTime / 1000 // 초 단위로 변환
+        SingletonKotlin.saveGameResult("4 Choice", correctAnswers, totalTimeSeconds)
+        questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTimeSeconds} seconds\nReturning to game selection screen in 5 seconds..."
+        handler.postDelayed({
+            finish()
+        }, 5000)
+    }
+
+    private fun startProgressBar(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
+        progressStatus = 0
+        progressBar.progress = progressStatus
+        progressBarThread?.interrupt()
+        progressBarThread = Thread {
+            val startRoundTime = System.currentTimeMillis()
+            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {  // 0.2 * 300 = 60초
                 progressStatus += 1
                 handler.post {
                     progressBar.progress = progressStatus
                 }
                 try {
-                    Thread.sleep(200)   // 0.2 seconds delay
+                    Thread.sleep(200)   // 0.2초 대기
                 } catch (e: InterruptedException) {
-                    e.printStackTrace()
+                    return@Thread
                 }
             }
             handler.post {
-                questionTextView.text = "Time's up!"
+                if (currentQuestionIndex < quizList.size) {
+                    questionTextView.text = "Time's up!"
+                    totalTime += roundTime
+                    currentQuestionIndex++
+                    if (currentQuestionIndex < quizList.size) {
+                        startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
+                        displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
+                        startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
+                    } else {
+                        endQuiz(questionTextView)
+                    }
+                }
             }
-        }.start()
+        }.apply { start() }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        progressBarThread?.interrupt()
     }
 }

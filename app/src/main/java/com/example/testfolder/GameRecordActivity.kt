@@ -4,44 +4,69 @@ import android.os.Bundle
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
 class GameRecordActivity : AppCompatActivity() {
+    private lateinit var webView: WebView
+    private var currentViewMode = "daily"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_record)
 
-        val webView = findViewById<WebView>(R.id.webView)
+        webView = findViewById(R.id.webView)
+        val dailyButton = findViewById<Button>(R.id.dailyButton)
+        val monthlyButton = findViewById<Button>(R.id.monthlyButton)
+
         webView.webViewClient = WebViewClient()
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
 
         SingletonKotlin.loadGameResults { results ->
-            val htmlContent = generateHtmlContent(results)
-            webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
+            renderGraph(results)
         }
+
+        dailyButton.setOnClickListener {
+            currentViewMode = "daily"
+            SingletonKotlin.loadGameResults { results ->
+                renderGraph(results)
+            }
+        }
+
+        monthlyButton.setOnClickListener {
+            currentViewMode = "monthly"
+            SingletonKotlin.loadGameResults { results ->
+                renderGraph(results)
+            }
+        }
+    }
+
+    private fun renderGraph(results: List<Map<String, Any>>) {
+        val htmlContent = generateHtmlContent(results)
+        webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
     }
 
     private fun generateHtmlContent(results: List<Map<String, Any>>): String {
         val gameTypeGroups = results.groupBy { it["gameType"] as String }
 
         val charts = gameTypeGroups.map { (gameType, gameResults) ->
+            val dateFormat = if (currentViewMode == "daily") "dd-MM-yyyy" else "MM-yyyy"
             val dailyResults = gameResults.groupBy {
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(it["timestamp"] as Long))
+                SimpleDateFormat(dateFormat, Locale.getDefault()).format(Date(it["timestamp"] as Long))
             }
 
             val correctAnswersData = dailyResults.map { (date, dailyGames) ->
-                val totalCorrectAnswers = dailyGames.sumOf { it["correctAnswers"] as Long }
-                val avgCorrectAnswers = totalCorrectAnswers.toFloat() / dailyGames.size //같은 날 여러번 게임하면 그래프가 난잡해짐
-                "['$date', $avgCorrectAnswers]"                                     //따라서 평균으로 바꾸어 그래프 표현하기로 함
+                val totalCorrectAnswers = dailyGames.sumOf { (it["correctAnswers"] as Long).toInt() }
+                val avgCorrectAnswers = totalCorrectAnswers.toFloat() / dailyGames.size
+                "['$date', $avgCorrectAnswers]"
             }.joinToString(",\n")
 
             val totalTimeData = dailyResults.map { (date, dailyGames) ->
-                val totalTime = dailyGames.sumOf { it["totalTime"] as Long }
-                val avgTotalTime = totalTime.toFloat() / dailyGames.size / 1000 // '초'단위로 변환
+                val totalTime = dailyGames.sumOf { (it["totalTime"] as Long).toInt() }
+                val avgTotalTime = totalTime.toFloat() / dailyGames.size // 초 단위로 변환 불필요
                 "['$date', $avgTotalTime]"
             }.joinToString(",\n")
 
