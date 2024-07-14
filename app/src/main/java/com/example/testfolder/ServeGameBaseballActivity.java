@@ -216,7 +216,14 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
 
     private void navigateToGameList() {
         Intent intent = new Intent(this, gamelistActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish(); // Finish current Activity
+        finish(); // 현재 액티비티 종료
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        navigateToGameList(); // 이전 화면으로 돌아갈 때 게임 목록으로 이동
     }
 }

@@ -2,36 +2,27 @@ package com.example.testfolder
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.widget.EditText
+import android.view.View
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class Diary_Check : AppCompatActivity() {
 
     private lateinit var databaseReference: DatabaseReference
     private lateinit var diaryContainer: LinearLayout
-    private lateinit var scrollView: ScrollView
-    private lateinit var searchBar: EditText
     private lateinit var auth: FirebaseAuth
-    private val diaryEntries = mutableListOf<DiaryEntry>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_check)
 
         diaryContainer = findViewById(R.id.diary_container)
-        scrollView = findViewById(R.id.scroll_view)
-        searchBar = findViewById(R.id.search_bar)
 
+        // Singleton을 통해 Firebase 객체 갖고 오게 변경
         auth = SingletonKotlin.getAuth()
         val currentUser = SingletonKotlin.getCurrentUser()
 
@@ -43,7 +34,6 @@ class Diary_Check : AppCompatActivity() {
             databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     diaryContainer.removeAllViews()
-                    diaryEntries.clear()
                     for (diarySnapshot in snapshot.children) {
                         var date = diarySnapshot.key
                         date = date?.replace(" ", "/")
@@ -51,9 +41,7 @@ class Diary_Check : AppCompatActivity() {
                         val content = diarySnapshot.child("content").getValue(String::class.java)
                         val diaryId = diarySnapshot.key
                         if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
-                            val diaryEntry = DiaryEntry(date, content, diaryId)
-                            diaryEntries.add(diaryEntry)
-                            addDiaryEntryToView(diaryEntry)
+                            addDiaryEntryToView(date, content, diaryId)
                         }
                     }
                 }
@@ -63,52 +51,18 @@ class Diary_Check : AppCompatActivity() {
                 }
             })
         }
-
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterDiaryEntries(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
     }
 
-    private fun filterDiaryEntries(query: String) {
-        diaryContainer.removeAllViews()
-        val filteredEntries = diaryEntries.filter {
-            it.date.contains(query, ignoreCase = true)
-        }
-        filteredEntries.forEach { addDiaryEntryToView(it) }
-        if (filteredEntries.isNotEmpty()) {
-            scrollToDiaryEntry(filteredEntries.first().date)
-        }
-    }
-
-    private fun scrollToDiaryEntry(date: String) {
-        for (i in 0 until diaryContainer.childCount) {
-            val diaryEntryView = diaryContainer.getChildAt(i) as LinearLayout
-            val dateTextView = diaryEntryView.getChildAt(0) as TextView
-            if (dateTextView.text == date) {
-                scrollView.post {
-                    scrollView.scrollTo(0, diaryEntryView.top)
-                }
-                break
-            }
-        }
-    }
-
-    private fun addDiaryEntryToView(diaryEntry: DiaryEntry) {
+    private fun addDiaryEntryToView(date: String, content: String, diaryId: String) {
         val dateTextView = TextView(this).apply {
-            text = diaryEntry.date
+            text = date
             textSize = 18f
             setPadding(0, 10, 0, 0)
             setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
         }
 
         val contentTextView = TextView(this).apply {
-            text = diaryEntry.content
+            text = content
             textSize = 16f
             setPadding(0, 5, 0, 10)
             setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
@@ -119,17 +73,27 @@ class Diary_Check : AppCompatActivity() {
             setPadding(0, 20, 0, 20)
             addView(dateTextView)
             addView(contentTextView)
+            //setBackgroundResource(R.drawable.diary_entry_background) // Optional: add background to each entry
             setOnClickListener {
                 val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java)
-                intent.putExtra("diaryId", diaryEntry.diaryId)
-                intent.putExtra("date", diaryEntry.date)
-                intent.putExtra("content", diaryEntry.content)
+                intent.putExtra("diaryId", diaryId)
+                intent.putExtra("date", date)
+                intent.putExtra("content", content)
                 startActivity(intent)
             }
         }
 
         diaryContainer.addView(diaryEntryLayout)
     }
+    private fun navigateToDiaryWriteUI() {
+        val intent = Intent(this, Diary_write_UI::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
+    }
 
-    data class DiaryEntry(val date: String, val content: String, val diaryId: String)
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateToDiaryWriteUI() // 이전 화면으로 돌아갈 때 Diary_write_UI로 이동
+    }
 }
