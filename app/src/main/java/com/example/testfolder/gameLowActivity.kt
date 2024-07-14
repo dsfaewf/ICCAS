@@ -23,6 +23,9 @@ class gameLowActivity : AppCompatActivity() {
     private var currentRound = 0
     private var correctAnswers = 0
     private var startTime: Long = 0
+    private var totalTime = 0L
+    private val roundTime = 60 * 1000 // 60초
+    private var progressBarThread: Thread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,13 +70,13 @@ class gameLowActivity : AppCompatActivity() {
         xbutton.setOnClickListener {
             handleAnswer("X", questionTextView)
         }
-        startTime = System.currentTimeMillis()
         startProgressBar(questionTextView)
     }
 
     private fun startRound(questionTextView: TextView) {
-        currentRound = 0
-        correctAnswers = 0
+        startTime = System.currentTimeMillis()
+        progressStatus = 0
+        progressBar.progress = progressStatus
         displayQuestion(questionTextView)
     }
 
@@ -82,12 +85,12 @@ class gameLowActivity : AppCompatActivity() {
             val quizItem = selectedQuizzes[currentRound]
             questionTextView.text = "Date: ${quizItem.date}\n\n${quizItem.question}" //4지선다랑 형식 통일화
         } else {
-            val totalTime = System.currentTimeMillis() - startTime
-            SingletonKotlin.saveGameResult("OX", correctAnswers, totalTime) // 게임 유형 추가
-            questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTime / 1000} seconds\nReturning to game selection screen in 5 seconds..."
+            val totalGameTime = totalTime / 1000 // 초 단위로 변환
+            SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime) // 게임 유형 추가
+            questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalGameTime} seconds\nReturning to game selection screen in 5 seconds..."
             handler.postDelayed({
-                finish() //그냥 이전 화면으로 돌아가기
-            }, 5000) // 나가기 전에 5 seconds 딜레이
+                finish() // 이전 화면으로 돌아가기
+            }, 5000) // 나가기 전에 5초 딜레이
         }
     }
 
@@ -102,17 +105,18 @@ class gameLowActivity : AppCompatActivity() {
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
             }
             currentRound++
-            if (currentRound < selectedQuizzes.size) {
-                displayQuestion(questionTextView)
-            } else {
-                displayQuestion(questionTextView)
-            }
+            totalTime += System.currentTimeMillis() - startTime
+            startRound(questionTextView)
         }
     }
 
     private fun startProgressBar(questionTextView: TextView) {
-        Thread {
-            while (progressStatus < 300) {  // 0.2 * 300 = 60초
+        progressStatus = 0
+        progressBar.progress = progressStatus
+        progressBarThread?.interrupt()
+        progressBarThread = Thread {
+            val startRoundTime = System.currentTimeMillis()
+            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {  // 0.2 * 300 = 60초
                 progressStatus += 1
                 handler.post {
                     progressBar.progress = progressStatus
@@ -120,12 +124,22 @@ class gameLowActivity : AppCompatActivity() {
                 try {
                     Thread.sleep(200)   // 0.2초 대기
                 } catch (e: InterruptedException) {
-                    e.printStackTrace()
+                    return@Thread
                 }
             }
-            handler.post {  // 60초 넘었을 때,
-                questionTextView.text = "Time's up!"
+            handler.post {
+                if (currentRound < selectedQuizzes.size) {
+                    questionTextView.text = "Time's up!"
+                    totalTime += roundTime
+                    currentRound++
+                    startRound(questionTextView)
+                }
             }
-        }.start()
+        }.apply { start() }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        progressBarThread?.interrupt()
     }
 }
