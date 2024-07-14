@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -32,12 +33,23 @@ class FindPwActivity : AppCompatActivity() {
     }
 
     private fun resetPassword(email: String) {
+        val builder = AlertDialog.Builder(this)
         auth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
+                    builder.setTitle("Find Password")
+                        .setMessage("Password reset email sent")
+                        .setPositiveButton("OK") { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 } else {
-                    Toast.makeText(this, "Error sending password reset email", Toast.LENGTH_SHORT).show()
+                    builder.setTitle("Find Password")
+                        .setMessage("Error sending password reset email")
+                        .setPositiveButton("OK") { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
             }
     }

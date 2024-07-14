@@ -35,6 +35,7 @@ class Main_UI : AppCompatActivity() {
         imageButton1.setOnClickListener {
             val intent = Intent(applicationContext, Setting_UI::class.java)
             startActivity(intent)
+            finish()
         }
 
         diaryButton.setOnClickListener {
@@ -44,16 +45,19 @@ class Main_UI : AppCompatActivity() {
             // Diary_write_UI 액티비티로 이동
             val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
+            finish()
         }
 
         gameButton.setOnClickListener {
             val intent = Intent(this, gamelistActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         catRoomButton.setOnClickListener {
             val intent = Intent(this, CatRoomActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 
