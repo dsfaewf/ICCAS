@@ -85,4 +85,16 @@ class Diary_Check : AppCompatActivity() {
 
         diaryContainer.addView(diaryEntryLayout)
     }
+    private fun navigateToDiaryWriteUI() {
+        val intent = Intent(this, Diary_write_UI::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateToDiaryWriteUI() // 이전 화면으로 돌아갈 때 Diary_write_UI로 이동
+    }
+
 }

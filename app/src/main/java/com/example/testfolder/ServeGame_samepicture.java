@@ -342,7 +342,6 @@ public class ServeGame_samepicture extends AppCompatActivity {
         Toast.makeText(this, "Time's up! Game Over.", Toast.LENGTH_LONG).show();
         navigateToGameList(); // 게임 종료 시 게임 목록으로 이동
     }
-
     private void navigateToGameList() {
         Intent intent = new Intent(this, gamelistActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
