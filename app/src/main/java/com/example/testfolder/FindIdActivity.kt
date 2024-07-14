@@ -1,6 +1,7 @@
 package com.example.testfolder
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -64,5 +65,11 @@ class FindIdActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .show()
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
