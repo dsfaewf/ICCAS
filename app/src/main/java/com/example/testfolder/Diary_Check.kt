@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class Diary_Check : AppCompatActivity() {
+class Diary_Check : BaseActivity() {
 
     private lateinit var databaseReference: DatabaseReference
     private lateinit var diaryContainer: LinearLayout
@@ -19,7 +19,7 @@ class Diary_Check : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_check)
-
+        applyFontSize() // 폰트 크기 적용
         diaryContainer = findViewById(R.id.diary_container)
 
         // Singleton을 통해 Firebase 객체 갖고 오게 변경

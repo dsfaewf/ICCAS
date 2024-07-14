@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseUser
 
-class gameHighActivity : AppCompatActivity() {
+class gameHighActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
     private val handler = Handler(Looper.getMainLooper())
@@ -50,7 +50,7 @@ class gameHighActivity : AppCompatActivity() {
             Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
             finish()
         }
-
+        applyFontSize()
         SingletonKotlin.loadBlankQuizData { quizData ->
             if (quizData.isNotEmpty()) {
                 quizList = quizData.shuffled().take(totalRounds)

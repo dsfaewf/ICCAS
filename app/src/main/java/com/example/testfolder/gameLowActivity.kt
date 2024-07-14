@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseUser
-import kotlin.random.Random
 
-class gameLowActivity : AppCompatActivity() {
+class gameLowActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
     private val handler = Handler(Looper.getMainLooper())
@@ -51,6 +49,9 @@ class gameLowActivity : AppCompatActivity() {
             Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
             finish()
         }
+
+        val excludeIds = setOf(R.id.o_btn, R.id.x_btn)
+        applyFontSize(excludeIds)
 
         // 랜덤으로 5개의 OX 퀴즈 데이터 불러오기
         SingletonKotlin.loadOXQuizData { quizData ->
