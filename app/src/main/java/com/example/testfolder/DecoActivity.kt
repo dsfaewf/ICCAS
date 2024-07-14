@@ -57,10 +57,12 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         roomBtn.setOnClickListener {
             val intent = Intent(this, CatRoomActivity::class.java)
             startActivity(intent)
+            finish()
         }
         shopBtn.setOnClickListener {
             val intent = Intent(this, ShopActivity::class.java)
             startActivity(intent)
+            finish()
         }
         saveBtn.setOnClickListener {
             // 선택된 배경을 db에 저장하도록 싱글톤 구현
@@ -81,6 +83,7 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
             .setPositiveButton("Yes") { dialog, which ->
                 val intent = Intent(this, CatRoomActivity::class.java)
                 startActivity(intent)
+                finish()
             }
             .setNegativeButton("No") { dialog, which ->
                 dialog.dismiss()

@@ -54,18 +54,22 @@ class CatRoomActivity : AppCompatActivity() {
         shopBtn.setOnClickListener {
             val intent = Intent(applicationContext, ShopActivity::class.java)
             startActivity(intent)
+            finish()
         }
         decoBtn.setOnClickListener {
             val intent = Intent(applicationContext, DecoActivity::class.java)
             startActivity(intent)
+            finish()
         }
         diaryBtn.setOnClickListener {
             val intent = Intent(applicationContext, Diary_write_UI::class.java)
             startActivity(intent)
+            finish()
         }
         gameBtn.setOnClickListener {
             val intent = Intent(applicationContext, gamelistActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }
