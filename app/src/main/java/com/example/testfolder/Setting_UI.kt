@@ -23,6 +23,13 @@ class Setting_UI : AppCompatActivity() {
         viewGameRecordButton.setOnClickListener {
             val intent = Intent(applicationContext, GameRecordActivity::class.java)
             startActivity(intent)
+            finish()
         }
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(applicationContext, Main_UI::class.java)
+        startActivity(intent)
+        finish()
     }
 }
