@@ -192,12 +192,14 @@ class Diary_write_UI : AppCompatActivity() {
         backButton1.setOnClickListener {
             val intent = Intent(applicationContext, Main_UI::class.java)
             startActivity(intent)
+            finish()
         }
 
         // 일지조회 버튼 클릭 시 Diary_Check 화면으로 이동
         diarycheckButton.setOnClickListener {
             val intent = Intent(applicationContext, Diary_Check::class.java)
             startActivity(intent)
+            finish()
         }
     }
 
