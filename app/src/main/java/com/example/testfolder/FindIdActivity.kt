@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -39,7 +40,7 @@ class FindIdActivity : AppCompatActivity() {
                     for (userSnapshot in dataSnapshot.children) {
                         val userId = userSnapshot.child("userId").getValue(String::class.java)
                         if (userId != null) {
-                            showUserId(userId)
+                            showUserIdDialog(userId)
                             return
                         }
                     }
@@ -55,8 +56,13 @@ class FindIdActivity : AppCompatActivity() {
         })
     }
 
-    private fun showUserId(userId: String) {
-        val textView = findViewById<TextView>(R.id.textView5)
-        textView.text = "Your ID is : $userId"
+    private fun showUserIdDialog(userId: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Your ID is")
+            .setMessage("\" $userId \" ")
+            .setPositiveButton("OK") { dialog, which ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }
