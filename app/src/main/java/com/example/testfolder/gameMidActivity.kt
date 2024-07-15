@@ -1,14 +1,17 @@
 package com.example.testfolder
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseUser
 
 class gameMidActivity : BaseActivity() {
@@ -26,16 +29,47 @@ class gameMidActivity : BaseActivity() {
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
 
+    private lateinit var roundImageView: ImageView
+    private lateinit var numberImageView: ImageView
+    private lateinit var finishedTextView: TextView
+
+    private lateinit var loadingLayout: View
+    private lateinit var loadingImage: ImageView
+    private lateinit var loadingText: TextView
+
+    private lateinit var btn1: Button
+    private lateinit var btn2: Button
+    private lateinit var btn3: Button
+    private lateinit var btn4: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_mid)
         progressBar = findViewById(R.id.progressBar1)
         val questionTextView = findViewById<TextView>(R.id.qeustionbox)
-        val btn1 = findViewById<Button>(R.id.btn1)
-        val btn2 = findViewById<Button>(R.id.btn2)
-        val btn3 = findViewById<Button>(R.id.btn3)
-        val btn4 = findViewById<Button>(R.id.btn4)
+        btn1 = findViewById(R.id.btn1)
+        btn2 = findViewById(R.id.btn2)
+        btn3 = findViewById(R.id.btn3)
+        btn4 = findViewById(R.id.btn4)
         coinText = findViewById(R.id.coin_text)
+
+        roundImageView = findViewById(R.id.roundImageView)
+        numberImageView = findViewById(R.id.numberImageView)
+        finishedTextView = findViewById(R.id.finishedTextView)
+
+        loadingLayout = findViewById(R.id.loading_layout)
+        loadingImage = findViewById(R.id.loading_image)
+        loadingText = findViewById(R.id.loading_text)
+
+        // 로딩 이미지 회전 애니메이션 적용
+        val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
+        loadingImage.startAnimation(rotateAnimation)
+
+        // 로딩 텍스트 애니메이션 적용
+        startLoadingTextAnimation()
+
+        // 답변 버튼 비활성화
+        disableAnswerButtons()
 
         try {
             currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
@@ -52,17 +86,24 @@ class gameMidActivity : BaseActivity() {
             finish()
         }
         applyFontSize()
-        // 퀴즈를 불러옴
-        SingletonKotlin.loadMultipleChoiceQuizData { quizData ->
-            if (quizData.isNotEmpty()) {
-                quizList = quizData.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
-                startTime = System.currentTimeMillis()
-                displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
-                startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
-            } else {
-                questionTextView.text = "No quiz available."
+
+        // 3초 동안 로딩 화면 표시 후 게임 시작
+        handler.postDelayed({
+            loadingLayout.visibility = View.GONE
+            // 퀴즈를 불러옴
+            SingletonKotlin.loadMultipleChoiceQuizData { quizData ->
+                if (quizData.isNotEmpty()) {
+                    quizList = quizData.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
+                    startTime = System.currentTimeMillis()
+                    displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
+                    startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
+                    // 답변 버튼 활성화
+                    enableAnswerButtons()
+                } else {
+                    questionTextView.text = "No quiz available."
+                }
             }
-        }
+        }, 3000)
 
         btn1.setOnClickListener { handleAnswer(btn1.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
         btn2.setOnClickListener { handleAnswer(btn2.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
@@ -82,6 +123,7 @@ class gameMidActivity : BaseActivity() {
             } else {
                 questionTextView.text = "Error: Not enough options available for this question."
             }
+            updateRoundImages()
         } else {
             endQuiz(questionTextView)
         }
@@ -113,10 +155,7 @@ class gameMidActivity : BaseActivity() {
     private fun endQuiz(questionTextView: TextView) {
         val totalTimeSeconds = totalTime / 1000 // 초 단위로 변환
         SingletonKotlin.saveGameResult("4 Choice", correctAnswers, totalTimeSeconds)
-        questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalTimeSeconds} seconds\nReturning to game selection screen in 5 seconds..."
-        handler.postDelayed({
-            finish()
-        }, 5000)
+        showGameResultDialog(correctAnswers, totalTimeSeconds)
     }
 
     private fun startProgressBar(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
@@ -151,6 +190,70 @@ class gameMidActivity : BaseActivity() {
                 }
             }
         }.apply { start() }
+    }
+
+    private fun updateRoundImages() {
+        val roundDrawable = R.drawable.round // round.png 이미지 리소스
+        val numberDrawable = when (currentQuestionIndex + 1) {
+            1 -> R.drawable.number1
+            2 -> R.drawable.number2
+            3 -> R.drawable.number3
+            4 -> R.drawable.number4
+            5 -> R.drawable.number5
+            else -> null
+        }
+        roundImageView.setImageResource(roundDrawable)
+        if (numberDrawable != null) {
+            numberImageView.visibility = View.VISIBLE
+            finishedTextView.visibility = View.GONE
+            numberImageView.setImageResource(numberDrawable)
+        } else {
+            numberImageView.visibility = View.GONE
+            finishedTextView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun startLoadingTextAnimation() { //...을 로딩과 함께 애니메이션으로 움직이도록
+        var dotCount = 0
+        handler.post(object : Runnable {
+            override fun run() {
+                dotCount++
+                if (dotCount > 3) {
+                    dotCount = 0
+                }
+                val dots = ".".repeat(dotCount)
+                loadingText.text = "Pulling out the diary$dots"
+                handler.postDelayed(this, 500) // 500ms마다 업데이트
+            }
+        })
+    }
+
+    private fun disableAnswerButtons() {
+        btn1.isEnabled = false
+        btn2.isEnabled = false
+        btn3.isEnabled = false
+        btn4.isEnabled = false
+    }
+
+    private fun enableAnswerButtons() {
+        btn1.isEnabled = true
+        btn2.isEnabled = true
+        btn3.isEnabled = true
+        btn4.isEnabled = true
+    }
+
+    private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long) {
+        val message = "Quiz completed! Correct answers: $correctAnswers, Time taken: $totalTimeSeconds seconds"
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Game Result")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish() // 이전 화면으로 돌아가기
+            }
+        val dialog = builder.create()
+        dialog.show()
     }
 
     override fun onDestroy() {

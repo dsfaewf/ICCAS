@@ -36,6 +36,38 @@
             android:textSize="30sp" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/roundImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="start"
+        app:srcCompat="@drawable/round"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/numberImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="start"
+        app:srcCompat="@drawable/number1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/roundImageView" />
+
+    <TextView
+        android:id="@+id/finishedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="start"
+        android:text="Finished!"
+        android:textSize="24sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/roundImageView" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -82,7 +114,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_margin="10dp"
-                                android:text="질문 말풍선"
+                                android:text="loading question"
                                 android:textColorLink="#000000"
                                 android:textSize="20sp" />
                         </LinearLayout>
@@ -137,22 +169,67 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"></LinearLayout>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/submit_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:background="@drawable/rectangle_btn_style2"
-                android:text="Submit" />
+                <Button
+                    android:id="@+id/hint_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hint"
+                    android:background="@drawable/rectangle_btn_style2"
+                    android:layout_weight="1"
+                    android:layout_gravity="left"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center" />
+
+                <Button
+                    android:id="@+id/submit_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="right"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:background="@drawable/rectangle_btn_style2"
+                    android:text="Submit" />
+
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
+
+    <!-- 로딩 화면 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@android:color/black"
+        android:alpha="0.9"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/loading_image"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/loading_main" />
+
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Pulling out the diary"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

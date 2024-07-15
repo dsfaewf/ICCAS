@@ -219,7 +219,7 @@ object SingletonKotlin {
     }
 
     // 주관식 퀴즈 불러오는 매서드
-    data class BlankQuizItem(val question: String, val answer: String, val date: String)
+    data class BlankQuizItem(val question: String, val answer: String, val date: String, val hint: String)
     fun loadBlankQuizData(callback: (List<BlankQuizItem>) -> Unit) {
         checkInitialization()
         val currentUser = auth.currentUser ?: return
@@ -234,7 +234,8 @@ object SingletonKotlin {
                     for (quizSnapshot in dateSnapshot.children) {
                         val question = quizSnapshot.child("question").getValue(String::class.java) ?: ""
                         val answer = quizSnapshot.child("answer").getValue(String::class.java) ?: ""
-                        quizList.add(BlankQuizItem(question, answer, date)) //그냥 가져다 쓰면 됨
+                        val hint = quizSnapshot.child("hint").getValue(String::class.java) ?: ""
+                        quizList.add(BlankQuizItem(question, answer, date, hint)) //그냥 가져다 쓰면 됨
                     }
                 }
                 callback(quizList)
@@ -245,7 +246,6 @@ object SingletonKotlin {
             }
         })
     }
-
 
     // 게임 결과를 저장하는 메서드
     fun saveGameResult(gameType: String, correctAnswers: Int, totalTime: Long) {
@@ -295,4 +295,27 @@ object SingletonKotlin {
         })
     }
 
+    // 힌트를 불러오는 매서드
+    fun loadHint(date: String, question: String, callback: (String) -> Unit) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val uid = currentUser.uid
+        val quizRef = database.child("blank_quiz").child(uid).child(date)
+
+        quizRef.orderByChild("question").equalTo(question)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (quizSnapshot in snapshot.children) {
+                        val hint = quizSnapshot.child("hint").getValue(String::class.java) ?: ""
+                        callback(hint)
+                        return
+                    }
+                    callback("No hint available.")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    callback("Failed to load hint.")
+                }
+            })
+    }
 }
