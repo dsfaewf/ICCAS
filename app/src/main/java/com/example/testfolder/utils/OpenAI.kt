@@ -371,7 +371,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 diaryEditText.setText(diary)
                 loadingAnimation.hideLoading()
                 Log.i("ERROR", "quizListBlank.count() != quizListHint.count()")
-                Toast.makeText(this.context, "Please clicked on the save button again", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.context, "Please click on the save button again", Toast.LENGTH_SHORT).show()
             }
             else {
                 quizListHint.forEachIndexed { index, quiz ->
