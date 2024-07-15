@@ -156,8 +156,8 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 "\nExample answer: " +
                 "{\"question\": \"I had <blank> for lunch.\", " +
                 "\"answer\": \"pizza\"}" +
-                "\nEach question must have only one <blank> that has to match one word." +
-                "\nEach question must be one sentence." +
+                "\nEach question must be short and have only one <blank>." +
+                "\nEach <blank> must match just one word." +
                 "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
     }
