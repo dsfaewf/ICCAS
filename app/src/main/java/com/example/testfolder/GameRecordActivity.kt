@@ -2,7 +2,6 @@ package com.example.testfolder
 
 import android.content.Intent
 import android.os.Bundle
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
@@ -21,6 +20,9 @@ class GameRecordActivity : AppCompatActivity() {
         webView = findViewById(R.id.webView)
         val dailyButton = findViewById<Button>(R.id.dailyButton)
         val monthlyButton = findViewById<Button>(R.id.monthlyButton)
+        val oxGameRecordButton = findViewById<Button>(R.id.oxGameRecordButton)
+        val fourChoiceGameRecordButton = findViewById<Button>(R.id.fourChoiceGameRecordButton)
+        val shortAnswerGameRecordButton = findViewById<Button>(R.id.shortAnswerGameRecordButton)
 
         webView.webViewClient = WebViewClient()
         webView.settings.javaScriptEnabled = true
@@ -42,6 +44,21 @@ class GameRecordActivity : AppCompatActivity() {
             SingletonKotlin.loadGameResults { results ->
                 renderGraph(results)
             }
+        }
+
+        oxGameRecordButton.setOnClickListener {
+            val intent = Intent(this, OXGameRecordActivity::class.java)
+            startActivity(intent)
+        }
+
+        fourChoiceGameRecordButton.setOnClickListener {
+            val intent = Intent(this, FourChoiceGameRecordActivity::class.java)
+            startActivity(intent)
+        }
+
+        shortAnswerGameRecordButton.setOnClickListener {
+            val intent = Intent(this, ShortAnswerGameRecordActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -74,7 +91,7 @@ class GameRecordActivity : AppCompatActivity() {
             """
             <h3>$gameType - Correct Answers</h3>
             <div id="correct_answers_chart_$gameType" style="width: 100%; height: 400px;"></div>
-            <h3>$gameType - Total Time</h3>
+            <h3>$gameType - Total time for the problem you got it right</h3>
             <div id="total_time_chart_$gameType" style="width: 100%; height: 400px;"></div>
             <script type="text/javascript">
                 google.charts.setOnLoadCallback(function() {
@@ -129,6 +146,7 @@ class GameRecordActivity : AppCompatActivity() {
         </html>
     """.trimIndent()
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, Main_UI::class.java)
