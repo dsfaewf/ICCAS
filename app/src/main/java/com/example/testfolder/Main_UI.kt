@@ -25,6 +25,9 @@ class Main_UI : BaseActivity()  {
         database = FirebaseDatabase.getInstance()
         mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
 
+        // MusicService 시작
+        startService(Intent(this, MusicService::class.java))
+
         checkFirstLogin()
 
         val imageButton1 = findViewById<View>(R.id.my_button4) as Button
@@ -70,6 +73,9 @@ class Main_UI : BaseActivity()  {
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
+
+        // MusicService 중지
+        stopService(Intent(this, MusicService::class.java))
     }
 
     private fun checkFirstLogin() {
