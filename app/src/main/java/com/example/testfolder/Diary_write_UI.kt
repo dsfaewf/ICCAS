@@ -74,8 +74,78 @@ class Diary_write_UI : BaseActivity() {
         val loadingAnimation = LoadingAnimation(this,
             loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Please wait")
         Log.d("Open AI", "Open AI Class is being created")
-        val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation)
+        val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation, diaryEditText)
+        myOpenAI.fetchApiKey()
 
+        // Attach observers
+        // Once a DB table whose date is the same as selected date is delete
+        // Save new data from ChatGPT
+        firebaseViewModel.OX_table_deleted.observe(this) {
+            Log.i("DB", "OX_table_deleted Observer triggered")
+            myOpenAI.save_OX_data()
+//            firebaseViewModel.OX_table_deleted.removeObservers(this)
+        }
+
+        // Once a DB table whose date is the same as selected date is delete
+        // Save new data from ChatGPT
+        firebaseViewModel.MCQ_table_deleted.observe(this) {
+            Log.i("DB", "MCQ_table_deleted Observer triggered")
+            myOpenAI.save_MCQ_data()
+//            firebaseViewModel.MCQ_table_deleted.removeObservers(this)
+        }
+
+        openAIViewModel.gotResponseForBlankLiveData.observe(this) {
+            Log.i("DB", "gotResponseForBlankLiveData Observer triggered")
+            myOpenAI.generate_hint()
+//            openAIViewModel.gotResponseForBlankLiveData.removeObservers(this)
+        }
+
+        // Once a DB table whose date is the same as selected date is delete
+        // Save new data from ChatGPT
+        firebaseViewModel.blank_table_deleted.observe(this) {
+            Log.i("DB", "blank_table_deleted Observer triggered")
+            myOpenAI.save_blank_quiz_data()
+//            firebaseViewModel.blank_table_deleted.removeObservers(this)
+        }
+
+        diaryWriteViewModel.buttonClickEvent.observe(this) {
+            Log.i("DB", "buttonClickEvent Observer triggered")
+            loadingAnimation.showLoading()
+
+//            ViewModel에 있는 date 값을 담고있는 LiveData를 update
+//            diaryWriteViewModel.setDate(dateTextView.text.toString())
+
+            // EditText 내용 Clear
+            diaryEditText.text.clear()
+            Log.d("Date", dateTextView.text.toString())
+            // OpenAI 인스턴스의 date도 함께 update
+            myOpenAI.updateDate(dateTextView.text.toString())
+
+            // 일기 내용을 Firebase 데이터베이스에 업로드
+            // 사용자별로 데이터 저장하기
+            uid?.let {
+                val date = dateTextView.text.toString().replace("/", " ")
+                val userDiaryRef = database.reference
+                    .child("diaries")
+                    .child(uid)
+                    .child(date) // 사용자별 레퍼런스 생성
+                val diaryEntryMap = mapOf(
+                    "content" to diaryContent
+                )
+                val dbTask = userDiaryRef.setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
+                dbTask.addOnSuccessListener {
+                    Log.i("DB", "Diary saved successfully")
+                }
+            }
+
+            // TEST
+            if (uid != null) {
+                myOpenAI.generate_OX_quiz_and_save(this.diaryContent, this.numOfQuestions)
+            } else {
+                Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+            }
+//            diaryWriteViewModel.buttonClickEvent.removeObservers(this)
+        }
 //        // UI 상 date가 바뀔 때마다 동작하는 함수
 //        diaryWriteViewModel.liveDataDate.observe(this) {
 //            myOpenAI.updateDate(dateTextView.text.toString())
@@ -106,77 +176,7 @@ class Diary_write_UI : BaseActivity() {
                 }
                 // Run only if the diary is long enough
                 else {
-                    // Attach observers
-                    // Once a DB table whose date is the same as selected date is delete
-                    // Save new data from ChatGPT
-                    firebaseViewModel.OX_table_deleted.observe(this) {
-                        myOpenAI.save_OX_data()
-                        firebaseViewModel.OX_table_deleted.removeObservers(this)
-                    }
 
-                    // Once a DB table whose date is the same as selected date is delete
-                    // Save new data from ChatGPT
-                    firebaseViewModel.MCQ_table_deleted.observe(this) {
-                        myOpenAI.save_MCQ_data()
-                        firebaseViewModel.MCQ_table_deleted.removeObservers(this)
-                    }
-
-                    openAIViewModel.gotResponseForBlankLiveData.observe(this) {
-                        myOpenAI.generate_hint()
-                        openAIViewModel.gotResponseForBlankLiveData.removeObservers(this)
-                    }
-
-                    // Once a DB table whose date is the same as selected date is delete
-                    // Save new data from ChatGPT
-                    firebaseViewModel.blank_table_deleted.observe(this) {
-                        myOpenAI.save_blank_quiz_data()
-                        firebaseViewModel.blank_table_deleted.removeObservers(this)
-                    }
-
-                    diaryWriteViewModel.buttonClickEvent.observe(this) {
-                        loadingAnimation.showLoading()
-
-//            ViewModel에 있는 date 값을 담고있는 LiveData를 update
-//            diaryWriteViewModel.setDate(dateTextView.text.toString())
-
-                        // EditText 내용 Clear
-                        diaryEditText.text.clear()
-                        Log.d("Date", dateTextView.text.toString())
-                        // OpenAI 인스턴스의 date도 함께 update
-                        myOpenAI.updateDate(dateTextView.text.toString())
-
-                        // 일기 내용을 Firebase 데이터베이스에 업로드
-                        // 사용자별로 데이터 저장하기
-                        uid?.let {
-                            val date = dateTextView.text.toString().replace("/", " ")
-                            val userDiaryRef = database.reference
-                                .child("diaries")
-                                .child(uid)
-                                .child(date) // 사용자별 레퍼런스 생성
-                            val diaryEntryMap = mapOf(
-                                "content" to diaryContent
-                            )
-                            val dbTask = userDiaryRef.setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
-                            dbTask.addOnSuccessListener {
-                                Log.i("DB", "Data saved successfully")
-                            }
-                        }
-
-                        // TEST
-                        if (uid != null) {
-                            // Observe the LiveData
-                            openAIViewModel.apiKey.observe(this) {
-                                myOpenAI.generate_OX_quiz_and_save(
-                                    this.diaryContent,
-                                    this.numOfQuestions)
-                                openAIViewModel.apiKey.removeObservers(this)
-                            }
-                            myOpenAI.fetchApiKey()
-                        } else {
-                            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
-                        }
-                        diaryWriteViewModel.buttonClickEvent.removeObservers(this)
-                    }
 
                     mediasave.start() //효과음 재생 추가 - 우석
                     errorTextView.visibility = TextView.INVISIBLE
