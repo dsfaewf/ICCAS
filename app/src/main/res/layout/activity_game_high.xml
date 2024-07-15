@@ -216,7 +216,7 @@
         android:background="@android:color/black"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/loading_image"
