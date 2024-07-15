@@ -129,15 +129,18 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 } else if (lifeCount == 0) {
                     toastMessage("Failure");
                     responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    responseText.setTextSize(32); // Strike, Ball 텍스트 크기 설정
                     // Navigate to game list after game ends
                     navigateToGameList();
                 } else {
                     responseText.setText("Strike: " + strike + ", Ball: " + ball);
+                    responseText.setTextSize(32); // Strike, Ball 텍스트 크기 설정
                     showResult(inputNumber);
                 }
 
                 lifeCountText.setText("Life: " + lifeCount);
                 requestText.setText("");
+                responseText.setTextSize(32);
                 strike = 0;
                 ball = 0;
             } else if (inputNumber.length() != 3) {
@@ -164,6 +167,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         try {
             String result = "Strike: " + strike + ", Ball: " + ball;
             resultText.append(inputNumber + " : " + result + "\n");
+            resultText.setTextSize(32); // Strike, Ball 텍스트 크기 설정
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during showResult", e);
         }
