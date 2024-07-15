@@ -213,7 +213,7 @@ class gameLowActivity : BaseActivity() {
     }
 
     private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long) {
-        val message = "Quiz completed! Correct answers: $correctAnswers, Time taken: $totalTimeSeconds seconds"
+        val message = "Quiz completed!\nCorrect answers: $correctAnswers\nTime taken: $totalTimeSeconds seconds"
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Game Result")
@@ -223,6 +223,7 @@ class gameLowActivity : BaseActivity() {
                 finish() // 이전 화면으로 돌아가기
             }
         val dialog = builder.create()
+        dialog.setCancelable(false)
         dialog.show()
     }
 

@@ -22,6 +22,7 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
     private lateinit var shopBtn: TextView
     private lateinit var saveBtn: TextView
     private lateinit var clickedItem: ShopItem
+    private lateinit var newcatGif: GifImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +30,19 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
+        newcatGif = findViewById(R.id.newcat_gif)
+        val newcatGifDrawable = newcatGif.drawable as GifDrawable
         val gifDrawable = catGif.drawable as GifDrawable
+
         frame = findViewById(R.id.deco_frame)
         roomBtn = findViewById(R.id.room_btn_deco)
         shopBtn = findViewById(R.id.shop_btn_deco)
         saveBtn = findViewById(R.id.save_btn_deco)
         gifDrawable.loopCount = 0 // 무한 반복
+
+        // 유저가 구입한 새로운 고양이가 있으면
+        // newcatGif.visibility = View.VISIBLE
+
 
         recyclerView = findViewById(R.id.buy_items_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
