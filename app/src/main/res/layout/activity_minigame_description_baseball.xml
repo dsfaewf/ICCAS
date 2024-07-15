@@ -20,14 +20,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
+    <VideoView
         android:id="@+id/description"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="500dp"
         android:layout_marginTop="50dp"
-        android:text="1. This is a game where the user guesses the number chosen by the computer.\n\n2. When the user presses the start button, three numbers between 0 and 9 are randomly selected.\n\n3. The user writes down the positions of the three numbers to submit their guess.\n\n4. If the number matches, it's a 'ball'; if both the number and the position match, it's a 'strike'.\n\n5. Based on the previous balls and strikes, the user deduces the correct order of the three numbers.\n\nHowever, there are only 10 chances, and duplicate numbers are not allowed."
-        android:textSize="16sp"
-        android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -36,7 +33,7 @@
         android:id="@+id/back_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Go Back"

@@ -20,14 +20,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
+    <VideoView
         android:id="@+id/description"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="500dp"
         android:layout_marginTop="50dp"
-        android:text="1. This is a game where the user guesses the number chosen by the computer.\n\n2. When the user presses the start button, a random number between 1 and 100 is generated.\n\n3. Based on whether the user's input number is greater or smaller than the correct answer, it indicates 'UP' or 'DOWN'.\n\n4. The user repeats guessing until they guess the correct answer.\n\nHowever, there are only 7 chances."
-        android:textSize="16sp"
-        android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -36,7 +33,7 @@
         android:id="@+id/back_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Go Back"

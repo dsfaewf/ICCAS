@@ -62,8 +62,8 @@
     <!-- GridLayout에 ImageButton들을 배치합니다 -->
     <GridLayout
         android:id="@+id/gridLayout"
-        android:layout_width="344dp"
-        android:layout_height="403dp"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
         android:layout_below="@id/progressBar1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="44dp"

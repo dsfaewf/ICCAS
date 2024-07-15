@@ -73,7 +73,7 @@
         <TextView
             android:id="@+id/result_text"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="350dp"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginTop="10dp"/>
