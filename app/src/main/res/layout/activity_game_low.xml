@@ -163,25 +163,69 @@
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatButton
+                <FrameLayout
                     android:id="@+id/o_btn"
+                    android:clickable="true"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/rectangle_btn_style"
-                    android:text="O"
-                    android:textSize="100dp" />
+                    android:background="@drawable/btn_event"
+                    android:layout_weight="1">
 
-                <androidx.appcompat.widget.AppCompatButton
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_weight="1"
+                            ></LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="O"
+                            android:textColor="@color/black"
+                            android:textSize="100sp" />
+                    </LinearLayout>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:clickable="true"
                     android:id="@+id/x_btn"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/rectangle_btn_style"
-                    android:text="X"
-                    android:textSize="100dp" />
+                    android:background="@drawable/btn_event"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_weight="1"
+                            ></LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="X"
+                            android:textColor="@color/black"
+                            android:textSize="100sp" />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
             </LinearLayout>
 
         </LinearLayout>
@@ -193,11 +237,10 @@
         android:id="@+id/loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:background="@android:color/black"
         android:alpha="0.9"
-        android:visibility="visible">
+        android:background="@android:color/black"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/loading_image"
@@ -211,8 +254,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Pulling out the diary"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

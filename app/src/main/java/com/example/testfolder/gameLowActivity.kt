@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -38,8 +39,8 @@ class gameLowActivity : BaseActivity() {
     private lateinit var loadingImage: ImageView
     private lateinit var loadingText: TextView
 
-    private lateinit var obutton: Button
-    private lateinit var xbutton: Button
+    private lateinit var obutton: FrameLayout
+    private lateinit var xbutton: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
