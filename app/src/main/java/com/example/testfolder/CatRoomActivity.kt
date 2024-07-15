@@ -42,12 +42,9 @@ class CatRoomActivity : AppCompatActivity() {
 
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
         newcatGif = findViewById(R.id.newcat_gif)
-        val newcatGif = newcatGif.drawable as GifDrawable
-        // 유저가 구입한 새로운 고양이가 있으면
-        // newcatGif.visibility = View.VISIBLE
-        // gifDrawable.loopCount = 0 // 무한 반
 
-
+        // 유저가 구입한 새로운 고양이 친구를 불러오기
+        SingletonKotlin.loadUserCatFriend(newcatGif)
 
         // 사용자 코인 불러오기
         try {
@@ -82,6 +79,7 @@ class CatRoomActivity : AppCompatActivity() {
             finish()
         }
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, Main_UI::class.java)

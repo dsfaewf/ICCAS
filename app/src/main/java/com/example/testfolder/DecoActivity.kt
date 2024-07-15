@@ -3,6 +3,7 @@ package com.example.testfolder
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -31,18 +32,12 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
         newcatGif = findViewById(R.id.newcat_gif)
-        val newcatGifDrawable = newcatGif.drawable as GifDrawable
         val gifDrawable = catGif.drawable as GifDrawable
-
         frame = findViewById(R.id.deco_frame)
         roomBtn = findViewById(R.id.room_btn_deco)
         shopBtn = findViewById(R.id.shop_btn_deco)
         saveBtn = findViewById(R.id.save_btn_deco)
         gifDrawable.loopCount = 0 // 무한 반복
-
-        // 유저가 구입한 새로운 고양이가 있으면
-        // newcatGif.visibility = View.VISIBLE
-
 
         recyclerView = findViewById(R.id.buy_items_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -56,11 +51,17 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         // 사용자 코인 불러오기
         SingletonKotlin.loadUserCoins(coinText)
 
-        // 기본 배경을 품목에 무조건 추가하도록 설정 //이거 필요함!! 없애면 안 돼유 ㅠㅠ
+        // 기본 배경을 품목에 무조건 추가하도록 설정
         buyItemList.add(ShopItem(R.drawable.room3, "Default Room", 0))
+
+        // 기본 고양이 친구 숨기기 품목 추가
+        buyItemList.add(ShopItem(R.drawable.normal_cat, "No Cat Friend", 0))
 
         // 사용자가 구매한 아이템 불러오기
         SingletonKotlin.loadPurchasedItems(buyItemList, adapter)
+
+        // 유저가 구입한 새로운 고양이 친구 불러오기
+        SingletonKotlin.loadPurchasedCatFriends(buyItemList, adapter)
 
         roomBtn.setOnClickListener {
             val intent = Intent(this, CatRoomActivity::class.java)
@@ -73,15 +74,32 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
             finish()
         }
         saveBtn.setOnClickListener {
-            // 선택된 배경을 db에 저장하도록 싱글톤 구현
-            SingletonKotlin.saveUserBackground(clickedItem.name)
+            // 선택된 배경 또는 고양이 친구를 db에 저장하도록 싱글톤 구현
+            if (clickedItem.name.startsWith("Cat Friend")) {
+                SingletonKotlin.saveUserCatFriend(clickedItem.name)
+            } else if (clickedItem.name == "No Cat Friend") {
+                SingletonKotlin.saveUserCatFriend("No Cat Friend")
+            } else {
+                SingletonKotlin.saveUserBackground(clickedItem.name)
+            }
             showConfirmationDialog() // 팝업 띄우고 확인 누르면 룸 이동
         }
     }
 
     override fun onItemClick(position: Int) {
         clickedItem = buyItemList[position]
-        frame.setBackgroundResource(clickedItem.imageResource)
+        if (clickedItem.name.startsWith("Cat Friend")) {
+            newcatGif.setImageResource(clickedItem.imageResource)
+            (newcatGif.drawable as? GifDrawable)?.apply {
+                loopCount = 0 // 무한 반복
+                start()
+            }
+            newcatGif.visibility = View.VISIBLE
+        } else if (clickedItem.name == "No Cat Friend") {
+            newcatGif.visibility = View.GONE
+        } else {
+            frame.setBackgroundResource(clickedItem.imageResource)
+        }
     }
 
     private fun showConfirmationDialog() {
@@ -98,6 +116,7 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
             }
             .show()
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, CatRoomActivity::class.java)

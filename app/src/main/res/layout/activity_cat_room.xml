@@ -91,7 +91,7 @@
                     android:layout_marginTop="170dp"
                     android:layout_weight="1"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/cat3"
+                    android:src="@drawable/cat_friend1"
                     android:visibility="gone">
 
                 </pl.droidsonroids.gif.GifImageView>
