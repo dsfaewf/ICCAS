@@ -1,6 +1,7 @@
 package com.example.testfolder.utils
 
 import android.util.Log
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
@@ -30,7 +31,8 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
              context: AppCompatActivity,
              openAIViewModel: OpenAIViewModel,
              firebaseViewModel: FirebaseViewModel,
-             loadingAnimation: LoadingAnimation) {
+             loadingAnimation: LoadingAnimation,
+             diaryEditText: EditText) {
     companion object {
         const val PROB_TYPE_OX  = 0
         const val PROB_TYPE_MCQ = 1
@@ -45,6 +47,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
     private lateinit var response_gpt_blank: String
     private lateinit var response_gpt_hint: String
     private lateinit var diary: String
+    private val diaryEditText: EditText
     private var lifecycleOwner: LifecycleOwner
     private var context: AppCompatActivity
     private var openAIViewModel: OpenAIViewModel
@@ -65,6 +68,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
         this.openAIViewModel = openAIViewModel
         this.firebaseViewModel = firebaseViewModel
         this.loadingAnimation = loadingAnimation
+        this.diaryEditText = diaryEditText
     }
 
     fun updateDate(date: String) {
@@ -152,8 +156,8 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 "\nExample answer: " +
                 "{\"question\": \"I had <blank> for lunch.\", " +
                 "\"answer\": \"pizza\"}" +
-                "\nEach question must have only one <blank> that has to match one word." +
-                "\nEach question must be one sentence." +
+                "\nEach question must be short and have only one <blank>." +
+                "\nEach <blank> must match just one word." +
                 "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
     }
@@ -292,10 +296,9 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
     fun save_OX_data() {
         if (uid != null) {
             Log.i("GPT-OX", "response: " + this.response_gpt_OX)
+            val quizMap = mutableMapOf<String, Map<String, String>>()
             val quizList = this.response_gpt_OX.split("\n")
             quizList.forEachIndexed { index, quiz ->
-                val ref = database.reference.child("ox_quiz").child(uid).child(this.date)
-                    .child(index.toString())
                 val jsonObject = JSONObject(quiz)
                 val question = jsonObject.getString("question")
                 val answer = jsonObject.getString("answer")
@@ -303,18 +306,20 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                     "question" to question,
                     "answer" to answer
                 )
-                val dbTask = ref.setValue(recordMap)
-                dbTask.addOnSuccessListener {
-                    this.savedOX = true
-                    if(savedOX && savedMCQ && savedBlank) {
-                        loadingAnimation.hideLoading()
-                        Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
-                        this.savedOX = false
-                        this.savedMCQ = false
-                        this.savedBlank = false
-                        firebaseViewModel.setAllQuizSaved(true)
-                    }
+                quizMap[index.toString()] = recordMap
+            }
+            val ref = database.reference.child("ox_quiz").child(uid).child(this.date)
+            val dbTask = ref.setValue(quizMap)
+            dbTask.addOnSuccessListener {
+                this.savedOX = true
+                if(savedOX && savedMCQ && savedBlank) {
+                    loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
+                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                    this.savedOX = false
+                    this.savedMCQ = false
+                    this.savedBlank = false
+                    firebaseViewModel.setAllQuizSaved(true)
                 }
             }
         }
@@ -323,10 +328,9 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
     fun save_MCQ_data() {
         if (uid != null) {
             Log.i("GPT-MCQ", "response: " + this.response_gpt_MCQ)
+            val quizMap = mutableMapOf<String, Map<String, String>>()
             val quizList = this.response_gpt_MCQ.split("\n")
             quizList.forEachIndexed { index, quiz ->
-                val ref = database.reference.child("mcq_quiz").child(uid).child(this.date)
-                    .child(index.toString())
                 val jsonObject = JSONObject(quiz)
                 val question = jsonObject.getString("question")
                 val choices = jsonObject.getString("choices")
@@ -336,20 +340,22 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                     "choices" to choices,
                     "answer" to answer
                 )
-                val dbTask = ref.setValue(recordMap)
-                dbTask.addOnSuccessListener {
-                    this.savedMCQ = true
-                    if(savedOX && savedMCQ && savedBlank) {
-                        loadingAnimation.hideLoading()
-                        Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
-                        this.savedOX = false
-                        this.savedMCQ = false
-                        this.savedBlank = false
-                        firebaseViewModel.setAllQuizSaved(true)
-                    }
+                quizMap[index.toString()] = recordMap
+            }
+            val ref = database.reference.child("mcq_quiz").child(uid).child(this.date)
+            val dbTask = ref.setValue(quizMap)
+            dbTask.addOnSuccessListener {
+                this.savedMCQ = true
+                if(savedOX && savedMCQ && savedBlank) {
+                    loadingAnimation.hideLoading()
                     Log.i("DB", "Data saved successfully")
-//                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
+                    this.savedOX = false
+                    this.savedMCQ = false
+                    this.savedBlank = false
+                    firebaseViewModel.setAllQuizSaved(true)
                 }
+//                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -357,31 +363,45 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
     fun save_blank_quiz_data() {
         if(uid != null) {
             Log.i("GPT-BLANK", "response: " + this.response_gpt_hint)
-            val quizList = this.response_gpt_hint.split("\n")
-            quizList.forEachIndexed { index, quiz ->
+            // Prepare a map to hold all the quiz records
+            val quizMap = mutableMapOf<String, Map<String, String>>()
+            val quizListBlank = this.response_gpt_blank.split("\n")
+            val quizListHint = this.response_gpt_hint.split("\n")
+            if(quizListBlank.count() != quizListHint.count()) {
+                diaryEditText.setText(diary)
+                loadingAnimation.hideLoading()
+                Log.i("ERROR", "quizListBlank.count() != quizListHint.count()")
+                Toast.makeText(this.context, "Please click on the save button again", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                quizListHint.forEachIndexed { index, quiz ->
+                    val jsonObjectBlank = JSONObject(quizListBlank.get(index))
+                    val question = jsonObjectBlank.getString("question")
+                    val answer = jsonObjectBlank.getString("answer")
+                    val jsonObjectHint = JSONObject(quiz)
+                    val hint = jsonObjectHint.getString("hint")
+                    val recordMap = mapOf(
+                        "question" to question,
+                        "answer" to answer,
+                        "hint" to hint
+                    )
+                    quizMap[index.toString()] = recordMap
+                }
+//                val ref = database.reference.child("blank_quiz").child(uid).child(this.date)
+//                    .child(index.toString())
                 val ref = database.reference.child("blank_quiz").child(uid).child(this.date)
-                    .child(index.toString())
-                val jsonObject = JSONObject(quiz)
-                val question = jsonObject.getString("question")
-                val answer = jsonObject.getString("answer")
-                val hint = jsonObject.getString("hint")
-                val recordMap = mapOf(
-                    "question" to question,
-                    "answer" to answer,
-                    "hint" to hint
-                )
-                val dbTask = ref.setValue(recordMap)
+                val dbTask = ref.setValue(quizMap)
                 dbTask.addOnSuccessListener {
                     this.savedBlank = true
-                    if(savedOX && savedMCQ && savedBlank) {
+                    if (savedOX && savedMCQ && savedBlank) {
                         loadingAnimation.hideLoading()
+                        Log.i("DB", "Data saved successfully")
                         Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                         this.savedOX = false
                         this.savedMCQ = false
                         this.savedBlank = false
                         firebaseViewModel.setAllQuizSaved(true)
                     }
-                    Log.i("DB", "Data saved successfully")
 //                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
                 }
             }

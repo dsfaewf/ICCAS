@@ -15,6 +15,7 @@ class CatRoomActivity : AppCompatActivity() {
     private lateinit var coinText: TextView
     private lateinit var currentUser: FirebaseUser
     private lateinit var roomframe: FrameLayout
+    private lateinit var newcatGif: GifImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +30,7 @@ class CatRoomActivity : AppCompatActivity() {
         }
 
         coinText = findViewById(R.id.coin_text)
-        val catGif = findViewById<GifImageView>(R.id.cat_gif)
+
         val shopBtn = findViewById<TextView>(R.id.shop_btn)
         val decoBtn = findViewById<TextView>(R.id.deco_btn)
         val diaryBtn = findViewById<TextView>(R.id.diary_btn)
@@ -38,6 +39,12 @@ class CatRoomActivity : AppCompatActivity() {
 
         // 기본 배경 설정 -> 유저가 저장한 배경이 있으면 해당 배경으로 없으면 기본 배경으로
         SingletonKotlin.loadUserBackground(roomframe)
+
+        val catGif = findViewById<GifImageView>(R.id.cat_gif)
+        newcatGif = findViewById(R.id.newcat_gif)
+
+        // 유저가 구입한 새로운 고양이 친구를 불러오기
+        SingletonKotlin.loadUserCatFriend(newcatGif)
 
         // 사용자 코인 불러오기
         try {
@@ -72,6 +79,7 @@ class CatRoomActivity : AppCompatActivity() {
             finish()
         }
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, Main_UI::class.java)

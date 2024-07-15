@@ -40,6 +40,11 @@ class DiaryDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_detail)
         applyFontSize() // 폰트 크기 적용
+        val dateTextView = findViewById<TextView>(R.id.edit_date)
+        val errorTextView = findViewById<TextView>(R.id.textview_error)
+        val contentEditText = findViewById<EditText>(R.id.edit_content)
+        val saveButton = findViewById<Button>(R.id.btn_save)
+        val deleteButton = findViewById<Button>(R.id.btn_delete)
         val loadingBackgroundLayout = findViewById<ConstraintLayout>(R.id.loading_background_layout)
         val loadingImage = findViewById<ImageView>(R.id.loading_image)
         val loadingText = findViewById<TextView>(R.id.loading_text)
@@ -50,7 +55,7 @@ class DiaryDetailActivity : BaseActivity() {
         val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)
         val loadingAnimation = LoadingAnimation(this,
             loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Generating Quiz")
-        val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation)
+        val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation, contentEditText)
         mediaEandS = MediaPlayer.create(this, R.raw.paper_flip)
         mediafail = MediaPlayer.create(this,R.raw.ding)
         mediadelete = MediaPlayer.create(this,R.raw.sad_meow)
@@ -92,12 +97,6 @@ class DiaryDetailActivity : BaseActivity() {
         val diaryId = intent.getStringExtra("diaryId")
         val date = intent.getStringExtra("date")
         val content = intent.getStringExtra("content")
-
-        val dateTextView = findViewById<TextView>(R.id.edit_date)
-        val errorTextView = findViewById<TextView>(R.id.textview_error)
-        val contentEditText = findViewById<EditText>(R.id.edit_content)
-        val saveButton = findViewById<Button>(R.id.btn_save)
-        val deleteButton = findViewById<Button>(R.id.btn_delete)
 
         dateTextView.text = date
         this.newDate = dateTextView.text.toString().replace("/", " ")

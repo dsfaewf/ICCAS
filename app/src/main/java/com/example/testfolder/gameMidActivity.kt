@@ -28,6 +28,7 @@ class gameMidActivity : BaseActivity() {
     private val totalRounds = 5
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
+    private val incorrectQuestions = mutableListOf<Pair<Int, String>>() // 틀린 문제 번호와 날짜 저장
 
     private lateinit var roundImageView: ImageView
     private lateinit var numberImageView: ImageView
@@ -137,10 +138,11 @@ class gameMidActivity : BaseActivity() {
                 correctAnswers++
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
                 SingletonKotlin.updateUserCoins(5, coinText) // Correct answer rewards 5 coins
+                totalTime += System.currentTimeMillis() - startTime
             } else {
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
+                incorrectQuestions.add(Pair(currentQuestionIndex + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
             }
-            totalTime += System.currentTimeMillis() - startTime
             currentQuestionIndex++
             if (currentQuestionIndex < quizList.size) {
                 startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
@@ -155,7 +157,7 @@ class gameMidActivity : BaseActivity() {
     private fun endQuiz(questionTextView: TextView) {
         val totalTimeSeconds = totalTime / 1000 // 초 단위로 변환
         SingletonKotlin.saveGameResult("4 Choice", correctAnswers, totalTimeSeconds)
-        showGameResultDialog(correctAnswers, totalTimeSeconds)
+        showGameResultDialog(correctAnswers, totalTimeSeconds, incorrectQuestions)
     }
 
     private fun startProgressBar(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
@@ -178,7 +180,6 @@ class gameMidActivity : BaseActivity() {
             handler.post {
                 if (currentQuestionIndex < quizList.size) {
                     questionTextView.text = "Time's up!"
-                    totalTime += roundTime
                     currentQuestionIndex++
                     if (currentQuestionIndex < quizList.size) {
                         startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
@@ -242,8 +243,21 @@ class gameMidActivity : BaseActivity() {
         btn4.isEnabled = true
     }
 
-    private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long) {
-        val message = "Quiz completed! Correct answers: $correctAnswers, Time taken: $totalTimeSeconds seconds"
+    private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long, incorrectQuestions: List<Pair<Int, String>>) {
+        val incorrectQuestionsText = if (incorrectQuestions.isNotEmpty()) {
+            incorrectQuestions.joinToString("\n") { "Question ${it.first}: ${it.second}" }
+        } else {
+            "None"
+        }
+
+        val message = """
+Quiz completed!
+Correct answers: $correctAnswers
+Time taken for correct answers: $totalTimeSeconds seconds
+--------------------
+Incorrect questions:
+$incorrectQuestionsText
+        """.trimIndent()
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Game Result")
@@ -253,6 +267,7 @@ class gameMidActivity : BaseActivity() {
                 finish() // 이전 화면으로 돌아가기
             }
         val dialog = builder.create()
+        dialog.setCancelable(false)
         dialog.show()
     }
 

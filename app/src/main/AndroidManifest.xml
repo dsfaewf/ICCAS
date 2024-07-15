@@ -22,6 +22,15 @@
             android:exported="true"></service>
 
         <activity
+            android:name=".ShortAnswerGameRecordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FourChoiceGameRecordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OXGameRecordActivity"
+            android:exported="false" />
+        <activity
             android:name=".GameRecordActivity"
             android:exported="false" />
         <activity

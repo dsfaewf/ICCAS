@@ -25,9 +25,10 @@ class gameLowActivity : BaseActivity() {
     private var currentRound = 0
     private var correctAnswers = 0
     private var startTime: Long = 0
-    private var totalTime = 0L
+    private var totalTime = 0L      //현재 토탈타임은 맞춘 문제에 대한 시간만 저장하는 것으로 변경되었음 주의.
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
+    private val incorrectQuestions = mutableListOf<Pair<Int, String>>() // 틀린 문제 번호와 날짜 저장
 
     private lateinit var roundImageView: ImageView
     private lateinit var numberImageView: ImageView
@@ -128,7 +129,7 @@ class gameLowActivity : BaseActivity() {
         } else {
             val totalGameTime = totalTime / 1000 // 초 단위로 변환
             SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime) // 게임 유형 추가
-            showGameResultDialog(correctAnswers, totalGameTime)
+            showGameResultDialog(correctAnswers, totalGameTime, incorrectQuestions)
         }
     }
 
@@ -138,12 +139,13 @@ class gameLowActivity : BaseActivity() {
             if (userAnswer == quizItem.answer) {
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
                 correctAnswers++
+                totalTime += System.currentTimeMillis() - startTime
                 SingletonKotlin.updateUserCoins(5, coinText)
             } else {
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
+                incorrectQuestions.add(Pair(currentRound + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
             }
             currentRound++
-            totalTime += System.currentTimeMillis() - startTime
             startRound(questionTextView)
         }
     }
@@ -168,7 +170,6 @@ class gameLowActivity : BaseActivity() {
             handler.post {
                 if (currentRound < selectedQuizzes.size) {
                     questionTextView.text = "Time's up!"
-                    totalTime += roundTime
                     currentRound++
                     startRound(questionTextView)
                 }
@@ -212,8 +213,21 @@ class gameLowActivity : BaseActivity() {
         })
     }
 
-    private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long) {
-        val message = "Quiz completed! Correct answers: $correctAnswers, Time taken: $totalTimeSeconds seconds"
+    private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long, incorrectQuestions: List<Pair<Int, String>>) {
+        val incorrectQuestionsText = if (incorrectQuestions.isNotEmpty()) {
+            incorrectQuestions.joinToString("\n") { "Question ${it.first}: ${it.second}" }
+        } else {
+            "None"
+        }
+
+        val message = """
+Quiz completed!
+Correct answers: $correctAnswers
+Time taken for correct answers: $totalTimeSeconds seconds
+--------------------
+Incorrect questions:
+$incorrectQuestionsText
+        """.trimIndent()
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Game Result")
@@ -223,6 +237,7 @@ class gameLowActivity : BaseActivity() {
                 finish() // 이전 화면으로 돌아가기
             }
         val dialog = builder.create()
+        dialog.setCancelable(false)
         dialog.show()
     }
 
