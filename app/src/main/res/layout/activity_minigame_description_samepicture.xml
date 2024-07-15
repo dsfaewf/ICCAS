@@ -31,7 +31,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/back_button"
-        android:layout_width="0dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginStart="16dp"
@@ -44,7 +44,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/start_button"
-        android:layout_width="0dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
