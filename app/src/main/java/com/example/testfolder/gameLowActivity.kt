@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -36,13 +37,16 @@ class gameLowActivity : BaseActivity() {
     private lateinit var loadingImage: ImageView
     private lateinit var loadingText: TextView
 
+    private lateinit var obutton: Button
+    private lateinit var xbutton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_low)
         progressBar = findViewById(R.id.progressBar1)
         val questionTextView = findViewById<TextView>(R.id.qeustionbox) // 질문텍스트
-        val obutton = findViewById<Button>(R.id.o_btn)  // O버튼
-        val xbutton = findViewById<Button>(R.id.x_btn) // X버튼
+        obutton = findViewById(R.id.o_btn)  // O버튼
+        xbutton = findViewById(R.id.x_btn) // X버튼
         coinText = findViewById(R.id.coin_text)
 
         roundImageView = findViewById(R.id.roundImageView)
@@ -57,6 +61,10 @@ class gameLowActivity : BaseActivity() {
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
         loadingImage.startAnimation(rotateAnimation)
         startLoadingTextAnimation()
+
+        // 답변 버튼 비활성화
+        obutton.isEnabled = false
+        xbutton.isEnabled = false
 
         try {
             currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
@@ -86,6 +94,9 @@ class gameLowActivity : BaseActivity() {
                 if (quizList.size >= 5) {
                     selectedQuizzes = quizList.shuffled().take(5)
                     startRound(questionTextView)
+                    // 답변 버튼 활성화
+                    obutton.isEnabled = true
+                    xbutton.isEnabled = true
                 } else {
                     questionTextView.text = "Not enough quizzes available."
                 }
@@ -117,10 +128,7 @@ class gameLowActivity : BaseActivity() {
         } else {
             val totalGameTime = totalTime / 1000 // 초 단위로 변환
             SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime) // 게임 유형 추가
-            questionTextView.text = "Quiz completed! Correct answers: $correctAnswers, Time taken: ${totalGameTime} seconds\nReturning to game selection screen in 5 seconds..."
-            handler.postDelayed({
-                finish() // 이전 화면으로 돌아가기
-            }, 5000) // 나가기 전에 5초 딜레이
+            showGameResultDialog(correctAnswers, totalGameTime)
         }
     }
 
@@ -185,7 +193,7 @@ class gameLowActivity : BaseActivity() {
             numberImageView.setImageResource(numberDrawable)
         } else {
             numberImageView.visibility = View.GONE
-            finishedTextView.visibility = View.VISIBLE
+//            finishedTextView.visibility = View.VISIBLE
         }
     }
 
@@ -202,6 +210,20 @@ class gameLowActivity : BaseActivity() {
                 handler.postDelayed(this, 500) // 500ms마다 업데이트
             }
         })
+    }
+
+    private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long) {
+        val message = "Quiz completed! Correct answers: $correctAnswers, Time taken: $totalTimeSeconds seconds"
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Game Result")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish() // 이전 화면으로 돌아가기
+            }
+        val dialog = builder.create()
+        dialog.show()
     }
 
     override fun onDestroy() {

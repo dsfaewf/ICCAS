@@ -114,7 +114,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_margin="10dp"
-                                android:text="질문 말풍선"
+                                android:text="loading question"
                                 android:textColorLink="#000000"
                                 android:textSize="20sp" />
                         </LinearLayout>
