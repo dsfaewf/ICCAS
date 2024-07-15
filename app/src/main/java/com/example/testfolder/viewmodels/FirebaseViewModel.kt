@@ -1,5 +1,6 @@
 package com.example.testfolder.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,26 +19,31 @@ class FirebaseViewModel : ViewModel() {
 
     fun set_OX_table_deleted(value: Boolean) {
         // setValue()를 사용하여 값 셋팅
+        Log.i("DB", "Invoked set_OX_table_deleted")
         _OX_table_deleted.postValue(value)
     }
 
     fun set_MCQ_table_deleted(value: Boolean) {
         // setValue()를 사용하여 값 셋팅
+        Log.i("DB", "Invoked set_MCQ_table_deleted")
         _MCQ_table_deleted.postValue(value)
     }
 
     fun set_blank_table_deleted(value: Boolean) {
         // setValue()를 사용하여 값 셋팅
+        Log.i("DB", "Invoked set_blank_table_deleted")
         _blank_table_deleted.postValue(value)
     }
 
     fun set_hint_table_deleted(value: Boolean) {
         // setValue()를 사용하여 값 셋팅
+        Log.i("DB", "Invoked set_hint_table_deleted")
         _hint_table_deleted.postValue(value)
     }
 
     fun setAllQuizSaved(value: Boolean) {
         // setValue()를 사용하여 값 셋팅
+        Log.i("DB", "Invoked setAllQuizSaved")
         _allQuizSaved.postValue(value)
     }
 }
