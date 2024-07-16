@@ -38,4 +38,5 @@ class SplashActivity : AppCompatActivity() {
             finish() // 현재 액티비티를 종료
         }, 1800) // 1800ms 로 설정 ( 현재 gif 시간 900ms)
     }
+
 }
