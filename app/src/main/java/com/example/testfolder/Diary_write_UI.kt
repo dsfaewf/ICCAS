@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.media.MediaPlayer
@@ -40,6 +41,7 @@ class Diary_write_UI : BaseActivity() {
     private lateinit var mediafail: MediaPlayer   //효과음 재생용 변수
 
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,7 +52,7 @@ class Diary_write_UI : BaseActivity() {
         setContentView(R.layout.activity_write_diary)
 
         val saveButton = findViewById<Button>(R.id.my_button6)
-        val backButton1 = findViewById<Button>(R.id.my_button8)
+        val photoActivity = findViewById<Button>(R.id.my_button11)
         val diarycheckButton = findViewById<Button>(R.id.my_button7)
         val diaryEditText = findViewById<EditText>(R.id.diary_edit_text)
         val characterCountTextView = findViewById<TextView>(R.id.character_count_text_view)
@@ -210,8 +212,8 @@ class Diary_write_UI : BaseActivity() {
         })
 
         // Back 버튼 클릭 시 메인 화면으로 이동
-        backButton1.setOnClickListener {
-            val intent = Intent(applicationContext, Main_UI::class.java)
+        photoActivity.setOnClickListener {
+            val intent = Intent(applicationContext, PhotoActivity::class.java)
             startActivity(intent)
             finish()
         }

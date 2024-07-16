@@ -82,14 +82,16 @@
             android:layout_weight="1"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button6"
+            android:id="@+id/my_button11"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:background="@drawable/rectangle_btn_style"
-            android:text="@string/save_button"
+            android:text="picture"
             android:textSize="20sp"
             android:textStyle="bold" />
+
+
     </LinearLayout>
 
     <LinearLayout
@@ -193,15 +195,15 @@
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button8"
-            android:layout_width="0dp"
+            android:id="@+id/my_button6"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_weight="1"
+            android:layout_gravity="end"
             android:background="@drawable/rectangle_btn_style"
-            android:text="back"
+            android:text="@string/save_button"
             android:textSize="20sp"
             android:textStyle="bold" />
+
     </LinearLayout>
 
 </LinearLayout>
