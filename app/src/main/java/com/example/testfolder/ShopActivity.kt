@@ -66,15 +66,20 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         recyclerView = findViewById(R.id.shop_items_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         shopItemList = listOf(
-            ShopItem(R.drawable.room01, "Room 1", 10),
-            ShopItem(R.drawable.room02, "Room 2", 30),
-            ShopItem(R.drawable.room03, "Room 3", 50),
-            ShopItem(R.drawable.room04, "Room 4", 70),
-            ShopItem(R.drawable.room05, "Room 5", 90),
-            ShopItem(R.drawable.room06, "Room 6", 100),
-            ShopItem(R.drawable.room07, "Room 7", 150),
-            ShopItem(R.drawable.room08, "Room 8", 200),
-            ShopItem(R.drawable.cat_friend1, "Cat Friend 1", 5000) // 추가된 고양이 친구
+            ShopItem(R.drawable.room01, "Room 1", 150),
+            ShopItem(R.drawable.room02, "Room 2", 200),
+            ShopItem(R.drawable.room03, "Room 3", 250),
+            ShopItem(R.drawable.room04, "Room 4", 300),
+            ShopItem(R.drawable.room05, "Room 5", 350),
+            ShopItem(R.drawable.room06, "Room 6", 400),
+            ShopItem(R.drawable.room07, "Room 7", 450),
+            ShopItem(R.drawable.room08, "Room 8", 450),
+            ShopItem(R.drawable.colosseum, "Catlosseum", 1000),
+            ShopItem(R.drawable.statueofliberty, "Cat of liberty", 1000),
+            ShopItem(R.drawable.effel, "Effel cat", 1000),
+            ShopItem(R.drawable.greatwall, "Great wall of Cat", 1000),
+            ShopItem(R.drawable.operahouse, "Catperahouse", 1000),
+            ShopItem(R.drawable.cat_friend1, "Cat Friend 1", 1000) // 추가된 고양이 친구
         )
 
         adapter = ShopItemsAdapter(shopItemList, this, this)
@@ -200,9 +205,6 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         if (userCoins < itemPrice) {
             showNotEnoughCoinsDialog(clickedItem) // 코인 부족할 때
         } else {
-            // 여기에 아이템을 구매하는 코드를 작성합니다.
-            // 예를 들어, 구매한 아이템을 데이터베이스에 업데이트하거나, 코인을 차감하는 등의 작업을 수행할 수 있습니다.
-
             // 구매 후 코인 차감 예시
             val remainingCoins = userCoins - itemPrice
             coinText.text = remainingCoins.toString()  // 화면에 남은 코인을 업데이트
@@ -225,6 +227,8 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
                 if (clickedItem.name.startsWith("Cat Friend") || clickedItem.name == "No Cat Friend") {
                     SingletonKotlin.saveUserCatFriend(clickedItem.name)
+                } else {
+                    SingletonKotlin.saveUserBackground(clickedItem.name)
                 }
 
                 val builder = AlertDialog.Builder(this)

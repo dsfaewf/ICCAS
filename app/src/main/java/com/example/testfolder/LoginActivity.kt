@@ -1,6 +1,9 @@
 package com.example.testfolder
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +18,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -35,7 +40,6 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-    //하위 4개의 변수는 로딩 이미지를 위해 선언함.
     private lateinit var loadingImage: ImageView
     private lateinit var loadingText: TextView
     private lateinit var rotateAnimation: Animation
@@ -44,6 +48,7 @@ class LoginActivity : AppCompatActivity() {
     companion object {
         private const val RC_SIGN_IN = 9001
         private const val TAG = "LoginActivity"
+        private const val NOTIFICATION_REQUEST_CODE = 1001
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +68,6 @@ class LoginActivity : AppCompatActivity() {
         // Google 계정 로그아웃
         googleSignInClient.signOut().addOnCompleteListener {
             // 로그아웃 후 작업을 수행할 수 있음
-            // 같은 아이디로만 로그인 되는 현상 해결을 위해 추가함.
         }
 
         val loginBtn = findViewById<Button>(R.id.login_btn)
@@ -80,11 +84,9 @@ class LoginActivity : AppCompatActivity() {
         // 로딩 이미지와 텍스트
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
-        //애니메이션 초기화
         rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
 
         // 비밀번호 입력 필드에 Enter 키 리스너 추가
-        // 기존의 비밀번호 입력 필드 리스너 수정
         inputPw.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
                 loginUser(inputId.text.toString().trim(), inputPw.text.toString().trim())
@@ -122,13 +124,16 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+
+        // 알림 권한 확인 및 요청
+        if (!checkNotificationPermission()) {
+            requestNotificationPermission()
+        }
     }
 
     private fun loginUser(userId: String, password: String) {
         if (userId.isNotEmpty() && password.isNotEmpty()) {
-
-            // 로딩 이미지와 텍스트 표시
-            showLoading() //만들어두고 왜 안썼었지 ㅋㅋ...
+            showLoading() //로딩 이미지와 텍스트 표시
 
             // 사용자 아이디로 이메일 찾기
             val userRef = FirebaseDatabase.getInstance().reference.child("users")
@@ -140,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
                             if (email != null) {
                                 signInWithEmail(email, password)
                             } else {
-                                hideLoading() //로딩없애기 처리
+                                hideLoading() //로딩 없애기 처리
                                 Toast.makeText(this@LoginActivity, "No email corresponding to the ID was found.", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -230,17 +235,14 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    // 사용자가 존재하는지 확인하고 로그인 처리
     private fun checkUserExistsAndLogin(userId: String) {
         val userRef = FirebaseDatabase.getInstance().reference.child("users").child(userId)
         userRef.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {
-                // 회원가입을 마친 사용자인 경우 로그인 성공
                 val intent = Intent(this, Main_UI::class.java)
                 startActivity(intent)
                 finish()
             } else {
-                // 회원가입을 마치지 않은 사용자인 경우 사용자 정보 추가
                 val user = auth.currentUser
                 val email = user?.email
                 if (email != null) {
@@ -257,37 +259,35 @@ class LoginActivity : AppCompatActivity() {
         val userRef = FirebaseDatabase.getInstance().reference.child("users").child(userId)
         val userData = hashMapOf(
             "email" to email,
-            "userId" to userId // 로그인 방식 추가
+            "userId" to userId
         )
         userRef.setValue(userData)
             .addOnSuccessListener {
-                // 데이터베이스에 사용자 정보 추가 성공
                 val intent = Intent(this, Main_UI::class.java)
                 startActivity(intent)
                 finish()
             }
             .addOnFailureListener { exception ->
                 hideLoading() //로딩 없애기 처리
-                // 데이터베이스에 사용자 정보 추가 실패
                 Toast.makeText(this, "Failed to add user information to database: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun showLoading() { //로딩이미지 표출용
+    private fun showLoading() {
         loadingImage.visibility = View.VISIBLE
         loadingText.visibility = View.VISIBLE
         loadingImage.startAnimation(rotateAnimation)
         startLoadingTextAnimation()
     }
 
-    private fun hideLoading() { //로딩이미지 다시 없애는 용도
+    private fun hideLoading() {
         loadingImage.visibility = View.GONE
         loadingText.visibility = View.GONE
         loadingImage.clearAnimation()
         handler.removeCallbacksAndMessages(null) // 애니메이션 중지
     }
 
-    private fun startLoadingTextAnimation() { //...을 로딩과 함께 애니메이션으로 움직이도록
+    private fun startLoadingTextAnimation() {
         var dotCount = 0
         handler.post(object : Runnable {
             override fun run() {
@@ -300,5 +300,45 @@ class LoginActivity : AppCompatActivity() {
                 handler.postDelayed(this, 500) // 500ms마다 업데이트
             }
         })
+    }
+
+    private fun checkNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                NOTIFICATION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            NOTIFICATION_REQUEST_CODE -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.d(TAG, "Notification permission granted")
+                } else {
+                    Log.d(TAG, "Notification permission denied")
+                    Toast.makeText(this, "Notification permission is required for proper app functionality.", Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+        }
     }
 }
