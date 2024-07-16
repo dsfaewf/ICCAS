@@ -15,7 +15,7 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game_record)
+        setContentView(R.layout.activity_oxgame_record)
 
         webView = findViewById(R.id.webView)
         val dailyButton = findViewById<Button>(R.id.dailyButton)
@@ -48,16 +48,19 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
         oxGameRecordButton.setOnClickListener {
             val intent = Intent(this, OXGameRecordActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         fourChoiceGameRecordButton.setOnClickListener {
             val intent = Intent(this, FourChoiceGameRecordActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         shortAnswerGameRecordButton.setOnClickListener {
             val intent = Intent(this, ShortAnswerGameRecordActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 

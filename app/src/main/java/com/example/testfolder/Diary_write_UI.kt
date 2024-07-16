@@ -134,9 +134,13 @@ class Diary_write_UI : BaseActivity() {
                 )
                 val dbTask = userDiaryRef.setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
                 dbTask.addOnSuccessListener {
+                    // 코인 업데이트 로직 추가
+                    SingletonKotlin.updateUserCoinsWithoutTextView(10,this)
+                    Toast.makeText(this, "Diary saved and 10 coins added!", Toast.LENGTH_SHORT).show()
                     Log.i("DB", "Diary saved successfully")
                 }
             }
+
 
             // TEST
             if (uid != null) {
