@@ -100,7 +100,8 @@ class gameLowActivity : BaseActivity() {
                     obutton.isEnabled = true
                     xbutton.isEnabled = true
                 } else {
-                    questionTextView.text = "Not enough quizzes available."
+//                    questionTextView.text = "No
+                    SingletonKotlin.showNoQuizzesDialogAndExit(this)
                 }
             }
         }, 3000)

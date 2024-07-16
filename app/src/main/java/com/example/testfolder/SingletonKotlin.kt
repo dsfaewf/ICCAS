@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.example.testfolder.utils.PreprocessTexts
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -412,4 +414,17 @@ object SingletonKotlin {
                 }
             })
     }
+    fun showNoQuizzesDialogAndExit(context: Context) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("No Quizzes Available")
+            .setMessage("You need to write a diary to unlock quizzes.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                (context as? AppCompatActivity)?.finish() // 현재 액티비티 종료
+            }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
+
 }
