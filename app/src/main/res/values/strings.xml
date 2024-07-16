@@ -18,4 +18,6 @@
 
     <string name="default_web_client_id">392698074344-k34oj2vn05f555j5th3dduj8trr350kj.apps.googleusercontent.com</string>
 
+    <string name="default_notification_channel_id">fcm_default_channel</string>
+
 </resources>
