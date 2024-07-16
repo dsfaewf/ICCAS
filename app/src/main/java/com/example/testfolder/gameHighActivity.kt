@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.example.testfolder.utils.PreprocessTexts
 import com.google.firebase.auth.FirebaseUser
 
 class gameHighActivity : BaseActivity() {
@@ -130,8 +131,11 @@ class gameHighActivity : BaseActivity() {
     private fun handleAnswer(userAnswer: String, questionTextView: TextView, answerEditText: EditText) {
         if (currentQuestionIndex < quizList.size) {
             val quizItem = quizList[currentQuestionIndex]
+            val inputStr = userAnswer.trim()
+            val answerStr = quizItem.answer.trim()
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
-            if (userAnswer.trim().equals(quizItem.answer.trim(), ignoreCase = true)) {
+//            if (userAnswer.trim().equals(quizItem.answer.trim(), ignoreCase = true)) {
+            if (PreprocessTexts.isCorrectAnswer(inputStr, answerStr)) {
                 correctAnswers++
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
                 SingletonKotlin.updateUserCoins(5, coinText)
