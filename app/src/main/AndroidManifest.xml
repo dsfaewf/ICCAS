@@ -15,15 +15,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestFolder"
         tools:ignore="ExtraText"
-        tools:targetApi="31" >
+
+        tools:targetApi="31">
         <activity
             android:name=".PhotoActivity"
             android:exported="false" />
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default_notification_channel_id"/>
         <service
             android:name=".MusicService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
+        <service
+            android:name=".service.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".ShortAnswerGameRecordActivity"
@@ -54,7 +64,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            />
         </activity> <!-- 로그인 액티비티를 메인으로 -->
         <activity
             android:name=".LoginActivity"
@@ -82,7 +91,7 @@
             android:exported="false" />
         <activity
             android:name=".gameHighActivity"
-            android:windowSoftInputMode="adjustUnspecified" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".gameMidActivity"
             android:exported="false" />
@@ -100,7 +109,7 @@
             android:exported="false" />
         <activity
             android:name=".Diary_write_UI"
-            android:exported="false" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".DiaryDetailActivity"
             android:exported="false" />

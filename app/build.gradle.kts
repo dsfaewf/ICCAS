@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.firebase.functions)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.config.ktx)
+    implementation ("com.google.firebase:firebase-messaging-ktx")
 
     // Google Play services library for Google Sign-In 추가
     implementation(libs.play.services.auth)
@@ -92,5 +93,7 @@ dependencies {
     implementation(libs.openai.client)
     implementation(libs.ktor.client.android)
     implementation(libs.okhttp)
+
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
 }
 
