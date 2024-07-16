@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.testfolder">
+    package="com.example.testfolder" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -15,12 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestFolder"
         tools:ignore="ExtraText"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".PhotoActivity"
+            android:exported="false" />
+
         <service
             android:name=".MusicService"
             android:enabled="true"
-            android:exported="false"/>
-
+            android:exported="false" />
 
         <activity
             android:name=".ShortAnswerGameRecordActivity"
@@ -45,7 +48,7 @@
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

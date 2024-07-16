@@ -16,6 +16,7 @@ class Main_UI : BaseActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var mediaPlayer: MediaPlayer   // 효과음 재생용 변수
+    private var musicServiceIntent: Intent? = null  // MusicService의 Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +27,8 @@ class Main_UI : BaseActivity() {
         mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
 
         // MusicService 시작
-        startService(Intent(this, MusicService::class.java))
+        musicServiceIntent = Intent(this, MusicService::class.java)
+        startService(musicServiceIntent)
 
         checkFirstLogin()
 
@@ -37,46 +39,58 @@ class Main_UI : BaseActivity() {
         val gameRecodeBtn = findViewById<View>(R.id.my_button5) as Button
 
         imageButton1.setOnClickListener {
-            val intent = Intent(applicationContext, Setting_UI::class.java)
-            startActivity(intent)
-            finish()
+            navigateToSettingUI()
         }
 
         diaryButton.setOnClickListener {
-            // 효과음 재생 테스트
             mediaPlayer.start()
-
-            // Diary_write_UI 액티비티로 이동
-            val intent = Intent(applicationContext, Diary_write_UI::class.java)
-            startActivity(intent)
-            finish()
+            navigateToDiaryWriteUI()
         }
 
         gameButton.setOnClickListener {
-            val intent = Intent(this, gamelistActivity::class.java)
-            startActivity(intent)
-            finish()
+            navigateToGameListActivity()
         }
 
         catRoomButton.setOnClickListener {
-            val intent = Intent(this, CatRoomActivity::class.java)
-            startActivity(intent)
-            finish()
+            navigateToCatRoomActivity()
         }
 
         gameRecodeBtn.setOnClickListener {
-            val intent = Intent(applicationContext, OXGameRecordActivity::class.java)
-            startActivity(intent)
-            finish()
+            navigateToOXGameRecordActivity()
         }
+    }
+
+    private fun navigateToSettingUI() {
+        val intent = Intent(applicationContext, Setting_UI::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToDiaryWriteUI() {
+        val intent = Intent(applicationContext, Diary_write_UI::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToGameListActivity() {
+        val intent = Intent(applicationContext, gamelistActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToCatRoomActivity() {
+        val intent = Intent(applicationContext, CatRoomActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToOXGameRecordActivity() {
+        val intent = Intent(applicationContext, OXGameRecordActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
 
-        // MusicService 중지하지 않음
-        // stopService(Intent(this, MusicService::class.java))
+        // MusicService 중지
+        stopService(musicServiceIntent)
     }
 
     private fun checkFirstLogin() {
@@ -101,7 +115,6 @@ class Main_UI : BaseActivity() {
             .setPositiveButton("Go to Survey") { dialog, which ->
                 val intent = Intent(this, SurveyActivity::class.java)
                 startActivity(intent)
-                finish()
             }
             .setNegativeButton("Do it Later", null)
             .show()
