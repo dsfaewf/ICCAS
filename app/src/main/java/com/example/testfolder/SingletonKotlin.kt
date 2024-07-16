@@ -1,5 +1,6 @@
 package com.example.testfolder
 
+import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -69,6 +70,30 @@ object SingletonKotlin {
             }
         })
     }
+
+    fun updateUserCoinsWithoutTextView(coinsToAdd: Long, context: Context) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val userRef = database.child("users").child(currentUser.uid)
+
+        userRef.child("coins").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val currentCoins = snapshot.getValue(Long::class.java) ?: 0L
+                val newCoins = currentCoins + coinsToAdd
+                userRef.child("coins").setValue(newCoins).addOnCompleteListener {
+                    if (!it.isSuccessful) {
+                        Toast.makeText(context, "Failed to update coins", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // 에러 처리
+            }
+        })
+    }
+
+
 
     fun loadUserBackground(frame: FrameLayout) {
         checkInitialization()

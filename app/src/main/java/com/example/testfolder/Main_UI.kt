@@ -64,7 +64,7 @@ class Main_UI : BaseActivity()  {
             finish()
         }
         gameRecodeBtn.setOnClickListener {
-            val intent = Intent(applicationContext, GameRecordActivity::class.java)
+            val intent = Intent(applicationContext, OXGameRecordActivity::class.java)
             startActivity(intent)
             finish()
         }
