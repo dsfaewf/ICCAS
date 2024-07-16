@@ -32,9 +32,6 @@
             android:name=".OXGameRecordActivity"
             android:exported="false" />
         <activity
-            android:name=".GameRecordActivity"
-            android:exported="false" />
-        <activity
             android:name=".MinigameDescriptionSamepictureActivity"
             android:exported="false" />
         <activity
