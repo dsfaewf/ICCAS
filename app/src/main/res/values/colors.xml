@@ -6,4 +6,24 @@
     <color name="lightred">#FFEFA09B</color>
     <color name="red">#FFFF0F00</color>
     <color name="purple_50">#CE93D8</color>
+    <color name="yellow_default">#FF9800</color> <!-- 기본 상태 색상: 주황색 -->
+    <color name="yellow_pressed">#F57C00</color> <!-- 버튼이 눌렸을 때 색상: 진한 주황색 -->
+    <color name="yellow_focused">#FFB74D</color> <!-- 버튼이 포커스 되었을 때 색상: 밝은 주황색 -->
+    <color name="grey_disabled">#BDBDBD</color> <!-- 버튼이 비활성화 되었을 때 색상: 회색 -->
+        <!-- 게임 시작 버튼 색상 -->
+        <!-- 주황색 계열 -->
+    <color name="orange_default">#FF9800</color> <!-- 기본 상태 색상: 주황색 -->
+    <color name="orange_pressed">#F57C00</color> <!-- 버튼이 눌렸을 때 색상: 진한 주황색 -->
+    <color name="orange_focused">#FFB74D</color> <!-- 버튼이 포커스 되었을 때 색상: 밝은 주황색 -->
+
+
+        <!-- 녹색 계열 -->
+    <color name="green_default">#4CAF50</color> <!-- 기본 상태 색상: 녹색 -->
+    <color name="green_pressed">#388E3C</color> <!-- 버튼이 눌렸을 때 색상: 진한 녹색 -->
+    <color name="green_focused">#81C784</color> <!-- 버튼이 포커스 되었을 때 색상: 밝은 녹색 -->
+
+
+
+
+
 </resources>
