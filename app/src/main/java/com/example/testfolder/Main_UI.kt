@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class Main_UI : BaseActivity()  {
+class Main_UI : BaseActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
-    private lateinit var mediaPlayer: MediaPlayer   //효과음 재생용 변수
+    private lateinit var mediaPlayer: MediaPlayer   // 효과음 재생용 변수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +63,7 @@ class Main_UI : BaseActivity()  {
             startActivity(intent)
             finish()
         }
+
         gameRecodeBtn.setOnClickListener {
             val intent = Intent(applicationContext, OXGameRecordActivity::class.java)
             startActivity(intent)
@@ -74,8 +75,8 @@ class Main_UI : BaseActivity()  {
         super.onDestroy()
         mediaPlayer.release()
 
-        // MusicService 중지
-        stopService(Intent(this, MusicService::class.java))
+        // MusicService 중지하지 않음
+        // stopService(Intent(this, MusicService::class.java))
     }
 
     private fun checkFirstLogin() {
@@ -96,7 +97,7 @@ class Main_UI : BaseActivity()  {
     private fun showSurveyDialog() {
         AlertDialog.Builder(this)
             .setTitle("Request for a survey")
-            .setMessage("Oh? You haven't filled out the survey yet! Please take a brief survey!") //수정
+            .setMessage("Oh? You haven't filled out the survey yet! Please take a brief survey!")
             .setPositiveButton("Go to Survey") { dialog, which ->
                 val intent = Intent(this, SurveyActivity::class.java)
                 startActivity(intent)
