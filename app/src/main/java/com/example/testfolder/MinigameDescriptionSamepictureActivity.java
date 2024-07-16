@@ -57,7 +57,7 @@ public class MinigameDescriptionSamepictureActivity extends AppCompatActivity {
     private void loadDescriptionVideo() {
         try {
             // 동영상 파일 경로 설정
-            String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.samepciture_game;
+            String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.samepicture_game;
             Uri uri = Uri.parse(videoPath);
             descriptionVideo.setVideoURI(uri);
 
