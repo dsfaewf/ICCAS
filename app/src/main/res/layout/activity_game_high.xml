@@ -108,6 +108,7 @@
 
                             <TextView
                                 android:id="@+id/qeustionbox"
+                                android:fontFamily="@font/bmjua_ttf"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_margin="10dp"
