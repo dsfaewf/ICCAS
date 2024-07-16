@@ -6,10 +6,13 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.example.testfolder.utils.PreprocessTexts
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.GifImageView
 
 object SingletonKotlin {
@@ -127,6 +130,9 @@ object SingletonKotlin {
                     val imageResource = getCatFriendImageResourceByName(selectedCatFriend)
                     newCatGif.setImageResource(imageResource)
                     newCatGif.visibility = View.VISIBLE
+                    // GIF 반복 설정
+                    val gifDrawable = newCatGif.drawable as GifDrawable
+                    gifDrawable.loopCount = 0 // 무한 반복
                 }
             }
 
@@ -212,6 +218,11 @@ object SingletonKotlin {
             "Room 6" -> R.drawable.room06
             "Room 7" -> R.drawable.room07
             "Room 8" -> R.drawable.room08
+            "Catlosseum" -> R.drawable.colosseum
+            "Cat of liberty" -> R.drawable.statueofliberty
+            "Effel cat" -> R.drawable.effel
+            "Great wall of Cat" -> R.drawable.greatwall
+            "Catperahouse" -> R.drawable.operahouse
             "Default Room" -> R.drawable.room3
             else -> R.drawable.room3 // 기본 이미지 설정
         }
@@ -403,4 +414,17 @@ object SingletonKotlin {
                 }
             })
     }
+    fun showNoQuizzesDialogAndExit(context: Context) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("No Quizzes Available")
+            .setMessage("You need to write a diary to unlock quizzes.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                (context as? AppCompatActivity)?.finish() // 현재 액티비티 종료
+            }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
+
 }

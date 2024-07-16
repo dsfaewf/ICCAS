@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,12 +33,10 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)
         newcatGif = findViewById(R.id.newcat_gif)
-        val gifDrawable = catGif.drawable as GifDrawable
         frame = findViewById(R.id.deco_frame)
         roomBtn = findViewById(R.id.room_btn_deco)
         shopBtn = findViewById(R.id.shop_btn_deco)
         saveBtn = findViewById(R.id.save_btn_deco)
-        gifDrawable.loopCount = 0 // 무한 반복
 
         recyclerView = findViewById(R.id.buy_items_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -84,7 +83,11 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
             }
             showConfirmationDialog() // 팝업 띄우고 확인 누르면 룸 이동
         }
+
+        // 새로운 고양이 친구를 로드하여 표시
+        SingletonKotlin.loadUserCatFriend(newcatGif)
     }
+
 
     override fun onItemClick(position: Int) {
         clickedItem = buyItemList[position]

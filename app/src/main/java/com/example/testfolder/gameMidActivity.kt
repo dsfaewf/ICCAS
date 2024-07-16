@@ -101,7 +101,8 @@ class gameMidActivity : BaseActivity() {
                     // 답변 버튼 활성화
                     enableAnswerButtons()
                 } else {
-                    questionTextView.text = "No quiz available."
+//                    questionTextView.text = "No quiz available."
+                    SingletonKotlin.showNoQuizzesDialogAndExit(this)
                 }
             }
         }, 3000)
