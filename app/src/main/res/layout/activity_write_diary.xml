@@ -140,6 +140,24 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textview_guide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Focus on writing about positive or grateful moments!"
+            android:textSize="16sp"
+            android:textColor="#0000FF"
+            android:padding="5dp"
+            android:background="@drawable/rectangle_btn_style2"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginTop="15dp">
