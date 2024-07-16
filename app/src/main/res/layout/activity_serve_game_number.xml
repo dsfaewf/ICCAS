@@ -87,7 +87,7 @@
                 android:id="@+id/btn1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="1"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -108,7 +108,7 @@
                 android:id="@+id/btn2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="2"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -130,7 +130,7 @@
                 android:id="@+id/btn3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="3"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -152,7 +152,7 @@
                 android:id="@+id/btn4"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="4"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -174,7 +174,7 @@
                 android:id="@+id/btn5"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="5"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -196,7 +196,7 @@
                 android:id="@+id/btn6"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="6"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -218,7 +218,7 @@
                 android:id="@+id/btn7"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="7"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -240,7 +240,7 @@
                 android:id="@+id/btn8"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="8"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -262,7 +262,7 @@
                 android:id="@+id/btn9"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="9"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -284,7 +284,7 @@
                 android:id="@+id/btnblank"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text=""
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -306,7 +306,7 @@
                 android:id="@+id/btn0"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="0"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -328,7 +328,7 @@
                 android:id="@+id/btn_delete"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/purple_50"
+                android:background="@drawable/game_button"
                 android:text="Del"
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />
@@ -344,8 +344,9 @@
         android:layout_below="@id/grid_layout"
         android:layout_alignParentStart="true"
         android:layout_marginStart="80dp"
-        android:background="@color/purple_50"
-        android:text="start"
+        android:background="@android:color/holo_green_light"
+        android:text="   start   "
+        android:textColor="#FFFFFF"
         android:textSize="25sp" />
 
     <Button
@@ -355,8 +356,9 @@
         android:layout_below="@id/grid_layout"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="80dp"
-        android:background="@color/purple_50"
-        android:text="answer"
+        android:background="@android:color/holo_green_light"
+        android:text=" answer "
+        android:textColor="#FFFFFF"
         android:textSize="25sp" />
 
 </RelativeLayout>

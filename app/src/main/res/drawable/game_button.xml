@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:drawable="@color/yellow_pressed" /> <!-- 버튼이 눌렸을 때 -->
+    <item android:state_focused="true" android:drawable="@color/yellow_focused" /> <!-- 버튼이 포커스 되었을 때 -->
+    <item android:state_enabled="false" android:drawable="@color/grey_disabled" /> <!-- 버튼이 비활성화 되었을 때 -->
+    <item android:drawable="@color/yellow_default" /> <!-- 기본 상태 -->
+</selector>
