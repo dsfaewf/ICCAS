@@ -19,6 +19,8 @@ opennlpTools = "1.9.4"
 playServicesAuth = "21.2.0"
 smileNlp = "2.6.0"
 firebaseConfigKtx = "22.0.0"
+googleServices = "4.4.2"
+firebaseMessaging = "24.0.0"
 
 [libraries]
 android-gif-drawable = { module = "pl.droidsonroids.gif:android-gif-drawable", version.ref = "androidGifDrawable" }
@@ -44,6 +46,8 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 smile-core = { module = "com.github.haifengl:smile-core", version.ref = "smileNlp" }
 smile-nlp = { module = "com.github.haifengl:smile-nlp", version.ref = "smileNlp" }
 firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebaseConfigKtx" }
+google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
