@@ -56,6 +56,7 @@ class DiaryDetailActivity : BaseActivity() {
         val loadingAnimation = LoadingAnimation(this,
             loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Generating Quiz")
         val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation, contentEditText)
+        myOpenAI.fetchApiKey()
         mediaEandS = MediaPlayer.create(this, R.raw.paper_flip)
         mediafail = MediaPlayer.create(this,R.raw.ding)
         mediadelete = MediaPlayer.create(this,R.raw.sad_meow)
@@ -65,32 +66,32 @@ class DiaryDetailActivity : BaseActivity() {
         // Save new data from ChatGPT
         firebaseViewModel.OX_table_deleted.observe(this) {
             myOpenAI.save_OX_data()
-            firebaseViewModel.OX_table_deleted.removeObservers(this)
+//            firebaseViewModel.OX_table_deleted.removeObservers(this)
         }
 
         // Once a DB table whose date is the same as selected date is delete
         // Save new data from ChatGPT
         firebaseViewModel.MCQ_table_deleted.observe(this) {
             myOpenAI.save_MCQ_data()
-            firebaseViewModel.MCQ_table_deleted.removeObservers(this)
+//            firebaseViewModel.MCQ_table_deleted.removeObservers(this)
         }
 
         openAIViewModel.gotResponseForBlankLiveData.observe(this) {
             myOpenAI.generate_hint()
-            openAIViewModel.gotResponseForBlankLiveData.removeObservers(this)
+//            openAIViewModel.gotResponseForBlankLiveData.removeObservers(this)
         }
 
         // Once a DB table whose date is the same as selected date is delete
         // Save new data from ChatGPT
         firebaseViewModel.blank_table_deleted.observe(this) {
             myOpenAI.save_blank_quiz_data()
-            firebaseViewModel.blank_table_deleted.removeObservers(this)
+//            firebaseViewModel.blank_table_deleted.removeObservers(this)
         }
 
         firebaseViewModel.allQuizSaved.observe(this) {
 //            Toast.makeText(this, "Diary has been modified.", Toast.LENGTH_SHORT).show()
             finish()
-            firebaseViewModel.allQuizSaved.removeObservers(this)
+//            firebaseViewModel.allQuizSaved.removeObservers(this)
         }
 
         auth = FirebaseAuth.getInstance()
@@ -136,14 +137,7 @@ class DiaryDetailActivity : BaseActivity() {
             myOpenAI.updateDate(dateTextView.text.toString())
             // Observe the LiveData
             // Once the api key is fetched, generate new 3 types of quiz
-            openAIViewModel.apiKey.observe(this) {
-                myOpenAI.generate_OX_quiz_and_save(
-                    this.newContent,
-                    this.numOfQuestions)
-                openAIViewModel.apiKey.removeObservers(this)
-            }
-            myOpenAI.fetchApiKey()
-            diaryWriteViewModel.buttonClickEvent.removeObservers(this)
+            myOpenAI.generate_quiz_and_save(this.newContent, this.numOfQuestions)
         }
 
         deleteButton.setOnClickListener {

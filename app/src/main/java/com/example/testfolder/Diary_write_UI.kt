@@ -146,7 +146,7 @@ class Diary_write_UI : BaseActivity() {
 
             // TEST
             if (uid != null) {
-                myOpenAI.generate_OX_quiz_and_save(this.diaryContent, this.numOfQuestions)
+                myOpenAI.generate_quiz_and_save(this.diaryContent, this.numOfQuestions)
             } else {
                 Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
             }
