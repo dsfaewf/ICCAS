@@ -202,9 +202,14 @@ class PreprocessTexts {
         }
 
         fun isCorrectAnswer(_inputStr: String, _answerStr: String): Boolean {
+            val alphabetsAndNumbers = generateAlphabetsAndNumbers()
             // Make every char to uppercase first
             val inputStr = _inputStr.uppercase()
             val answerStr = _answerStr.uppercase()
+            // If it has an invalid character, return false
+            inputStr.forEach {
+                if(it !in alphabetsAndNumbers) return false
+            }
             if (inputStr.length == answerStr.length) {
                 return bothAreTheSame(inputStr, answerStr)
             } else {
@@ -242,6 +247,26 @@ class PreprocessTexts {
             val stringArray = _stringLookingLikeArray.split(",").map { it.trim() }
             return stringArray
         }
-    }
 
+        fun generateAlphabetsAndNumbers(): List<Char> {
+            val alphabetsAndNumbers = mutableListOf<Char>()
+
+            // Add uppercase letters A-Z
+            for (c in 'A'..'Z') {
+                alphabetsAndNumbers.add(c)
+            }
+
+            // Add lowercase letters a-z
+            for (c in 'a'..'z') {
+                alphabetsAndNumbers.add(c)
+            }
+
+            // Add numbers 0-9
+            for (c in '0'..'9') {
+                alphabetsAndNumbers.add(c)
+            }
+
+            return alphabetsAndNumbers
+        }
+    }
 }

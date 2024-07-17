@@ -7,15 +7,24 @@
         android:id="@+id/btnSelectImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose your image"
+        android:text="Choice your image"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"/>
+
+    <Button
+        android:id="@+id/btnGoToList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Image List"
+        android:layout_below="@id/btnSelectImage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
 
     <ImageView
         android:id="@+id/selectedImageView"
         android:layout_width="280dp"
         android:layout_height="400dp"
-        android:layout_below="@id/btnSelectImage"
+        android:layout_below="@id/btnGoToList"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:visibility="gone" />
@@ -32,35 +41,19 @@
 
     <EditText
         android:id="@+id/keywordEditText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="Enter keyword"
         android:layout_below="@id/btnUploadImage"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:visibility="gone" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
 
     <TextView
         android:id="@+id/errorTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Error message"
-        android:textColor="@color/red"
-        android:background="@color/white"
-        android:padding="10dp"
-        android:visibility="gone"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:layout_below="@id/keywordEditText"
-        android:layout_marginTop="20dp" />
-
-    <Button
-        android:id="@+id/btnViewImages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Uploaded Images"
+        android:layout_below="@id/keywordEditText"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/errorTextView"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:visibility="gone"/>
 </RelativeLayout>

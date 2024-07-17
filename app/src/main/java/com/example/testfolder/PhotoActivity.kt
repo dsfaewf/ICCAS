@@ -2,6 +2,7 @@ package com.example.testfolder
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -31,7 +32,7 @@ class PhotoActivity : AppCompatActivity() {
 
     private lateinit var btnSelectImage: Button
     private lateinit var btnUploadImage: Button
-    private lateinit var btnViewImages: Button
+    private lateinit var btnGoToList: Button
     private lateinit var selectedImageView: ImageView
     private lateinit var keywordEditText: EditText
     private lateinit var errorTextView: TextView
@@ -53,7 +54,7 @@ class PhotoActivity : AppCompatActivity() {
 
         btnSelectImage = findViewById(R.id.btnSelectImage)
         btnUploadImage = findViewById(R.id.btnUploadImage)
-        btnViewImages = findViewById(R.id.btnViewImages)
+        btnGoToList = findViewById(R.id.btnGoToList)
         selectedImageView = findViewById(R.id.selectedImageView)
         keywordEditText = findViewById(R.id.keywordEditText)
         errorTextView = findViewById(R.id.errorTextView)
@@ -75,7 +76,7 @@ class PhotoActivity : AppCompatActivity() {
             }
         }
 
-        btnViewImages.setOnClickListener {
+        btnGoToList.setOnClickListener {
             val intent = Intent(this, ImageListActivity::class.java)
             startActivity(intent)
         }
@@ -94,10 +95,10 @@ class PhotoActivity : AppCompatActivity() {
 
             try {
                 val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-                selectedImageView.setImageBitmap(bitmap)
+                val rotatedBitmap = imageUri?.let { rotateImageIfRequired(bitmap, it) }
+                selectedImageView.setImageBitmap(rotatedBitmap)
                 selectedImageView.visibility = View.VISIBLE
                 btnUploadImage.visibility = View.VISIBLE
-                keywordEditText.visibility = View.VISIBLE
                 errorTextView.visibility = View.GONE
 
             } catch (e: IOException) {
@@ -130,6 +131,26 @@ class PhotoActivity : AppCompatActivity() {
         return exifData
     }
 
+    private fun rotateImageIfRequired(bitmap: Bitmap, imageUri: Uri): Bitmap {
+        val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
+        val exifInterface = ExifInterface(inputStream!!)
+        val orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        inputStream.close()
+
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
+            else -> bitmap
+        }
+    }
+
+    private fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degree)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
     private fun uploadImageToFirebase(imageUri: Uri, exifData: Map<String, String>, keyword: String) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -149,7 +170,6 @@ class PhotoActivity : AppCompatActivity() {
             }.addOnFailureListener { exception ->
                 Log.e("Firebase", "Failed to upload image: ${exception.message}", exception)
                 errorTextView.text = "Failed to upload image to Firebase: ${exception.message}"
-                errorTextView.setTextColor(getColor(R.color.red))
                 errorTextView.visibility = View.VISIBLE
             }
         } else {
@@ -175,7 +195,6 @@ class PhotoActivity : AppCompatActivity() {
                 } else {
                     Log.e("Firebase", "Failed to save EXIF data", task.exception)
                     errorTextView.text = "Failed to save EXIF data to Firebase."
-                    errorTextView.setTextColor(getColor(R.color.red))
                     errorTextView.visibility = View.VISIBLE
                 }
             }

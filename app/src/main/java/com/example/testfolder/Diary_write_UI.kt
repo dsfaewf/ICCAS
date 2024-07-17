@@ -52,7 +52,6 @@ class Diary_write_UI : BaseActivity() {
         setContentView(R.layout.activity_write_diary)
 
         val saveButton = findViewById<Button>(R.id.my_button6)
-        val photoActivity = findViewById<Button>(R.id.my_button11)
         val diarycheckButton = findViewById<Button>(R.id.my_button7)
         val diaryEditText = findViewById<EditText>(R.id.diary_edit_text)
         val characterCountTextView = findViewById<TextView>(R.id.character_count_text_view)
@@ -210,13 +209,6 @@ class Diary_write_UI : BaseActivity() {
                 characterCountTextView.text = "$count/1000"
             }
         })
-
-        // Back 버튼 클릭 시 메인 화면으로 이동
-        photoActivity.setOnClickListener {
-            val intent = Intent(applicationContext, PhotoActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
 
         // 일지조회 버튼 클릭 시 Diary_Check 화면으로 이동
         diarycheckButton.setOnClickListener {

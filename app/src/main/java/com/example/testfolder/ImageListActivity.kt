@@ -2,7 +2,6 @@ package com.example.testfolder
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
@@ -81,15 +80,11 @@ class ImageListActivity : AppCompatActivity() {
 
     private fun sortImagesByMonth() {
         val dateFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        imageList.sortBy { dateFormat.format(it.dateTime) }
+        imageList.sortBy {
+            it.dateTime?.let { dateStr ->
+                dateFormat.format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(dateStr)!!)
+            }
+        }
         imageListAdapter.notifyDataSetChanged()
     }
-
-    data class ImageData(
-        val imageUrl: String,
-        val keyword: String?,
-        val dateTime: String?,
-        val gpsLatitude: String?,
-        val gpsLongitude: String?
-    )
 }
