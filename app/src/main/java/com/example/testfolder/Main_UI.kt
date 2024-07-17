@@ -84,11 +84,6 @@ class Main_UI : BaseActivity() {
         startActivity(intent)
     }
 
-    private fun navigateToOXGameRecordActivity() {
-        val intent = Intent(applicationContext, OXGameRecordActivity::class.java)
-        startActivity(intent)
-    }
-
     private fun navigateToPhotoActivity() {
         val intent = Intent(applicationContext, PhotoActivity::class.java)
         startActivity(intent)
