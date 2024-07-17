@@ -67,7 +67,10 @@ class PhotoActivity : AppCompatActivity() {
             imageUri?.let { uri ->
                 val exifData = extractExifData(uri)
                 val keyword = keywordEditText.text.toString().trim()
-                if (exifData.containsKey("GPSLatitude") && exifData.containsKey("GPSLongitude") && exifData.containsKey("DateTime")) {
+                if (keyword.isEmpty()) {
+                    errorTextView.text = "Please write keyword about your photo."
+                    errorTextView.visibility = View.VISIBLE
+                } else if (exifData.containsKey("GPSLatitude") && exifData.containsKey("GPSLongitude") && exifData.containsKey("DateTime")) {
                     uploadImageToFirebase(uri, exifData, keyword)
                 } else {
                     errorTextView.text = "The selected image does not contain necessary location or time data."

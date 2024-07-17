@@ -1,59 +1,85 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/photobackground">
 
-    <Button
-        android:id="@+id/btnSelectImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Choice your image"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"/>
+    <LinearLayout
+        android:id="@+id/photoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="30dp">
 
-    <Button
-        android:id="@+id/btnGoToList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go to Image List"
-        android:layout_below="@id/btnSelectImage"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/btnSelectImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:padding="7dp"
+            android:background="@drawable/rectangle_btn_style"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:text="Choose your image" />
 
-    <ImageView
-        android:id="@+id/selectedImageView"
-        android:layout_width="280dp"
-        android:layout_height="400dp"
-        android:layout_below="@id/btnGoToList"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:visibility="gone" />
+        <ImageView
+            android:id="@+id/selectedImageView"
+            android:layout_width="300dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            android:background="@drawable/img_rounded"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp"
+            android:scaleType="centerInside" />
 
-    <Button
-        android:id="@+id/btnUploadImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Upload Image"
-        android:layout_below="@id/selectedImageView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:visibility="gone" />
+        <EditText
+            android:id="@+id/keywordEditText"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:background="@drawable/rectangle_btn_style2"
+            android:hint=" Enter keyword " />
 
-    <EditText
-        android:id="@+id/keywordEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Enter keyword"
-        android:layout_below="@id/btnUploadImage"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/btnUploadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="7dp"
+            android:background="@drawable/rectangle_btn_style"
+            android:text="Upload" />
 
-    <TextView
-        android:id="@+id/errorTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/keywordEditText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:visibility="gone"/>
-</RelativeLayout>
+        <TextView
+            android:id="@+id/errorTextView"
+            android:layout_width="wrap_content"
+            android:padding="5dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle_btn_style2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/red"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnGoToList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="50dp"
+            android:padding="7dp"
+            android:background="@drawable/rectangle_btn_style"
+            android:text="Photo List" />
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
