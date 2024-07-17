@@ -59,6 +59,8 @@ class PhotoActivity : AppCompatActivity() {
         keywordEditText = findViewById(R.id.keywordEditText)
         errorTextView = findViewById(R.id.errorTextView)
 
+        selectedImageView.clipToOutline = true
+
         btnSelectImage.setOnClickListener {
             openGallery()
         }

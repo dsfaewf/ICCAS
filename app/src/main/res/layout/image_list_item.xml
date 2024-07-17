@@ -1,35 +1,62 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:orientation="vertical"
+    android:layout_marginBottom="5dp">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:contentDescription="Image" />
-
-    <TextView
-        android:id="@+id/dateTimeTextView"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/imageView"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="8dp"
-        android:background="#80000000"
-        android:padding="4dp"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:background="@drawable/circle_btn_w_style"
+        android:layout_margin="20dp">
 
-    <TextView
-        android:id="@+id/keywordTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/imageView"
-        android:layout_marginTop="8dp"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:background="@drawable/img_rounded"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:scaleType="centerInside"
+            android:contentDescription="Image" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/dateTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/bmjua_ttf"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/keywordTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textSize="18sp"
+            android:layout_margin="5dp"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/deletePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:padding="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:fontFamily="@font/bmjua_ttf"
+            android:background="@drawable/btn_rounded"
+            android:text=" Delete " />
+    </LinearLayout>
+</LinearLayout>
