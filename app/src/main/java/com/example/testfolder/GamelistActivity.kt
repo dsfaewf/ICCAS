@@ -1,8 +1,10 @@
 package com.example.testfolder
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.TypedValue
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -10,13 +12,16 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import android.util.TypedValue
-
 
 class GamelistActivity : AppCompatActivity() {
+
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gamelist)
+
+        sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
 
         val btn1 = findViewById<LinearLayout>(R.id.btn1)
         val btn2 = findViewById<LinearLayout>(R.id.btn2)
@@ -62,49 +67,60 @@ class GamelistActivity : AppCompatActivity() {
         }
 
         settingBtn.setOnClickListener {
-            val builder = android.app.AlertDialog.Builder(this, R.style.RoundedAlertDialog)
-            builder.setTitle("Main game Setting")
-                .setMessage("Choose period")
-
-            val radioGroup = RadioGroup(this)
-            val options = arrayOf("Option 1", "Option 2", "Option 3","Option 3")
-
-            val marginInDp = 16
-            val marginInPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, marginInDp.toFloat(),
-                resources.displayMetrics
-            ).toInt()
-
-            for ((index, option) in options.withIndex()) {
-                val radioButton = RadioButton(this)
-                radioButton.text = option
-                radioButton.id = index
-                val params = RadioGroup.LayoutParams(
-                    RadioGroup.LayoutParams.WRAP_CONTENT,
-                    RadioGroup.LayoutParams.WRAP_CONTENT
-                )
-                params.setMargins(marginInPx, marginInPx, marginInPx, marginInPx)
-                radioButton.layoutParams = params
-                radioGroup.addView(radioButton)
-            }
-
-            builder.setView(radioGroup)
-
-            builder.setPositiveButton("OK") { dialog, _ ->
-                val selectedId = radioGroup.checkedRadioButtonId
-                if (selectedId != -1) {
-                    val selectedOption = options[selectedId]
-                    dialog.dismiss()
-                } else {
-                }
-            }
-
-            val dialog = builder.create()
-            dialog.setCancelable(false)
-            dialog.show()
-
+            showSettingDialog()
         }
     }
+
+    private fun showSettingDialog() {
+        val builder = AlertDialog.Builder(this, R.style.RoundedAlertDialog)
+        builder.setTitle("Main game Setting")
+            .setMessage("Choose period")
+
+        val radioGroup = RadioGroup(this)
+        val options = arrayOf("Random", "Within 3 days", "3 days to 1 week", "1 week to 2 weeks", "2 weeks to 1 month", "1 month to 6 months")
+
+        val marginInDp = 16
+        val marginInPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, marginInDp.toFloat(),
+            resources.displayMetrics
+        ).toInt()
+
+        for ((index, option) in options.withIndex()) {
+            val radioButton = RadioButton(this)
+            radioButton.text = option
+            radioButton.id = index
+            val params = RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.WRAP_CONTENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(marginInPx, marginInPx, marginInPx, marginInPx)
+            radioButton.layoutParams = params
+            radioGroup.addView(radioButton)
+        }
+
+        builder.setView(radioGroup)
+
+        builder.setPositiveButton("OK") { dialog, _ ->
+            val selectedId = radioGroup.checkedRadioButtonId
+            if (selectedId != -1) {
+                val selectedOption = options[selectedId]
+                saveSetting(selectedOption)
+                dialog.dismiss()
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
+
+    private fun saveSetting(option: String) {
+        with(sharedPreferences.edit()) {
+            putString("selected_period", option)
+            apply()
+        }
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(applicationContext, Main_UI::class.java)
