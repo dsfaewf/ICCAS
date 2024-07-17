@@ -417,7 +417,7 @@ object SingletonKotlin {
     fun showNoQuizzesDialogAndExit(context: Context) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("No Quizzes Available")
-            .setMessage("You need to write a diary to unlock quizzes.")
+            .setMessage("You need to write a diary more to unlock quizzes for the selected period.")
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
                 (context as? AppCompatActivity)?.finish() // 현재 액티비티 종료

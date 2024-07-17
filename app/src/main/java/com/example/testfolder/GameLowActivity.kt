@@ -1,6 +1,8 @@
 package com.example.testfolder
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -12,7 +14,11 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseUser
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class GameLowActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
@@ -44,10 +50,14 @@ class GameLowActivity : BaseActivity() {
     private lateinit var getCoin: MediaPlayer   //효과음 재생용 변수
     private lateinit var wrong: MediaPlayer   //효과음 재생용 변수
 
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_low)
+
+        sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
+
         progressBar = findViewById(R.id.progressBar1)
         val questionTextView = findViewById<TextView>(R.id.qeustionbox) // 질문텍스트
         obutton = findViewById(R.id.o_btn)  // O버튼
@@ -62,7 +72,7 @@ class GameLowActivity : BaseActivity() {
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
 
-        getCoin = MediaPlayer.create(this,R.raw.coin)
+        getCoin = MediaPlayer.create(this, R.raw.coin)
         wrong = MediaPlayer.create(this, R.raw.wrong)
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
@@ -95,9 +105,9 @@ class GameLowActivity : BaseActivity() {
         // 3초 동안 로딩 화면 표시 후 게임 시작
         handler.postDelayed({
             loadingLayout.visibility = View.GONE
-            // 랜덤으로 5개의 OX 퀴즈 데이터 불러오기
+            // 설정된 기간에 맞게 퀴즈 데이터 필터링
             SingletonKotlin.loadOXQuizData { quizData ->
-                quizList = quizData
+                quizList = filterQuizDataByPeriod(quizData)
                 if (quizList.size >= 5) {
                     selectedQuizzes = quizList.shuffled().take(5)
                     startRound(questionTextView)
@@ -105,8 +115,7 @@ class GameLowActivity : BaseActivity() {
                     obutton.isEnabled = true
                     xbutton.isEnabled = true
                 } else {
-//                    questionTextView.text = "No
-                    SingletonKotlin.showNoQuizzesDialogAndExit(this)
+                    showNoQuizzesDialogAndExit()
                 }
             }
         }, 3000)
@@ -118,6 +127,37 @@ class GameLowActivity : BaseActivity() {
         xbutton.setOnClickListener {
             handleAnswer("X", questionTextView)
         }
+    }
+
+    private fun filterQuizDataByPeriod(quizData: List<SingletonKotlin.QuizItem>): List<SingletonKotlin.QuizItem> {
+        val selectedPeriod = sharedPreferences.getString("selected_period", "Random")
+        if (selectedPeriod == "Random") return quizData //기존이랑 같음
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd MM yyyy", Locale.getDefault())
+        return quizData.filter {
+            val quizTime = dateFormat.parse(it.date).time
+            when (selectedPeriod) {
+                "Within 3 days" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) <= 3
+                "3 days to 1 week" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 4..7
+                "1 week to 2 weeks" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 8..14
+                "2 weeks to 1 month" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 15..30
+                "1 month to 6 months" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 31..180
+                else -> true
+            }
+        }
+    }
+
+    private fun showNoQuizzesDialogAndExit() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("No Quizzes Available")
+            .setMessage("There are no diary entries available for the selected period.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
     }
 
     private fun startRound(questionTextView: TextView) {
@@ -203,7 +243,6 @@ class GameLowActivity : BaseActivity() {
             numberImageView.setImageResource(numberDrawable)
         } else {
             numberImageView.visibility = View.GONE
-//            finishedTextView.visibility = View.VISIBLE
         }
     }
 
