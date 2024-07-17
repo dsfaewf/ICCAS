@@ -21,6 +21,7 @@ smileNlp = "2.6.0"
 firebaseConfigKtx = "22.0.0"
 googleServices = "4.4.2"
 firebaseMessaging = "24.0.0"
+firebaseStorageKtx = "21.0.0"
 
 [libraries]
 android-gif-drawable = { module = "pl.droidsonroids.gif:android-gif-drawable", version.ref = "androidGifDrawable" }
@@ -48,6 +49,7 @@ smile-nlp = { module = "com.github.haifengl:smile-nlp", version.ref = "smileNlp"
 firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebaseConfigKtx" }
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

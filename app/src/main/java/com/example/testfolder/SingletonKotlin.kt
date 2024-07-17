@@ -427,4 +427,19 @@ object SingletonKotlin {
         dialog.show()
     }
 
+    // --- 여기서부터는 메타데이터 관련 부분 ----
+    fun saveImageMetaData(metaData: Map<String, String?>, context: Context) {
+        checkInitialization()
+        val currentUser = auth.currentUser ?: return
+        val userMetaDataRef = database.child("users").child(currentUser.uid).child("photos").push()
+
+        userMetaDataRef.setValue(metaData).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Meta data saved successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Error saving meta data", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 }

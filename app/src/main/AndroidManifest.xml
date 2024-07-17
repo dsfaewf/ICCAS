@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.testfolder" >
+    package="com.example.testfolder">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -17,26 +16,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestFolder"
         tools:ignore="ExtraText"
-
         tools:targetApi="31">
+        <activity
+            android:name=".ImageListActivity"
+            android:exported="false" />
         <activity
             android:name=".PhotoActivity"
             android:exported="false" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="default_notification_channel_id"/>
+            android:value="default_notification_channel_id" />
+
         <service
             android:name=".MusicService"
             android:enabled="true"
-            android:exported="false"/>
-<!--        <service--> <!--필요없어서 주석 처리함-->
-<!--            android:name=".service.FirebaseMessagingService"-->
-<!--            android:exported="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-<!--            </intent-filter>-->
-<!--        </service>-->
-
+            android:exported="false" /> <!-- <service -->
+        <!-- 필요없어서 주석 처리함 -->
+        <!-- android:name=".service.FirebaseMessagingService" -->
+        <!-- android:exported="false"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.google.firebase.MESSAGING_EVENT" /> -->
+        <!-- </intent-filter> -->
+        <!-- </service> -->
         <activity
             android:name=".ShortAnswerGameRecordActivity"
             android:exported="false" />
@@ -60,7 +62,7 @@
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
