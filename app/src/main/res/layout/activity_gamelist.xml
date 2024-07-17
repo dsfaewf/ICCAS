@@ -12,48 +12,207 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/linearLayout1"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="10dp"
-                android:text="Main Game"
-                android:textColor="@color/black"
-                android:textSize="25sp"
-                android:textStyle="bold" />
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical" >
 
                 <LinearLayout
+                    android:id="@+id/linearLayout1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Main Game"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:id="@+id/btn1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:id="@+id/btn1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/circle_btn_w_style"
+                                    android:clickable="true"
+                                    android:elevation="5dp"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:id="@+id/imageView2"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="110dp"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginBottom="5dp"
+                                        android:scaleType="centerInside"
+                                        app:srcCompat="@drawable/gameox" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_margin="5dp"
+                                        android:background="@drawable/white_style"
+                                        android:gravity="center"
+                                        android:text="OX\nQuiz"
+                                        android:textSize="18sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/btn2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/circle_btn_w_style"
+                                    android:clickable="true"
+                                    android:elevation="5dp"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:id="@+id/imageView4"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="120dp"
+                                        android:layout_marginStart="2dp"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginEnd="2dp"
+                                        android:scaleType="centerInside"
+                                        app:srcCompat="@drawable/gamebtn4" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_margin="5dp"
+                                        android:background="@drawable/white_style"
+                                        android:gravity="center"
+                                        android:text="4 choice\nQuiz"
+                                        android:textSize="18sp" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:id="@+id/btn3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/circle_btn_w_style"
+                                    android:clickable="true"
+                                    android:elevation="5dp"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:id="@+id/imageView8"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="120dp"
+                                        android:layout_marginStart="5dp"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginEnd="5dp"
+                                        app:srcCompat="@drawable/game_answer" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_margin="5dp"
+                                        android:background="@drawable/white_style"
+                                        android:gravity="center"
+                                        android:text="Short\nanswer"
+                                        android:textSize="18sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/btn7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/circle_btn_w_style"
+                                    android:clickable="true"
+                                    android:elevation="5dp"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:id="@+id/imageView9"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="120dp"
+                                        android:layout_marginStart="5dp"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginEnd="5dp"
+                                        app:srcCompat="@drawable/gameox" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_margin="5dp"
+                                        android:background="@drawable/white_style"
+                                        android:gravity="center"
+                                        android:text="OX Quiz\nwith picture"
+                                        android:textSize="18sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Mini Game"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/btn4"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="5dp"
@@ -64,13 +223,75 @@
                             android:orientation="vertical">
 
                             <ImageView
-                                android:id="@+id/imageView2"
+                                android:id="@+id/imageView5"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:layout_marginLeft="6dp"
+                                android:layout_marginRight="6dp"
+                                android:scaleType="centerInside"
+                                app:srcCompat="@drawable/gameupdown" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/white_style"
+                                android:gravity="center"
+                                android:text="up&amp;down\n number"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/circle_btn_w_style"
+                            android:clickable="true"
+                            android:elevation="5dp"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/imageView6"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                app:srcCompat="@drawable/gamebaseball" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/white_style"
+                                android:gravity="center"
+                                android:text="baseball\n number"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn6"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/circle_btn_w_style"
+                            android:clickable="true"
+                            android:elevation="5dp"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/imageView7"
                                 android:layout_width="match_parent"
                                 android:layout_height="110dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginBottom="5dp"
-                                android:scaleType="centerInside"
-                                app:srcCompat="@drawable/gameox" />
+                                android:background="@drawable/gamesame"
+                                android:scaleType="centerInside" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -79,236 +300,25 @@
                                 android:layout_margin="5dp"
                                 android:background="@drawable/white_style"
                                 android:gravity="center"
-                                android:text="OX\nQuiz"
+                                android:text="same\npicture"
                                 android:textSize="18sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/btn2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/circle_btn_w_style"
-                            android:clickable="true"
-                            android:elevation="5dp"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/imageView4"
-                                android:layout_width="match_parent"
-                                android:layout_height="120dp"
-                                android:layout_marginStart="2dp"
-                                android:layout_marginEnd="2dp"
-                                android:layout_marginTop="5dp"
-                                android:scaleType="centerInside"
-                                app:srcCompat="@drawable/gamebtn4" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_margin="5dp"
-                                android:background="@drawable/white_style"
-                                android:gravity="center"
-                                android:text="4 choice\nQuiz"
-                                android:textSize="18sp" />
-
                         </LinearLayout>
 
                     </LinearLayout>
 
-                    <LinearLayout
+                    <Button
+                        android:id="@+id/game_record_btn"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
                         android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:id="@+id/btn3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/circle_btn_w_style"
-                            android:clickable="true"
-                            android:elevation="5dp"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/imageView8"
-                                android:layout_width="match_parent"
-                                android:layout_height="120dp"
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:layout_marginTop="5dp"
-                                app:srcCompat="@drawable/game_answer" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_margin="5dp"
-                                android:background="@drawable/white_style"
-                                android:gravity="center"
-                                android:text="Short\nanswer"
-                                android:textSize="18sp" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:id="@+id/btn7"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/circle_btn_w_style"
-                            android:clickable="true"
-                            android:elevation="5dp"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:id="@+id/imageView9"
-                                android:layout_width="match_parent"
-                                android:layout_height="120dp"
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:layout_marginTop="5dp"
-                                app:srcCompat="@drawable/gameox" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_margin="5dp"
-                                android:background="@drawable/white_style"
-                                android:gravity="center"
-                                android:text="OX Quiz\nwith picture"
-                                android:textSize="18sp" />
-                        </LinearLayout>
-                    </LinearLayout>
+                        android:background="@drawable/circle_btn_w_style"
+                        android:elevation="5dp"
+                        android:text="GAME RECORD"
+                        android:textSize="20sp" />
                 </LinearLayout>
-
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp"
-                android:text="Mini Game"
-                android:textColor="@color/black"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/btn4"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:orientation="vertical"
-                    android:clickable="true">
-
-                    <ImageView
-                        android:id="@+id/imageView5"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginRight="6dp"
-                        android:scaleType="centerInside"
-                        app:srcCompat="@drawable/gameupdown" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textSize="18sp"
-                        android:background="@drawable/white_style"
-                        android:text="up&amp;down\n number" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btn5"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:orientation="vertical"
-                    android:clickable="true">
-
-                    <ImageView
-                        android:id="@+id/imageView6"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        app:srcCompat="@drawable/gamebaseball" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textSize="18sp"
-                        android:background="@drawable/white_style"
-                        android:text="baseball\n number" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btn6"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:orientation="vertical"
-                    android:clickable="true">
-
-                    <ImageView
-                        android:id="@+id/imageView7"
-                        android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@drawable/gamesame"
-                        android:scaleType="centerInside" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textSize="18sp"
-                        android:background="@drawable/white_style"
-                        android:text="same\npicture" />
-                </LinearLayout>
-
-            </LinearLayout>
-                <Button
-                    android:id="@+id/game_record_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:text="GAME RECORD"
-                    android:textSize="20sp"
-                    android:layout_margin="10dp"/>
-        </LinearLayout>
+        </ScrollView>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
