@@ -2,6 +2,7 @@ package com.example.testfolder
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -42,6 +43,10 @@ class gameLowActivity : BaseActivity() {
     private lateinit var obutton: FrameLayout
     private lateinit var xbutton: FrameLayout
 
+    private lateinit var getCoin: MediaPlayer   //효과음 재생용 변수
+    private lateinit var wrong: MediaPlayer   //효과음 재생용 변수
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_low)
@@ -59,6 +64,8 @@ class gameLowActivity : BaseActivity() {
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
 
+        getCoin = MediaPlayer.create(this,R.raw.coin)
+        wrong = MediaPlayer.create(this, R.raw.wrong)
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
         loadingImage.startAnimation(rotateAnimation)
@@ -143,7 +150,9 @@ class gameLowActivity : BaseActivity() {
                 correctAnswers++
                 totalTime += System.currentTimeMillis() - startTime
                 SingletonKotlin.updateUserCoins(5, coinText)
+                getCoin.start()
             } else {
+                wrong.start()
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
                 incorrectQuestions.add(Pair(currentRound + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
             }
