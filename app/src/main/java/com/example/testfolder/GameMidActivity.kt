@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -53,6 +54,9 @@ class GameMidActivity : BaseActivity() {
     private lateinit var getCoin: MediaPlayer
     private lateinit var wrong: MediaPlayer
 
+    private lateinit var correctWrongOverlay: FrameLayout
+    private lateinit var correctWrongImage: ImageView
+
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +82,10 @@ class GameMidActivity : BaseActivity() {
         loadingText = findViewById(R.id.loading_text)
         getCoin = MediaPlayer.create(this, R.raw.coin)
         wrong = MediaPlayer.create(this, R.raw.wrong)
+
+        correctWrongOverlay = findViewById(R.id.correct_wrong_overlay)
+        correctWrongImage = findViewById(R.id.correct_wrong_image)
+
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
         loadingImage.startAnimation(rotateAnimation)
@@ -188,20 +196,30 @@ class GameMidActivity : BaseActivity() {
                 SingletonKotlin.updateUserCoins(5, coinText) // Correct answer rewards 5 coins
                 getCoin.start()
                 totalTime += System.currentTimeMillis() - startTime
+                showCorrectWrongImage(R.drawable.correct_cat)
             } else {
                 wrong.start()
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
                 incorrectQuestions.add(Pair(currentQuestionIndex + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
+                showCorrectWrongImage(R.drawable.wrong_cat)
             }
+        }
+    }
+
+    private fun showCorrectWrongImage(imageResId: Int) {
+        correctWrongImage.setImageResource(imageResId)
+        correctWrongOverlay.visibility = View.VISIBLE
+        handler.postDelayed({
+            correctWrongOverlay.visibility = View.GONE
             currentQuestionIndex++
             if (currentQuestionIndex < selectedQuizzes.size) {
                 startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
-                displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
-                startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
+                displayQuestion(findViewById(R.id.qeustionbox), btn1, btn2, btn3, btn4)
+                startProgressBar(findViewById(R.id.qeustionbox), btn1, btn2, btn3, btn4)
             } else {
-                endQuiz(questionTextView)
+                endQuiz(findViewById(R.id.qeustionbox))
             }
-        }
+        }, 2000) // 2초 동안 이미지를 표시
     }
 
     private fun endQuiz(questionTextView: TextView) {
@@ -326,3 +344,4 @@ $incorrectQuestionsText
         progressBarThread?.interrupt()
     }
 }
+

@@ -50,6 +50,9 @@ class GameLowActivity : BaseActivity() {
     private lateinit var getCoin: MediaPlayer   //효과음 재생용 변수
     private lateinit var wrong: MediaPlayer   //효과음 재생용 변수
 
+    private lateinit var correctWrongOverlay: FrameLayout
+    private lateinit var correctWrongImage: ImageView
+
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +74,9 @@ class GameLowActivity : BaseActivity() {
         loadingLayout = findViewById(R.id.loading_layout)
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
+
+        correctWrongOverlay = findViewById(R.id.correct_wrong_overlay)
+        correctWrongImage = findViewById(R.id.correct_wrong_image)
 
         getCoin = MediaPlayer.create(this, R.raw.coin)
         wrong = MediaPlayer.create(this, R.raw.wrong)
@@ -189,14 +195,25 @@ class GameLowActivity : BaseActivity() {
                 totalTime += System.currentTimeMillis() - startTime
                 SingletonKotlin.updateUserCoins(5, coinText)
                 getCoin.start()
+                showCorrectWrongImage(R.drawable.correct_cat)
             } else {
                 wrong.start()
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
                 incorrectQuestions.add(Pair(currentRound + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
+                showCorrectWrongImage(R.drawable.wrong_cat)
             }
-            currentRound++
-            startRound(questionTextView)
         }
+    }
+
+    private fun showCorrectWrongImage(imageResId: Int) {
+        correctWrongImage.setImageResource(imageResId)
+        correctWrongOverlay.visibility = View.VISIBLE
+
+        handler.postDelayed({
+            correctWrongOverlay.visibility = View.GONE
+            currentRound++
+            startRound(findViewById(R.id.qeustionbox))
+        }, 2000)
     }
 
     private fun startProgressBar(questionTextView: TextView) {

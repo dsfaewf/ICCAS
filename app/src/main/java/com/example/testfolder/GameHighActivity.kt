@@ -14,6 +14,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -62,6 +63,9 @@ class GameHighActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
+    private lateinit var correctWrongOverlay: FrameLayout
+    private lateinit var correctWrongImage: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_high)
@@ -85,6 +89,9 @@ class GameHighActivity : BaseActivity() {
 
         getCoin = MediaPlayer.create(this, R.raw.coin)
         wrong = MediaPlayer.create(this, R.raw.wrong)
+
+        correctWrongOverlay = findViewById(R.id.correct_wrong_overlay)
+        correctWrongImage = findViewById(R.id.correct_wrong_image)
 
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
@@ -200,6 +207,23 @@ class GameHighActivity : BaseActivity() {
         dialog.show()
     }
 
+    private fun showCorrectWrongImage(imageResId: Int) {
+        correctWrongImage.setImageResource(imageResId)
+        correctWrongOverlay.visibility = View.VISIBLE
+        handler.postDelayed({
+            correctWrongOverlay.visibility = View.GONE
+            currentQuestionIndex++
+            if (currentQuestionIndex < selectedQuizzes.size) {
+                startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
+                displayQuestion(findViewById(R.id.qeustionbox), findViewById(R.id.answer_edit_text))
+                startProgressBar(findViewById(R.id.qeustionbox), findViewById(R.id.answer_edit_text))
+            } else {
+                endQuiz()
+            }
+        }, 2000) // 2초 동안 이미지를 표시
+    }
+
+
     private fun displayQuestion(questionTextView: TextView, answerEditText: EditText) {
         if (currentQuestionIndex < selectedQuizzes.size) {
             val quizItem = selectedQuizzes[currentQuestionIndex]
@@ -228,11 +252,13 @@ class GameHighActivity : BaseActivity() {
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
             if (PreprocessTexts.isCorrectAnswer(inputStr, answerStr)) {
                 correctAnswers++
+                showCorrectWrongImage(R.drawable.correct_cat)
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
                 SingletonKotlin.updateUserCoins(5, coinText)
                 getCoin.start()
                 totalTime += System.currentTimeMillis() - startTime
             } else {
+                showCorrectWrongImage(R.drawable.wrong_cat)
                 wrong.start()
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
                 incorrectQuestions.add(Pair(currentQuestionIndex + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
