@@ -5,28 +5,27 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseUser
 
-class gameMidActivity : BaseActivity() {
+class GameLowActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var coinText: TextView
     private lateinit var currentUser: FirebaseUser
-    private lateinit var quizList: List<SingletonKotlin.MultipleChoiceQuizItem>
-    private var currentQuestionIndex = 0
+    private lateinit var quizList: List<SingletonKotlin.QuizItem>
+    private lateinit var selectedQuizzes: List<SingletonKotlin.QuizItem>
+    private var currentRound = 0
     private var correctAnswers = 0
-    private var startTime = 0L
-    private var totalTime = 0L
-    private val totalRounds = 5
+    private var startTime: Long = 0
+    private var totalTime = 0L      //현재 토탈타임은 맞춘 문제에 대한 시간만 저장하는 것으로 변경되었음 주의.
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
     private val incorrectQuestions = mutableListOf<Pair<Int, String>>() // 틀린 문제 번호와 날짜 저장
@@ -39,23 +38,20 @@ class gameMidActivity : BaseActivity() {
     private lateinit var loadingImage: ImageView
     private lateinit var loadingText: TextView
 
-    private lateinit var btn1: Button
-    private lateinit var btn2: Button
-    private lateinit var btn3: Button
-    private lateinit var btn4: Button
+    private lateinit var obutton: FrameLayout
+    private lateinit var xbutton: FrameLayout
 
-    private lateinit var getCoin:MediaPlayer
-    private lateinit var wrong:MediaPlayer
+    private lateinit var getCoin: MediaPlayer   //효과음 재생용 변수
+    private lateinit var wrong: MediaPlayer   //효과음 재생용 변수
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game_mid)
+        setContentView(R.layout.activity_game_low)
         progressBar = findViewById(R.id.progressBar1)
-        val questionTextView = findViewById<TextView>(R.id.qeustionbox)
-        btn1 = findViewById(R.id.btn1)
-        btn2 = findViewById(R.id.btn2)
-        btn3 = findViewById(R.id.btn3)
-        btn4 = findViewById(R.id.btn4)
+        val questionTextView = findViewById<TextView>(R.id.qeustionbox) // 질문텍스트
+        obutton = findViewById(R.id.o_btn)  // O버튼
+        xbutton = findViewById(R.id.x_btn) // X버튼
         coinText = findViewById(R.id.coin_text)
 
         roundImageView = findViewById(R.id.roundImageView)
@@ -65,17 +61,17 @@ class gameMidActivity : BaseActivity() {
         loadingLayout = findViewById(R.id.loading_layout)
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
-        getCoin= MediaPlayer.create(this,R.raw.coin)
+
+        getCoin = MediaPlayer.create(this,R.raw.coin)
         wrong = MediaPlayer.create(this, R.raw.wrong)
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
         loadingImage.startAnimation(rotateAnimation)
-
-        // 로딩 텍스트 애니메이션 적용
         startLoadingTextAnimation()
 
         // 답변 버튼 비활성화
-        disableAnswerButtons()
+        obutton.isEnabled = false
+        xbutton.isEnabled = false
 
         try {
             currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
@@ -85,90 +81,85 @@ class gameMidActivity : BaseActivity() {
             return
         }
 
+        // 사용자 코인 불러오기
         try {
             SingletonKotlin.loadUserCoins(coinText)
         } catch (e: IllegalStateException) {
             Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
             finish()
         }
-        applyFontSize()
+
+        val excludeIds = setOf(R.id.o_btn, R.id.x_btn)
+        applyFontSize(excludeIds)
 
         // 3초 동안 로딩 화면 표시 후 게임 시작
         handler.postDelayed({
             loadingLayout.visibility = View.GONE
-            // 퀴즈를 불러옴
-            SingletonKotlin.loadMultipleChoiceQuizData { quizData ->
-                if (quizData.isNotEmpty()) {
-                    quizList = quizData.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
-                    startTime = System.currentTimeMillis()
-                    displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
-                    startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
+            // 랜덤으로 5개의 OX 퀴즈 데이터 불러오기
+            SingletonKotlin.loadOXQuizData { quizData ->
+                quizList = quizData
+                if (quizList.size >= 5) {
+                    selectedQuizzes = quizList.shuffled().take(5)
+                    startRound(questionTextView)
                     // 답변 버튼 활성화
-                    enableAnswerButtons()
+                    obutton.isEnabled = true
+                    xbutton.isEnabled = true
                 } else {
-//                    questionTextView.text = "No quiz available."
+//                    questionTextView.text = "No
                     SingletonKotlin.showNoQuizzesDialogAndExit(this)
                 }
             }
         }, 3000)
 
-        btn1.setOnClickListener { handleAnswer(btn1.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
-        btn2.setOnClickListener { handleAnswer(btn2.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
-        btn3.setOnClickListener { handleAnswer(btn3.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
-        btn4.setOnClickListener { handleAnswer(btn4.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
-    }
+        obutton.setOnClickListener {
+            handleAnswer("O", questionTextView)
+        }
 
-    private fun displayQuestion(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
-        if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
-            questionTextView.text = "Date: ${quizItem.date}\n\n${quizItem.question}"
-            if (quizItem.choices.size >= 4) {
-                btn1.text = quizItem.choices[0]
-                btn2.text = quizItem.choices[1]
-                btn3.text = quizItem.choices[2]
-                btn4.text = quizItem.choices[3]
-            } else {
-                questionTextView.text = "Error: Not enough options available for this question."
-            }
-            updateRoundImages()
-        } else {
-            endQuiz(questionTextView)
+        xbutton.setOnClickListener {
+            handleAnswer("X", questionTextView)
         }
     }
 
-    private fun handleAnswer(userAnswer: String, questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
-        if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
-            Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
+    private fun startRound(questionTextView: TextView) {
+        startTime = System.currentTimeMillis()
+        progressStatus = 0
+        progressBar.progress = progressStatus
+        updateRoundImages()
+        displayQuestion(questionTextView)
+        startProgressBar(questionTextView)
+    }
+
+    private fun displayQuestion(questionTextView: TextView) {
+        if (currentRound < selectedQuizzes.size) {
+            val quizItem = selectedQuizzes[currentRound]
+            questionTextView.text = "Date: ${quizItem.date}\n\n${quizItem.question}" //4지선다랑 형식 통일화
+        } else {
+            val totalGameTime = totalTime / 1000 // 초 단위로 변환
+            SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime) // 게임 유형 추가
+            showGameResultDialog(correctAnswers, totalGameTime, incorrectQuestions)
+        }
+    }
+
+    private fun handleAnswer(userAnswer: String, questionTextView: TextView) {
+        if (currentRound < selectedQuizzes.size) {
+            val quizItem = selectedQuizzes[currentRound]
             if (userAnswer == quizItem.answer) {
-                correctAnswers++
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
-                SingletonKotlin.updateUserCoins(5, coinText) // Correct answer rewards 5 coins
-                getCoin.start()
+                correctAnswers++
                 totalTime += System.currentTimeMillis() - startTime
+                SingletonKotlin.updateUserCoins(5, coinText)
+                getCoin.start()
             } else {
                 wrong.start()
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
-                incorrectQuestions.add(Pair(currentQuestionIndex + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
+                incorrectQuestions.add(Pair(currentRound + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
             }
-            currentQuestionIndex++
-            if (currentQuestionIndex < quizList.size) {
-                startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
-                displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
-                startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
-            } else {
-                endQuiz(questionTextView)
-            }
+            currentRound++
+            startRound(questionTextView)
         }
     }
 
-    private fun endQuiz(questionTextView: TextView) {
-        val totalTimeSeconds = totalTime / 1000 // 초 단위로 변환
-        SingletonKotlin.saveGameResult("4 Choice", correctAnswers, totalTimeSeconds)
-        showGameResultDialog(correctAnswers, totalTimeSeconds, incorrectQuestions)
-    }
-
-    private fun startProgressBar(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
+    private fun startProgressBar(questionTextView: TextView) {
         progressStatus = 0
         progressBar.progress = progressStatus
         progressBarThread?.interrupt()
@@ -186,16 +177,10 @@ class gameMidActivity : BaseActivity() {
                 }
             }
             handler.post {
-                if (currentQuestionIndex < quizList.size) {
+                if (currentRound < selectedQuizzes.size) {
                     questionTextView.text = "Time's up!"
-                    currentQuestionIndex++
-                    if (currentQuestionIndex < quizList.size) {
-                        startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
-                        displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
-                        startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
-                    } else {
-                        endQuiz(questionTextView)
-                    }
+                    currentRound++
+                    startRound(questionTextView)
                 }
             }
         }.apply { start() }
@@ -203,7 +188,7 @@ class gameMidActivity : BaseActivity() {
 
     private fun updateRoundImages() {
         val roundDrawable = R.drawable.round // round.png 이미지 리소스
-        val numberDrawable = when (currentQuestionIndex + 1) {
+        val numberDrawable = when (currentRound + 1) {
             1 -> R.drawable.number1
             2 -> R.drawable.number2
             3 -> R.drawable.number3
@@ -218,7 +203,7 @@ class gameMidActivity : BaseActivity() {
             numberImageView.setImageResource(numberDrawable)
         } else {
             numberImageView.visibility = View.GONE
-            finishedTextView.visibility = View.VISIBLE
+//            finishedTextView.visibility = View.VISIBLE
         }
     }
 
@@ -235,20 +220,6 @@ class gameMidActivity : BaseActivity() {
                 handler.postDelayed(this, 500) // 500ms마다 업데이트
             }
         })
-    }
-
-    private fun disableAnswerButtons() {
-        btn1.isEnabled = false
-        btn2.isEnabled = false
-        btn3.isEnabled = false
-        btn4.isEnabled = false
-    }
-
-    private fun enableAnswerButtons() {
-        btn1.isEnabled = true
-        btn2.isEnabled = true
-        btn3.isEnabled = true
-        btn4.isEnabled = true
     }
 
     private fun showGameResultDialog(correctAnswers: Int, totalTimeSeconds: Long, incorrectQuestions: List<Pair<Int, String>>) {

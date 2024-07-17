@@ -74,7 +74,7 @@ class CatRoomActivity : AppCompatActivity() {
             finish()
         }
         gameBtn.setOnClickListener {
-            val intent = Intent(applicationContext, gamelistActivity::class.java)
+            val intent = Intent(applicationContext, GamelistActivity::class.java)
             startActivity(intent)
             finish()
         }

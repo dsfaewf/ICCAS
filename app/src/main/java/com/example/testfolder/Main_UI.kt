@@ -36,7 +36,8 @@ class Main_UI : BaseActivity() {
         val diaryButton = findViewById<View>(R.id.my_button2) as Button
         val catRoomButton = findViewById<View>(R.id.my_button3) as Button
         val gameButton = findViewById<Button>(R.id.btn_game)
-        val gameRecodeBtn = findViewById<View>(R.id.my_button5) as Button
+//        val gameRecodeBtn = findViewById<View>(R.id.my_button5) as Button
+        val photoBtn = findViewById<View>(R.id.my_button6) as Button
 
         imageButton1.setOnClickListener {
             navigateToSettingUI()
@@ -55,8 +56,11 @@ class Main_UI : BaseActivity() {
             navigateToCatRoomActivity()
         }
 
-        gameRecodeBtn.setOnClickListener {
-            navigateToOXGameRecordActivity()
+//        gameRecodeBtn.setOnClickListener {
+//            navigateToOXGameRecordActivity()
+//        }
+        photoBtn.setOnClickListener {
+            navigateToPhotoActivity()
         }
     }
 
@@ -71,7 +75,7 @@ class Main_UI : BaseActivity() {
     }
 
     private fun navigateToGameListActivity() {
-        val intent = Intent(applicationContext, gamelistActivity::class.java)
+        val intent = Intent(applicationContext, GamelistActivity::class.java)
         startActivity(intent)
     }
 
@@ -82,6 +86,11 @@ class Main_UI : BaseActivity() {
 
     private fun navigateToOXGameRecordActivity() {
         val intent = Intent(applicationContext, OXGameRecordActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToPhotoActivity() {
+        val intent = Intent(applicationContext, PhotoActivity::class.java)
         startActivity(intent)
     }
 
