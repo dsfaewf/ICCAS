@@ -17,12 +17,16 @@
             android:id="@+id/dailyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_rounded"
             android:text="Daily" />
 
         <Button
             android:id="@+id/monthlyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_rounded"
             android:text="Monthly" />
     </LinearLayout>
 
@@ -32,25 +36,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/buttonContainer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp">
+        android:layout_centerHorizontal="true">
 
         <Button
             android:id="@+id/oxGameRecordButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_rounded"
             android:text="OX" />
 
         <Button
             android:id="@+id/fourChoiceGameRecordButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/btn_rounded"
+            android:layout_margin="5dp"
             android:text="4 Choice" />
 
         <Button
             android:id="@+id/shortAnswerGameRecordButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/btn_rounded"
+            android:layout_margin="5dp"
             android:text="Short Answer" />
     </LinearLayout>
 
