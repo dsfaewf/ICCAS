@@ -1,6 +1,7 @@
 package com.example.testfolder
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -28,6 +29,8 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
 
+        fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
+        dailyButton.setBackgroundResource(R.drawable.btn_rounded3)
         SingletonKotlin.loadGameResults { results ->
             renderGraph(results.filter { it["gameType"] == "4 Choice" })
         }
@@ -37,6 +40,8 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
             SingletonKotlin.loadGameResults { results ->
                 renderGraph(results.filter { it["gameType"] == "4 Choice" })
             }
+            monthlyButton.setBackgroundResource(R.drawable.btn_rounded)
+            dailyButton.setBackgroundResource(R.drawable.btn_rounded3)
         }
 
         monthlyButton.setOnClickListener {
@@ -44,23 +49,34 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
             SingletonKotlin.loadGameResults { results ->
                 renderGraph(results.filter { it["gameType"] == "4 Choice" })
             }
+            dailyButton.setBackgroundResource(R.drawable.btn_rounded)
+            monthlyButton.setBackgroundResource(R.drawable.btn_rounded3)
         }
         oxGameRecordButton.setOnClickListener {
             val intent = Intent(this, OXGameRecordActivity::class.java)
             startActivity(intent)
             finish()
+            oxGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
+            fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
+            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
         }
 
         fourChoiceGameRecordButton.setOnClickListener {
             val intent = Intent(this, FourChoiceGameRecordActivity::class.java)
             startActivity(intent)
             finish()
+            oxGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
+            fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
+            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
         }
 
         shortAnswerGameRecordButton.setOnClickListener {
             val intent = Intent(this, ShortAnswerGameRecordActivity::class.java)
             startActivity(intent)
             finish()
+            oxGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
+            fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
+            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
         }
     }
 
@@ -108,7 +124,7 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
                         ]);
 
                         var correctAnswersOptions = {
-                            title: '4 Choice - Average Correct Answers by Date',
+                            title: 'Average Correct Answers by Date',
                             hAxis: { title: 'Date', titleTextStyle: { color: '#333' } },
                             vAxis: { minValue: 0, maxValue: 10 },
                             curveType: 'function',
@@ -116,7 +132,7 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
                         };
 
                         var totalTimeOptions = {
-                            title: '4 Choice - Average Total Time by Date',
+                            title: 'Average Total Time by Date',
                             hAxis: { title: 'Date', titleTextStyle: { color: '#333' } },
                             vAxis: { minValue: 0, maxValue: 300 },
                             curveType: 'function',
@@ -130,11 +146,17 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
                         totalTimeChart.draw(totalTimeData, totalTimeOptions);
                     }
                 </script>
+                <style>
+                    h3 {
+                        margin-left: 50px;
+                    }
+                </style>
             </head>
             <body>
-                <h3>4 Choice - Correct Answers</h3>
+                <h3> Correct Answers</h3>
                 <div id="correct_answers_chart" style="width: 100%; height: 400px;"></div>
-                <h3>4 Choice - Total time for the problem you got it right</h3>
+                <hr style="margin: 30px;">
+                <h3 style="margin-right: 50px;"> Total time for the problem you got it right</h3>
                 <div id="total_time_chart" style="width: 100%; height: 400px;"></div>
             </body>
             </html>
