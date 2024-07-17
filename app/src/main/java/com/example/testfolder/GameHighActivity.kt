@@ -5,6 +5,8 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -24,6 +26,10 @@ class GameHighActivity : BaseActivity() {
     private lateinit var coinText: TextView
     private lateinit var currentUser: FirebaseUser
     private lateinit var quizList: List<SingletonKotlin.BlankQuizItem>
+    private lateinit var date: String
+    private lateinit var answer: String
+    private var isTextChangedListenerActive: Boolean = true
+    private var indexOfFirstUnderbar = 0
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var startTime = 0L
@@ -114,12 +120,42 @@ class GameHighActivity : BaseActivity() {
         }, 3000)
 
         submitBtn.setOnClickListener {
-            handleAnswer(answerEditText.text.toString(), questionTextView, answerEditText)
+            isTextChangedListenerActive = false
+            var userAnswer = answerEditText.text.toString()
+            if(userAnswer.length > answer.length) {
+                userAnswer = userAnswer.substring(0, answer.length)
+            }
+            handleAnswer(userAnswer, questionTextView, answerEditText)
         }
 
         hintButton.setOnClickListener {
             showHintDialog()
         }
+
+        answerEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    if(isTextChangedListenerActive) {
+                        val questionText = questionTextView.text.toString()
+                        var underbarIndex = indexOfFirstUnderbar
+                        val sb = StringBuilder(questionText)
+                        for (i in 0..answer.length - 1) {
+                            if (i <= s.length - 1) {
+                                sb.setCharAt(underbarIndex, s.get(i))
+                            } else {
+                                sb.setCharAt(underbarIndex, '_')
+                            }
+                            underbarIndex += 1
+                        }
+                        questionTextView.setText(sb.toString())
+                    }
+                }
+            }
+        })
     }
 
     private fun displayQuestion(questionTextView: TextView, answerEditText: EditText) {
@@ -127,10 +163,16 @@ class GameHighActivity : BaseActivity() {
             val quizItem = quizList[currentQuestionIndex]
             val answerLength = quizItem.answer.length
             val question = quizItem.question.replace("<blank>", "_".repeat(answerLength))
-
+            // Update TextView text
             questionTextView.text = "Date: ${quizItem.date}\n\n${question}"
             answerEditText.text.clear()
+            // Initialize a class variable
+            this.date = quizItem.date
+            this.answer = quizItem.answer
+            this.indexOfFirstUnderbar = questionTextView.text.indexOf('_')
             updateRoundImages()
+            // Activate textChangedListener for the answer edit text
+            isTextChangedListenerActive = true
         } else {
             endQuiz()
         }
