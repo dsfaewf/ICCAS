@@ -26,6 +26,7 @@ class Setting_UI : BaseActivity() {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val currentUser = auth.currentUser
     private val uid = currentUser?.uid
+    private var musicServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +39,7 @@ class Setting_UI : BaseActivity() {
         fontSizeSeekBar = findViewById(R.id.fontSizeSeekBar)
         sampleTextView = findViewById(R.id.sampleTextView)
         musicSwitch = findViewById(R.id.music_switch)
+        musicServiceIntent = Intent(this, MusicService::class.java)
 
         val savedFontSize = sharedPreferences.getFloat("fontSize", 16f)
         fontSizeSeekBar.max = 24  // Maximum increase from the minimum size
@@ -76,6 +78,12 @@ class Setting_UI : BaseActivity() {
             val editor = sharedPreferences.edit()
             editor.putBoolean("music_on", isChecked)
             editor.apply()
+
+            if (isChecked) {
+                startService(musicServiceIntent)
+            } else {
+                stopService(musicServiceIntent)
+            }
         }
     }
 
@@ -211,6 +219,6 @@ class Setting_UI : BaseActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        navigateToMain() // 이전 화면으로 돌아갈 때 게임 목록으로 이동
+        navigateToMain() // 이전 화면으로 돌아갈 때 메인 화면으로 이동
     }
 }

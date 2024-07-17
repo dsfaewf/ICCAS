@@ -29,11 +29,10 @@ class Main_UI : BaseActivity() {
         val isMusicOn = sharedPreferences.getBoolean("music_on", true)
 
         if (isMusicOn) {
+            mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
             musicServiceIntent = Intent(this, MusicService::class.java)
             startService(musicServiceIntent)
         }
-
-        mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
 
         checkFirstLogin()
 
