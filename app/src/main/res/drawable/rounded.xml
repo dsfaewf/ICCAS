@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android"
+        android:shape="rectangle">
+        <corners android:radius="50dp" /> <!-- 원하는 둥근 모서리 반지름을 설정 -->
+        <solid android:color="@android:color/white" /> <!-- 배경색 지정 -->
+    </shape>
+</selector>
