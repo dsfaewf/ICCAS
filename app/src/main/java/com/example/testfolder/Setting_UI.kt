@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.SeekBar
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +20,7 @@ class Setting_UI : BaseActivity() {
     private lateinit var backButton: Button
     private lateinit var fetchDiaryButton: Button
     private lateinit var deleteAccountButton: Button
+    private lateinit var musicSwitch: Switch
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
@@ -35,6 +37,7 @@ class Setting_UI : BaseActivity() {
         deleteAccountButton = findViewById(R.id.delete_account_button)
         fontSizeSeekBar = findViewById(R.id.fontSizeSeekBar)
         sampleTextView = findViewById(R.id.sampleTextView)
+        musicSwitch = findViewById(R.id.music_switch)
 
         val savedFontSize = sharedPreferences.getFloat("fontSize", 16f)
         fontSizeSeekBar.max = 24  // Maximum increase from the minimum size
@@ -63,6 +66,16 @@ class Setting_UI : BaseActivity() {
 
         deleteAccountButton.setOnClickListener {
             confirmDeleteAccount()
+        }
+
+        // Load the saved music setting
+        val isMusicOn = sharedPreferences.getBoolean("music_on", true)
+        musicSwitch.isChecked = isMusicOn
+
+        musicSwitch.setOnCheckedChangeListener { _, isChecked ->
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("music_on", isChecked)
+            editor.apply()
         }
     }
 
