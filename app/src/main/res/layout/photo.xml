@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +7,7 @@
         android:id="@+id/btnSelectImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choice your image"
+        android:text="Choose your image"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"/>
 
@@ -21,4 +20,47 @@
         android:layout_marginTop="20dp"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/btnUploadImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Image"
+        android:layout_below="@id/selectedImageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/keywordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter keyword"
+        android:layout_below="@id/btnUploadImage"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/errorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Error message"
+        android:textColor="@color/red"
+        android:background="@color/white"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_below="@id/keywordEditText"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btnViewImages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Uploaded Images"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/errorTextView"
+        android:layout_marginTop="20dp" />
 </RelativeLayout>
