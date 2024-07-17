@@ -13,21 +13,27 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
+
+object OkHttpClientSingleton {
+    val instance: OkHttpClient by lazy {
+        OkHttpClient.Builder().connectTimeout(20, java.util.concurrent.TimeUnit.SECONDS) // Connection timeout
+            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS) // Read timeout
+            .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS) // Write timeout
+            .build()
+    }
+}
 
 class OpenAI(lifecycleOwner: LifecycleOwner,
              context: AppCompatActivity,
@@ -43,6 +49,9 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
         const val PROB_TYPE_MCQ_REFINED = 4
         const val NULL_STRING = "NULL"
     }
+    private val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+    private val client = OkHttpClientSingleton.instance
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
     private lateinit var apiKey: String
     private lateinit var date: String
     private lateinit var response_gpt_OX: String
@@ -120,39 +129,29 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
         val prompt_MCQ = get_prompt_MCQ_quiz(diary, numOfQuestions)
         val prompt_blank = get_prompt_blank_quiz(diary, numOfQuestions/2)
         this.diary = diary
-//        get_response(prompt_OX, PROB_TYPE_OX)
-//        get_response(prompt_MCQ, PROB_TYPE_MCQ)
-//        get_response(prompt_blank, PROB_TYPE_BLANK)
         // Launch coroutines in parallel
-        CoroutineScope(Dispatchers.IO).launch {
-            val resultOX = async { get_response(prompt_OX, PROB_TYPE_OX) }
-            val resultMCQ = async { get_response(prompt_MCQ, PROB_TYPE_MCQ) }
-            val resultBlank = async { get_response(prompt_blank, PROB_TYPE_BLANK) }
-
+        coroutineScope.launch {
+            val resultOX = async { getResponse(prompt_OX, PROB_TYPE_OX) }
+            val resultMCQ = async { getResponse(prompt_MCQ, PROB_TYPE_MCQ) }
+            val resultBlank = async { getResponse(prompt_blank, PROB_TYPE_BLANK) }
             // Wait for all results
 //            val results = awaitAll(resultOX, resultMCQ, resultBlank)
         }
     }
 
-//    fun generate_hint() {
-//        val quizListBlank = this.response_gpt_blank.split("\n")
-//        quizListBlank.forEachIndexed { index, quiz ->
-//            val prompt_hint = get_prompt_for_hint(quiz)
-//            get_response(prompt_hint, PROB_TYPE_HINT,
-//                sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets" +
-//                        "\nDictionary format: {\"hint\": \"~\"}"
-//            )
-//        }
-//    }
-
     fun generate_hint() {
         val prompt_hint = get_prompt_for_hint()
-        CoroutineScope(Dispatchers.IO).launch {
-            get_response(
+        coroutineScope.launch {
+            getResponse(
                 prompt_hint, PROB_TYPE_HINT,
-                sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets. Each dictionary must be separated by new line. There must not be any new lines in each dictionary." +
+                sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets. Each dictionary must be separated by new line" +
                         "\nDictionary format: {\"hint\": \"~\"}"
             )
+//            getResponse(
+//                prompt_hint, PROB_TYPE_HINT,
+//                sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets. Each dictionary must be separated by new line. There must not be any new lines in each dictionary." +
+//                        "\nDictionary format: {\"hint\": \"~\"}"
+//            )
         }
     }
 
@@ -173,7 +172,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 "{\"question\": \"What did you have for lunch?\", " +
                 "\"choices\": [\"pasta\", \"pizza\", \"sandwich\", \"burger\"], " +
                 "\"answer\": \"pizza\"}" +
-                "\nUse \"I\" as the subject of the question." 
+                "\nUse \"I\" as the subject of the question."
 //                "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
     }
@@ -186,34 +185,28 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 "\"answer\": \"pizza\"}" +
                 "\nEach question must be short and have only one <blank>." +
                 "\nEach <blank> must match just one word." +
-                "\nUse \"I\" as the subject of the question." 
+                "\nUse \"I\" as the subject of the question."
 //                "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
     }
 
-//    private fun get_prompt_for_hint(singleBlankQuiz: String): String {
+    private fun get_prompt_for_hint(): String {
+        val prompt_hint =
+            "Hints should be generated based on the given diary." +
+            "\nDiary: ${this.diary}" +
+            "\nGenerate hint for each question by referring to the following example." +
+            "\nExample: {\"question\": \"I had <blank> for lunch\", \"answer\": \"pizza\", \"hint\": \"I went to an Italian restaurant\"}" +
+            "\nThe hint must not contain the problem's answer." +
+            "\nTarget questions: ${this.response_gpt_blank}"
+//                    "\nEach answer should be separated by \"\\n\""
+//        Log.d("PROMPT_HINT", prompt_hint)
 //        val prompt_hint =
-//            "You're a bot generating hint for answers that should be filled in the blank. Hint should be generated based on the given diary." +
+//            "You're a bot generating hints for answers that are filled in blanks. Hint should be generated based on the given diary." +
 //                    "\nDiary: ${this.diary}" +
 //                    "\nGenerate hint for each question by referring to the following example." +
 //                    "\nExample: {\"question\": \"I had <blank> for lunch\", \"answer\": \"pizza\", \"hint\": \"I went to an Italian restaurant\"}" +
-//                    "\nThe hint must not contain the problem's answer."
-//                    "\nTarget questions: ${this.response_gpt_blank}" +
-//                    "\nEach answer should be separated by \"\\n\""
-//        Log.d("PROMPT_HINT", prompt_hint)
-//        return prompt_hint
-//    }
-
-    private fun get_prompt_for_hint(): String {
-        val prompt_hint =
-            "You're a bot generating hint for answers that should be filled in the blank. Hint should be generated based on the given diary." +
-                    "\nDiary: ${this.diary}" +
-                    "\nGenerate hint for each question by referring to the following example." +
-                    "\nExample: {\"question\": \"I had <blank> for lunch\", \"answer\": \"pizza\", \"hint\": \"I went to an Italian restaurant\"}" +
-                    "\nThe hint must not contain the problem's answer." +
-                    "\nTarget questions: ${this.response_gpt_blank}"
-//                    "\nEach answer should be separated by \"\\n\""
-//        Log.d("PROMPT_HINT", prompt_hint)
+//                    "\nThe hint must not contain the problem's answer." +
+//                    "\nTarget questions: ${this.response_gpt_blank}"
         return prompt_hint
     }
 
@@ -228,116 +221,84 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
         return prompt
     }
 
-    private fun get_response(prompt: String, probType: Int, sysMsg: String = NULL_STRING) {
-        // Using coroutines to run this block in background thread
-        CoroutineScope(Dispatchers.IO).launch {
-            val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
-            val okHttpClient = OkHttpClient()
-            val messages = JSONArray()
-            val systemMsg = JSONObject()
-            val userMsg = JSONObject()
-            val json = JSONObject()
-            // system message that is gonna be contained in the final json object
-            systemMsg.put("role", "system")
-            if(sysMsg == NULL_STRING) {
-                systemMsg.put("content", "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary.")
-            } else {
-                systemMsg.put("content", sysMsg)
-            }
-            // user message that is gonna be contained in the final json object
-            userMsg.put("role", "user")
-            userMsg.put("content", prompt)
-            // Create value of the key messages that is gonna be contained in the final json object
-            messages.put(systemMsg)
-            messages.put(userMsg)
-            // Create a final json object to send through API call
-            json.put("model", model)
-            json.put("messages", messages)
-            json.put("temperature", 0)
-            val requestBody: RequestBody = json.toString().toRequestBody(mediaType)
-            val request: Request =
-                Request.Builder()
-                    .url("https://api.openai.com/v1/chat/completions")
-                    .addHeader("Authorization", "Bearer $apiKey")
-                    .post(requestBody)
-                    .build()
-
-            Log.d("GPT-CALL", "Called GPT. probType: $probType")
-
-            okHttpClient.newCall(request).enqueue(object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    if (response.isSuccessful) {
-                        try {
-                            val jsonObject = JSONObject(response.body?.string() ?: "")
-                            val jsonArray = jsonObject.getJSONArray("choices")
-                            // 아래 result 받아오는 경로가 좀 수정되었다.
-                            val result = jsonArray.getJSONObject(0).getJSONObject("message")
-                                .getString("content").trim()
-                            // Save the response to DB
-                            when (probType) {
-                                PROB_TYPE_OX -> {
-                                    Log.i("GPT-RECEIVED", "Got OX response")
-                                    // update response
-                                    response_gpt_OX = result
-                                    // Delete existing diary for the day first
-                                    delete_data("ox_quiz", PROB_TYPE_OX)
-                                }
-
-//                                PROB_TYPE_MCQ -> {
-//                                    // update response
-//                                    response_gpt_MCQ = result
-//                                    // Delete existing diary for the day first
-//                                    delete_data("mcq_quiz", PROB_TYPE_MCQ)
-//                                }
-
-                                PROB_TYPE_MCQ -> {
-                                    Log.i("GPT-RECEIVED", "Got MCQ response")
-                                    // update response
-                                    val prompt_for_refining_response = get_prompt_for_refining_response(result)
-                                    get_response(prompt_for_refining_response, PROB_TYPE_MCQ_REFINED)
-                                }
-
-                                PROB_TYPE_MCQ_REFINED -> {
-                                    Log.i("GPT-RECEIVED", "Got refined MCQ response")
-                                    // update response
-                                    response_gpt_MCQ = result
-                                    // Delete existing diary for the day first
-                                    delete_data("mcq_quiz", PROB_TYPE_MCQ)
-                                }
-
-                                PROB_TYPE_BLANK -> {
-                                    Log.i("GPT-RECEIVED", "Got BLANK response")
-                                    // update response
-                                    response_gpt_blank = result
-                                    openAIViewModel.setGotResponseForBlankLiveData(true)
-                                    // Delete existing diary for the day first
-//                                    delete_data("blank_quiz", PROB_TYPE_BLANK)
-                                }
-
-                                PROB_TYPE_HINT -> {
-                                    Log.i("GPT-RECEIVED", "Got HINT response")
-                                    // update response
-                                    response_gpt_hint = result
-                                    // Delete existing diary for the day first
-                                    delete_data("blank_quiz", PROB_TYPE_BLANK)
-                                }
-
-                                else -> {
-                                    throw Exception("Wrong problem type specified")
-                                }
-                            }
-                        } catch (e: JSONException) {
-                            e.printStackTrace()
-                        }
-                    } else {
-                        Log.i("GPT", "Failed to load response due to ${response.body?.string()}")
-                    }
-                }
-
-                override fun onFailure(call: Call, e: java.io.IOException) {
-                    Log.i("GPT", "onFailure: ")
-                }
+    private suspend fun getResponse(prompt: String, probType: Int, sysMsg: String = NULL_STRING): String {
+        val messages = JSONArray().apply {
+            put(JSONObject().apply {
+                put("role", "system")
+                put("content", if (sysMsg == NULL_STRING) "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary." else sysMsg)
             })
+            put(JSONObject().apply {
+                put("role", "user")
+                put("content", prompt)
+            })
+        }
+
+        val json = JSONObject().apply {
+            put("model", model)
+            put("messages", messages)
+            put("temperature", 0)
+        }
+
+        val requestBody = json.toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("https://api.openai.com/v1/chat/completions")
+            .addHeader("Authorization", "Bearer $apiKey")
+            .post(requestBody)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    response.body?.string()?.let { responseBody ->
+                        val jsonObject = JSONObject(responseBody)
+                        val result = jsonObject.getJSONArray("choices")
+                            .getJSONObject(0)
+                            .getJSONObject("message")
+                            .getString("content")
+                            .trim()
+
+                        processResponse(result, probType)
+                        result
+                    } ?: throw IOException("Empty response body")
+                } else {
+                    throw IOException("Failed to load response: ${response.message}")
+                }
+            } catch (e: Exception) {
+                Log.e("GPT", "Error fetching response", e)
+                throw e
+            }
+        }
+    }
+
+    private fun processResponse(result: String, probType: Int) {
+        when (probType) {
+            PROB_TYPE_OX -> {
+                Log.i("GPT-RECEIVED", "Got OX response")
+                response_gpt_OX = result
+                delete_data("ox_quiz", PROB_TYPE_OX)
+            }
+            PROB_TYPE_MCQ -> {
+                Log.i("GPT-RECEIVED", "Got MCQ response")
+                val promptForRefiningResponse = get_prompt_for_refining_response(result)
+                coroutineScope.launch { getResponse(promptForRefiningResponse, PROB_TYPE_MCQ_REFINED) }
+            }
+            PROB_TYPE_MCQ_REFINED -> {
+                Log.i("GPT-RECEIVED", "Got refined MCQ response")
+                response_gpt_MCQ = result
+                delete_data("mcq_quiz", PROB_TYPE_MCQ)
+            }
+            PROB_TYPE_BLANK -> {
+                Log.i("GPT-RECEIVED", "Got BLANK response")
+                response_gpt_blank = result
+                openAIViewModel.setGotResponseForBlankLiveData(true)
+            }
+            PROB_TYPE_HINT -> {
+                Log.i("GPT-RECEIVED", "Got HINT response")
+                response_gpt_hint = result
+                delete_data("blank_quiz", PROB_TYPE_BLANK)
+            }
+            else -> throw Exception("Wrong problem type specified")
         }
     }
 
@@ -403,15 +364,16 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
 
     fun save_MCQ_data() {
         if (uid != null) {
-            Log.i("GPT-MCQ-REFINED", "response: " + this.response_gpt_MCQ)
+            val responseGptMCQ = this.response_gpt_MCQ.trimIndent()
+            Log.i("GPT-MCQ-REFINED", "response: " + responseGptMCQ)
             val quizMap = mutableMapOf<String, Map<String, String>>()
-            var quizList: List<String>
             // Preprocess the response from GPT
-            quizList = if(this.response_gpt_MCQ.contains("} {")) {
-                getStringListByCleaningSpaceBetweenDict(this.response_gpt_MCQ)
+            var quizList: List<String> = if (responseGptMCQ.contains("} {")) {
+                getStringListByCleaningSpaceBetweenDict(responseGptMCQ)
             } else {
-                this.response_gpt_MCQ.split("\n")
+                responseGptMCQ.split("\n").map { it.trim() }
             }
+
             // Filter out strings that consist only of white spaces
             quizList = quizList.filter { it.isNotBlank() }
             quizList.forEachIndexed { index, quiz ->
@@ -467,8 +429,10 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
             // Filter out strings that consist only of white spaces
             quizListBlank = quizListBlank.filter { it.isNotBlank() }
             quizListHint = quizListHint.filter { it.isNotBlank() }
-            if(quizListBlank.count() != quizListHint.count()) {
-                diaryEditText.setText(diary)
+//            val quizCountDiff = abs(quizListBlank.count() - quizListHint.count())
+//            if((quizCountDiff >= 2) || (quizListHint.count() > quizListBlank.count())) {
+            if(quizListHint.count() > quizListBlank.count()) {
+                    diaryEditText.setText(diary)
                 loadingAnimation.hideLoading()
                 Log.i("ERROR", "quizListBlank.count()(${quizListBlank.count()}) != quizListHint.count()(${quizListHint.count()})")
                 Log.i("ERROR", "quizListBlank: $quizListBlank")
@@ -531,26 +495,4 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
         }
         return jsonObjectList
     }
-
-//    fun save_hint_data() {
-//        if(uid != null) {
-//            Log.i("GPT-HINT", "response: " + this.response_gpt_hint)
-//            val quizList = this.response_gpt_hint.split("\n")
-//            quizList.forEachIndexed { index, quiz ->
-//                val ref = database.reference.child("hint_for_blank").child(uid).child(this.date)
-//                    .child(index.toString())
-//                val jsonObject = JSONObject(quiz)
-//                val hint = jsonObject.getString("hint")
-//                val recordMap = mapOf(
-//                    "hint" to hint,
-//                )
-//                val dbTask = ref.setValue(recordMap)
-//                dbTask.addOnSuccessListener {
-//                    Log.i("DB", "Data saved successfully")
-////                    Toast.makeText(this.context, "Data saved successfully", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//        }
-//    }
-
 }
