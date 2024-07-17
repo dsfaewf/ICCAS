@@ -64,6 +64,7 @@ class GamelistActivity : AppCompatActivity() {
         gRbtn.setOnClickListener {
             val intent = Intent(this, OXGameRecordActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         settingBtn.setOnClickListener {
