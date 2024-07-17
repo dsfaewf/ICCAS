@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -12,15 +13,21 @@ import com.google.firebase.database.*
 
 class Diary_Check : BaseActivity() {
 
+    private lateinit var listView: ListView
     private lateinit var databaseReference: DatabaseReference
     private lateinit var diaryContainer: LinearLayout
     private lateinit var auth: FirebaseAuth
+    private lateinit var diaryListAdapter: DiaryListAdapter
+    private val diaryList = mutableListOf<DiaryData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_check)
         applyFontSize() // 폰트 크기 적용
-        diaryContainer = findViewById(R.id.diary_container)
+
+        listView = findViewById(R.id.diaryListView)
+        diaryListAdapter = DiaryListAdapter(this, diaryList)
+        listView.adapter = diaryListAdapter
 
         // Singleton을 통해 Firebase 객체 갖고 오게 변경
         auth = SingletonKotlin.getAuth()
@@ -33,23 +40,43 @@ class Diary_Check : BaseActivity() {
 
             databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    diaryContainer.removeAllViews()
+//                    diaryContainer.removeAllViews()
+                    diaryList.clear()
+//                    for (diarySnapshot in snapshot.children) {
+//                        var date = diarySnapshot.key
+//                        date = date?.replace(" ", "/")
+//                        Log.d("DIARY_LIST", "date: $date")
+//                        val content = diarySnapshot.child("content").getValue(String::class.java)
+//                        val diaryId = diarySnapshot.key
+//                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
+//                            addDiaryEntryToView(date, content, diaryId)
+//                        }
+//                    }
                     for (diarySnapshot in snapshot.children) {
-                        var date = diarySnapshot.key
-                        date = date?.replace(" ", "/")
-                        Log.d("DIARY_LIST", "date: $date")
+                        val date = diarySnapshot.key?.replace(" ", "/")
                         val content = diarySnapshot.child("content").getValue(String::class.java)
                         val diaryId = diarySnapshot.key
                         if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
-                            addDiaryEntryToView(date, content, diaryId)
+                            diaryList.add(DiaryData(diaryId, content, date))
                         }
                     }
+                    diaryListAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     // Handle possible errors
                 }
             })
+        }
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val diaryData = diaryList[position]
+            val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java).apply {
+                putExtra("diaryId", diaryData.diaryId)
+                putExtra("date", diaryData.date)
+                putExtra("content", diaryData.content)
+            }
+            startActivity(intent)
         }
     }
 
@@ -81,6 +108,7 @@ class Diary_Check : BaseActivity() {
                 intent.putExtra("content", content)
                 startActivity(intent)
             }
+
         }
 
         diaryContainer.addView(diaryEntryLayout)

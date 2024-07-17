@@ -1,45 +1,32 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/diary_background">
+    android:background="@drawable/diary_background"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/search_bar_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/search_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="10dp"
             android:background="@drawable/rectangle_btn_style2"
-            android:padding="5dp"
             android:hint="Enter date (dd/MM/yyyy)"
+            android:padding="5dp"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:inputType="date" />
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/diaryListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/white" />
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/search_bar_container"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:id="@+id/diary_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#DDFF"
-            android:padding="10dp" />
-
-    </ScrollView>
-
-</RelativeLayout>
+</LinearLayout>
