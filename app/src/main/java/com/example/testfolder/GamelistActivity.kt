@@ -107,6 +107,7 @@ class GamelistActivity : AppCompatActivity() {
                 val selectedOption = options[selectedId]
                 saveSetting(selectedOption)
                 dialog.dismiss()
+                finish()
             }
         }
 
@@ -122,10 +123,17 @@ class GamelistActivity : AppCompatActivity() {
         }
     }
 
+    private fun navigateToMain() {
+        val intent = Intent(this, Main_UI::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
+    }
     override fun onBackPressed() {
         super.onBackPressed()
-        val intent = Intent(applicationContext, Main_UI::class.java)
-        startActivity(intent)
-        finish()
+        navigateToMain()
+//        val intent = Intent(applicationContext, Main_UI::class.java)
+//        startActivity(intent)
+//        finish()
     }
 }
