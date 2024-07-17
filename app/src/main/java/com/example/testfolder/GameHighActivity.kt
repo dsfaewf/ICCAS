@@ -17,7 +17,7 @@ import android.widget.Toast
 import com.example.testfolder.utils.PreprocessTexts
 import com.google.firebase.auth.FirebaseUser
 
-class gameHighActivity : BaseActivity() {
+class GameHighActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
     private val handler = Handler(Looper.getMainLooper())

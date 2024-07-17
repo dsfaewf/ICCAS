@@ -111,7 +111,7 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         }
         gameBtn.setOnClickListener {
             Log.d("ShopActivity", "Game button clicked")
-            val intent = Intent(this, gamelistActivity::class.java)
+            val intent = Intent(this, GamelistActivity::class.java)
             startActivity(intent)
             finish()
         }

@@ -343,7 +343,7 @@ public class ServeGame_samepicture extends AppCompatActivity {
         navigateToGameList(); // 게임 종료 시 게임 목록으로 이동
     }
     private void navigateToGameList() {
-        Intent intent = new Intent(this, gamelistActivity.class);
+        Intent intent = new Intent(this, GamelistActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish(); // 현재 액티비티 종료

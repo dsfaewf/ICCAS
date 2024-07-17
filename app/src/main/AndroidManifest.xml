@@ -17,12 +17,6 @@
         android:theme="@style/Theme.TestFolder"
         tools:ignore="ExtraText"
         tools:targetApi="31">
-        <activity
-            android:name=".ImageListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PhotoActivity"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
@@ -91,16 +85,16 @@
             android:name=".ServeGameBaseballActivity"
             android:exported="true" />
         <activity
-            android:name=".gamelistActivity"
+            android:name=".GamelistActivity"
             android:exported="false" />
         <activity
-            android:name=".gameHighActivity"
+            android:name=".GameHighActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".gameMidActivity"
+            android:name=".GameMidActivity"
             android:exported="false" />
         <activity
-            android:name=".gameLowActivity"
+            android:name=".GameLowActivity"
             android:exported="false" />
         <activity
             android:name=".Diary_Check"
@@ -125,6 +119,16 @@
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GamePictureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhotoActivity"
+            android:exported="false" />
+      
+       <activity
+            android:name=".ImageListActivity"
             android:exported="false" />
     </application>
 

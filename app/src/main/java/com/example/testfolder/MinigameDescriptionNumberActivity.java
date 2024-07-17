@@ -33,7 +33,7 @@ public class MinigameDescriptionNumberActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MinigameDescriptionNumberActivity.this, gamelistActivity.class);
+                Intent intent = new Intent(MinigameDescriptionNumberActivity.this, GamelistActivity.class);
                 startActivity(intent);
                 finish();
             }

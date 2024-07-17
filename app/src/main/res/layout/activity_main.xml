@@ -39,6 +39,16 @@
             android:textSize="24sp" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/my_button6"
+            android:layout_width="250dp"
+            android:layout_height="60dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/rectangle_style"
+            android:gravity="center"
+            android:text="Photo"
+            android:textSize="24sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/my_button3"
             android:layout_width="250dp"
             android:layout_height="60dp"
@@ -66,7 +76,8 @@
             android:background="@drawable/rectangle_style"
             android:gravity="center"
             android:text="Game Record"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/my_button4"

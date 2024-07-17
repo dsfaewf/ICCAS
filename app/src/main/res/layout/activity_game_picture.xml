@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GameLowActivity">
+    tools:context=".GamePictureActivity">
 
     <LinearLayout
         android:id="@+id/coin_layout"
@@ -84,63 +84,87 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="15"
-                    android:background="@drawable/chat"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_margin="15dp"
+                    android:layout_gravity="center"
                     android:orientation="horizontal">
 
-                    <ScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" >
-
-                            <TextView
-                                android:id="@+id/qeustionbox"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_margin="10dp"
-                                android:fontFamily="@font/bmjua_ttf"
-                                android:text="loading question"
-                                android:textColorLink="#000000"
-                                android:textSize="30sp" />
-                        </LinearLayout>
-                    </ScrollView>
-
+                    <ImageView
+                        android:id="@+id/qeustionImg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:scaleType="centerInside"
+                        android:background="@drawable/img_rounded"
+                        android:layout_weight="1"
+                        app:srcCompat="@drawable/colosseum" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginBottom="30dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/chat_triangle"
-                    android:orientation="horizontal"></LinearLayout>
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="70dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
-                    app:srcCompat="@drawable/sitting_cat" />
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="15"
+                        android:background="@drawable/chat"
+                        android:orientation="horizontal">
+
+                        <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/qeustionbox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="10dp"
+                                    android:fontFamily="@font/bmjua_ttf"
+                                    android:text="loading question"
+                                    android:textColorLink="#000000"
+                                    android:textSize="30sp" />
+                            </LinearLayout>
+                        </ScrollView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/chat_triangle"
+                        android:orientation="horizontal"></LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="70dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:srcCompat="@drawable/sitting_cat" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <ProgressBar
@@ -159,18 +183,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
                 <FrameLayout
                     android:id="@+id/o_btn"
-                    android:clickable="true"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_event"
-                    android:layout_weight="1">
+                    android:clickable="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -180,9 +204,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="horizontal"
                             android:layout_weight="1"
-                            ></LinearLayout>
+                            android:orientation="horizontal"></LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -196,12 +219,12 @@
                 </FrameLayout>
 
                 <FrameLayout
-                    android:clickable="true"
                     android:id="@+id/x_btn"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_event"
-                    android:layout_weight="1">
+                    android:clickable="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -211,9 +234,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="horizontal"
                             android:layout_weight="1"
-                            ></LinearLayout>
+                            android:orientation="horizontal"></LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -258,5 +280,4 @@
             android:textColor="@android:color/white"
             android:textSize="20sp" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
