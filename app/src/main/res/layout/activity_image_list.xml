@@ -2,25 +2,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnSortByDate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sort by Date" />
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
 
-    <Button
-        android:id="@+id/btnSortByMonth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sort by Month" />
+        <Button
+            android:id="@+id/btnSortByDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:background="@drawable/btn_rounded"
+            android:text="Sort by Date" />
+
+        <Button
+            android:id="@+id/btnSortByMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_rounded"
+            android:text="Sort by Month" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/imageListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp" />
+        android:divider="@color/white" />
 
 </LinearLayout>
