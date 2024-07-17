@@ -205,4 +205,17 @@ class PhotoActivity : AppCompatActivity() {
             Toast.makeText(this, "User not authenticated.", Toast.LENGTH_SHORT).show()
         }
     }
+    private fun navigateToMain() {
+        val intent = Intent(this, Main_UI::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateToMain()
+//        val intent = Intent(applicationContext, Main_UI::class.java)
+//        startActivity(intent)
+//        finish()
+    }
 }
