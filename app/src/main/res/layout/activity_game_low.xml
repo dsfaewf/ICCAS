@@ -259,4 +259,20 @@
             android:textSize="20sp" />
     </LinearLayout>
 
+    <!-- 정답 또는 오답 이미지를 표시할 오버레이 레이아웃 -->
+    <FrameLayout
+        android:id="@+id/correct_wrong_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#80000000"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/correct_wrong_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher_background" />
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -163,10 +163,18 @@ class OXGameRecordActivity : AppCompatActivity() {
             </html>
         """.trimIndent()
     }
+
+    private fun navigateToGamelist() {
+        val intent = Intent(this, GamelistActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
+    }
     override fun onBackPressed() {
         super.onBackPressed()
-        val intent = Intent(applicationContext, GamelistActivity::class.java)
-        startActivity(intent)
-        finish()
+        navigateToGamelist()
+//        val intent = Intent(applicationContext, GamelistActivity::class.java)
+//        startActivity(intent)
+//        finish()
     }
 }
