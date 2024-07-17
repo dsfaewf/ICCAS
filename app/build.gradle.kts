@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    kotlin("kapt") // kapt 플러그인 추가
 }
 
 // To use values in the file local.properties
@@ -29,7 +30,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // For using API_KEY
-        buildConfigField("String", "API_KEY", "${localProperties["API_KEY"]}")
+        buildConfigField("String", "API_KEY", "\"${localProperties["API_KEY"]}\"")
     }
 
     buildFeatures {
@@ -64,7 +65,7 @@ dependencies {
     implementation(libs.firebase.functions)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.config.ktx)
-    implementation ("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
 
     // Google Play services library for Google Sign-In 추가
     implementation(libs.play.services.auth)
@@ -75,9 +76,13 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.core.ktx)
+    implementation("androidx.exifinterface:exifinterface:1.3.6") // ExifInterface 추가
 
     // Additional libraries
     implementation(libs.android.gif.drawable)
+    implementation(libs.firebase.storage.ktx)
+    implementation("com.github.bumptech.glide:glide:4.12.0") // Glide 추가
+    kapt("com.github.bumptech.glide:compiler:4.12.0") // Glide annotation processor
 
     // Test libraries
     testImplementation(libs.junit)
@@ -94,6 +99,5 @@ dependencies {
     implementation(libs.ktor.client.android)
     implementation(libs.okhttp)
 
-    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 }
-

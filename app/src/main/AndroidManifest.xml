@@ -126,6 +126,10 @@
         <activity
             android:name=".PhotoActivity"
             android:exported="false" />
+      
+       <activity
+            android:name=".ImageListActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
