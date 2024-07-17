@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".gamelistActivity"
+    tools:context=".GamelistActivity"
     android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +16,8 @@
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -27,8 +28,10 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="10dp"
                 android:text="Main Game"
+                android:textColor="@color/black"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -38,95 +41,150 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:id="@+id/btn1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:orientation="vertical"
-                    android:clickable="true">
-
-                    <ImageView
-                        android:id="@+id/imageView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:scaleType="centerInside"
-                        app:srcCompat="@drawable/gameox" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textSize="18sp"
-                        android:background="@drawable/white_style"
-                        android:text="OX\nQuiz" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btn2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:orientation="vertical"
-                    android:clickable="true">
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/imageView4"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginEnd="2dp"
-                        android:scaleType="centerInside"
-                        app:srcCompat="@drawable/gamebtn4" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textSize="18sp"
-                        android:background="@drawable/white_style"
-                        android:text="4 choice\nQuiz" />
-                </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/btn1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/circle_btn_w_style"
+                            android:clickable="true"
+                            android:elevation="5dp"
+                            android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/btn3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:elevation="5dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/circle_btn_w_style"
-                    android:orientation="vertical"
-                    android:clickable="true">
+                            <ImageView
+                                android:id="@+id/imageView2"
+                                android:layout_width="match_parent"
+                                android:layout_height="110dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="5dp"
+                                android:scaleType="centerInside"
+                                app:srcCompat="@drawable/gameox" />
 
-                    <ImageView
-                        android:id="@+id/imageView8"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/white_style"
+                                android:gravity="center"
+                                android:text="OX\nQuiz"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/circle_btn_w_style"
+                            android:clickable="true"
+                            android:elevation="5dp"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/imageView4"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginTop="5dp"
+                                android:scaleType="centerInside"
+                                app:srcCompat="@drawable/gamebtn4" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/white_style"
+                                android:gravity="center"
+                                android:text="4 choice\nQuiz"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        app:srcCompat="@drawable/game_answer" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textSize="18sp"
-                        android:background="@drawable/white_style"
-                        android:text="Short\nanswer" />
+                        <LinearLayout
+                            android:id="@+id/btn3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/circle_btn_w_style"
+                            android:clickable="true"
+                            android:elevation="5dp"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/imageView8"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:layout_marginTop="5dp"
+                                app:srcCompat="@drawable/game_answer" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/white_style"
+                                android:gravity="center"
+                                android:text="Short\nanswer"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/btn7"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/circle_btn_w_style"
+                            android:clickable="true"
+                            android:elevation="5dp"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/imageView9"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:layout_marginTop="5dp"
+                                app:srcCompat="@drawable/gameox" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/white_style"
+                                android:gravity="center"
+                                android:text="OX Quiz\nwith picture"
+                                android:textSize="18sp" />
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
@@ -135,9 +193,10 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
                 android:text="Mini Game"
+                android:textColor="@color/black"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -235,12 +294,23 @@
                         android:layout_margin="5dp"
                         android:textSize="18sp"
                         android:background="@drawable/white_style"
-                        android:text="same picture" />
+                        android:text="same\npicture" />
                 </LinearLayout>
 
             </LinearLayout>
-
+                <Button
+                    android:id="@+id/game_record_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:elevation="5dp"
+                    android:background="@drawable/circle_btn_w_style"
+                    android:text="GAME RECORD"
+                    android:textSize="20sp"
+                    android:layout_margin="10dp"/>
         </LinearLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

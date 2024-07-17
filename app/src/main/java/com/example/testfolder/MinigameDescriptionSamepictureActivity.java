@@ -33,7 +33,7 @@ public class MinigameDescriptionSamepictureActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MinigameDescriptionSamepictureActivity.this, gamelistActivity.class);
+                Intent intent = new Intent(MinigameDescriptionSamepictureActivity.this, GamelistActivity.class);
                 startActivity(intent);
                 finish();
             }

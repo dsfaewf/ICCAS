@@ -219,7 +219,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     }
 
     private void navigateToGameList() {
-        Intent intent = new Intent(this, gamelistActivity.class);
+        Intent intent = new Intent(this, GamelistActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish(); // 현재 액티비티 종료
