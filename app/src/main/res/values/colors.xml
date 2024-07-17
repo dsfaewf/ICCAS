@@ -15,6 +15,7 @@
     <color name="orange_default">#FF9800</color> <!-- 기본 상태 색상: 주황색 -->
     <color name="orange_pressed">#F57C00</color> <!-- 버튼이 눌렸을 때 색상: 진한 주황색 -->
     <color name="orange_focused">#FFB74D</color> <!-- 버튼이 포커스 되었을 때 색상: 밝은 주황색 -->
+    <color name="gray_light">#DBDBDB</color>
 
 
         <!-- 녹색 계열 -->
