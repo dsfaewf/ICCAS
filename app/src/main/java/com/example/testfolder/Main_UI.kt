@@ -1,13 +1,13 @@
 package com.example.testfolder
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -15,8 +15,8 @@ class Main_UI : BaseActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
-    private lateinit var mediaPlayer: MediaPlayer   // 효과음 재생용 변수
-    private var musicServiceIntent: Intent? = null  // MusicService의 Intent
+    private lateinit var mediaPlayer: MediaPlayer
+    private var musicServiceIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,11 +24,15 @@ class Main_UI : BaseActivity() {
         applyFontSize() // 폰트 크기 적용
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
-        mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
 
-        // MusicService 시작
-        musicServiceIntent = Intent(this, MusicService::class.java)
-        startService(musicServiceIntent)
+        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val isMusicOn = sharedPreferences.getBoolean("music_on", true)
+
+        if (isMusicOn) {
+            mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
+            musicServiceIntent = Intent(this, MusicService::class.java)
+            startService(musicServiceIntent)
+        }
 
         checkFirstLogin()
 
@@ -36,7 +40,6 @@ class Main_UI : BaseActivity() {
         val diaryButton = findViewById<View>(R.id.my_button2) as Button
         val catRoomButton = findViewById<View>(R.id.my_button3) as Button
         val gameButton = findViewById<Button>(R.id.btn_game)
-//        val gameRecodeBtn = findViewById<View>(R.id.my_button5) as Button
         val photoBtn = findViewById<View>(R.id.my_button6) as Button
 
         imageButton1.setOnClickListener {
@@ -56,9 +59,6 @@ class Main_UI : BaseActivity() {
             navigateToCatRoomActivity()
         }
 
-//        gameRecodeBtn.setOnClickListener {
-//            navigateToOXGameRecordActivity()
-//        }
         photoBtn.setOnClickListener {
             navigateToPhotoActivity()
         }
@@ -93,8 +93,9 @@ class Main_UI : BaseActivity() {
         super.onDestroy()
         mediaPlayer.release()
 
-        // MusicService 중지
-        stopService(musicServiceIntent)
+        if (musicServiceIntent != null) {
+            stopService(musicServiceIntent)
+        }
     }
 
     private fun checkFirstLogin() {

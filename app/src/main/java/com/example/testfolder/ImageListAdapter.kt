@@ -47,6 +47,7 @@ class ImageListAdapter(private val context: Context, private val imageList: List
         val imageData = imageList[position]
         holder.keywordTextView.text = imageData.keyword
         holder.dateTimeTextView.text = imageData.dateTime
+        holder.imageView.clipToOutline = true
 
         Glide.with(context)
             .load(imageData.imageUrl)

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/gray"
+        android:background="@color/gray_light"
         android:padding="15dp"
         android:layout_marginTop="20dp">
 
@@ -32,52 +32,32 @@
             android:id="@+id/sampleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             android:text="Sample Text"
             android:textSize="16sp"
             android:layout_marginTop="10dp" />
     </LinearLayout>
 
-    <LinearLayout
+    <!-- activity_setting.xml -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/gray"
-        android:padding="15dp"
-        android:layout_marginTop="20dp">
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/gray_light"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
 
-        <TextView
-            android:id="@+id/textview3"
+        <Switch
+            android:id="@+id/music_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Music Setting"
             android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_marginBottom="10dp" />
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <RadioButton
-                android:id="@+id/radioButton9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Music Sound 1" />
-
-            <RadioButton
-                android:id="@+id/radioButton10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Music Sound 2" />
-
-            <RadioButton
-                android:id="@+id/radioButton11"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Music Sound 3" />
-        </RadioGroup>
-
+            android:text="Background Music"
+            android:layout_gravity="center" />
     </LinearLayout>
+
+
 
     <Button
         android:id="@+id/fetch_diary_button"
@@ -85,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Fetch Diaries"
+        android:background="@color/gray_light"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -93,6 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:background="@color/gray_light"
         android:text="Delete Account"
         android:textSize="20sp"
         android:textStyle="bold" />
