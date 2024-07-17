@@ -164,7 +164,7 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
     }
     override fun onBackPressed() {
         super.onBackPressed()
-        val intent = Intent(applicationContext, Main_UI::class.java)
+        val intent = Intent(applicationContext, GamelistActivity::class.java)
         startActivity(intent)
         finish()
     }

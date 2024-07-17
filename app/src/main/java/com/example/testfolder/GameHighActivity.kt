@@ -1,6 +1,8 @@
 package com.example.testfolder
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -18,6 +20,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.testfolder.utils.PreprocessTexts
 import com.google.firebase.auth.FirebaseUser
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class GameHighActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
@@ -26,6 +31,7 @@ class GameHighActivity : BaseActivity() {
     private lateinit var coinText: TextView
     private lateinit var currentUser: FirebaseUser
     private lateinit var quizList: List<SingletonKotlin.BlankQuizItem>
+    private lateinit var selectedQuizzes: List<SingletonKotlin.BlankQuizItem>
     private lateinit var date: String
     private lateinit var answer: String
     private var isTextChangedListenerActive: Boolean = true
@@ -51,12 +57,17 @@ class GameHighActivity : BaseActivity() {
     private lateinit var submitBtn: Button
     private lateinit var hintButton: Button
 
-    private lateinit var getCoin:MediaPlayer
-    private lateinit var wrong:MediaPlayer
+    private lateinit var getCoin: MediaPlayer
+    private lateinit var wrong: MediaPlayer
+
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_high)
+
+        sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
+
         progressBar = findViewById(R.id.progressBar1)
         val questionTextView = findViewById<TextView>(R.id.qeustionbox)
         answerEditText = findViewById(R.id.answer_edit_text)
@@ -72,8 +83,8 @@ class GameHighActivity : BaseActivity() {
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
 
-        getCoin=MediaPlayer.create(this,R.raw.coin)
-        wrong= MediaPlayer.create(this, R.raw.wrong)
+        getCoin = MediaPlayer.create(this, R.raw.coin)
+        wrong = MediaPlayer.create(this, R.raw.wrong)
 
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
@@ -105,16 +116,16 @@ class GameHighActivity : BaseActivity() {
         handler.postDelayed({
             loadingLayout.visibility = View.GONE
             SingletonKotlin.loadBlankQuizData { quizData ->
-                if (quizData.isNotEmpty()) {
-                    quizList = quizData.shuffled().take(totalRounds)
+                quizList = filterQuizDataByPeriod(quizData)
+                if (quizList.size >= totalRounds) {
+                    selectedQuizzes = quizList.shuffled().take(totalRounds)
                     startTime = System.currentTimeMillis()
                     displayQuestion(questionTextView, answerEditText)
                     startProgressBar(questionTextView, answerEditText)
                     // 답변 버튼 활성화
                     enableAnswerControls()
                 } else {
-//                    questionTextView.text = "No quiz available."
-                    SingletonKotlin.showNoQuizzesDialogAndExit(this)
+                    showNoQuizzesDialogAndExit()
                 }
             }
         }, 3000)
@@ -122,7 +133,7 @@ class GameHighActivity : BaseActivity() {
         submitBtn.setOnClickListener {
             isTextChangedListenerActive = false
             var userAnswer = answerEditText.text.toString()
-            if(userAnswer.length > answer.length) {
+            if (userAnswer.length > answer.length) {
                 userAnswer = userAnswer.substring(0, answer.length)
             }
             handleAnswer(userAnswer, questionTextView, answerEditText)
@@ -139,28 +150,59 @@ class GameHighActivity : BaseActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
-                    if(isTextChangedListenerActive) {
+                    if (isTextChangedListenerActive) {
                         val questionText = questionTextView.text.toString()
                         var underbarIndex = indexOfFirstUnderbar
                         val sb = StringBuilder(questionText)
-                        for (i in 0..answer.length - 1) {
-                            if (i <= s.length - 1) {
-                                sb.setCharAt(underbarIndex, s.get(i))
+                        for (i in 0 until answer.length) {
+                            if (i < s.length) {
+                                sb.setCharAt(underbarIndex, s[i])
                             } else {
                                 sb.setCharAt(underbarIndex, '_')
                             }
                             underbarIndex += 1
                         }
-                        questionTextView.setText(sb.toString())
+                        questionTextView.text = sb.toString()
                     }
                 }
             }
         })
     }
+    private fun filterQuizDataByPeriod(quizData: List<SingletonKotlin.BlankQuizItem>): List<SingletonKotlin.BlankQuizItem> {
+        val selectedPeriod = sharedPreferences.getString("selected_period", "Random")
+        if (selectedPeriod == "Random") return quizData //기존이랑 같음
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd MM yyyy", Locale.getDefault())
+        return quizData.filter {
+            val quizTime = dateFormat.parse(it.date).time
+            when (selectedPeriod) {
+                "Within 3 days" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) <= 3
+                "3 days to 1 week" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 4..7
+                "1 week to 2 weeks" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 8..14
+                "2 weeks to 1 month" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 15..30
+                "1 month to 6 months" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 31..180
+                else -> true
+            }
+        }
+    }
+
+
+    private fun showNoQuizzesDialogAndExit() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("No Quizzes Available")
+            .setMessage("There are no diary entries available for the selected period.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
 
     private fun displayQuestion(questionTextView: TextView, answerEditText: EditText) {
-        if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
+        if (currentQuestionIndex < selectedQuizzes.size) {
+            val quizItem = selectedQuizzes[currentQuestionIndex]
             val answerLength = quizItem.answer.length
             val question = quizItem.question.replace("<blank>", "_".repeat(answerLength))
             // Update TextView text
@@ -184,7 +226,6 @@ class GameHighActivity : BaseActivity() {
             val inputStr = userAnswer.trim()
             val answerStr = quizItem.answer.trim()
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
-//            if (userAnswer.trim().equals(quizItem.answer.trim(), ignoreCase = true)) {
             if (PreprocessTexts.isCorrectAnswer(inputStr, answerStr)) {
                 correctAnswers++
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()

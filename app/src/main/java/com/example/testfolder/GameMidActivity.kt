@@ -1,6 +1,8 @@
 package com.example.testfolder
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +16,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseUser
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class GameMidActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
@@ -22,6 +27,7 @@ class GameMidActivity : BaseActivity() {
     private lateinit var coinText: TextView
     private lateinit var currentUser: FirebaseUser
     private lateinit var quizList: List<SingletonKotlin.MultipleChoiceQuizItem>
+    private lateinit var selectedQuizzes: List<SingletonKotlin.MultipleChoiceQuizItem>
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var startTime = 0L
@@ -44,12 +50,17 @@ class GameMidActivity : BaseActivity() {
     private lateinit var btn3: Button
     private lateinit var btn4: Button
 
-    private lateinit var getCoin:MediaPlayer
-    private lateinit var wrong:MediaPlayer
+    private lateinit var getCoin: MediaPlayer
+    private lateinit var wrong: MediaPlayer
+
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_mid)
+
+        sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
+
         progressBar = findViewById(R.id.progressBar1)
         val questionTextView = findViewById<TextView>(R.id.qeustionbox)
         btn1 = findViewById(R.id.btn1)
@@ -65,7 +76,7 @@ class GameMidActivity : BaseActivity() {
         loadingLayout = findViewById(R.id.loading_layout)
         loadingImage = findViewById(R.id.loading_image)
         loadingText = findViewById(R.id.loading_text)
-        getCoin= MediaPlayer.create(this,R.raw.coin)
+        getCoin = MediaPlayer.create(this, R.raw.coin)
         wrong = MediaPlayer.create(this, R.raw.wrong)
         // 로딩 이미지 회전 애니메이션 적용
         val rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate)
@@ -96,18 +107,18 @@ class GameMidActivity : BaseActivity() {
         // 3초 동안 로딩 화면 표시 후 게임 시작
         handler.postDelayed({
             loadingLayout.visibility = View.GONE
-            // 퀴즈를 불러옴
+            // 설정된 기간에 맞게 퀴즈 데이터 필터링
             SingletonKotlin.loadMultipleChoiceQuizData { quizData ->
-                if (quizData.isNotEmpty()) {
-                    quizList = quizData.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
+                quizList = filterQuizDataByPeriod(quizData)
+                if (quizList.size >= 5) {
+                    selectedQuizzes = quizList.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
                     startTime = System.currentTimeMillis()
                     displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
                     startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
                     // 답변 버튼 활성화
                     enableAnswerButtons()
                 } else {
-//                    questionTextView.text = "No quiz available."
-                    SingletonKotlin.showNoQuizzesDialogAndExit(this)
+                    showNoQuizzesDialogAndExit()
                 }
             }
         }, 3000)
@@ -118,9 +129,40 @@ class GameMidActivity : BaseActivity() {
         btn4.setOnClickListener { handleAnswer(btn4.text.toString(), questionTextView, btn1, btn2, btn3, btn4) }
     }
 
+    private fun filterQuizDataByPeriod(quizData: List<SingletonKotlin.MultipleChoiceQuizItem>): List<SingletonKotlin.MultipleChoiceQuizItem> {
+        val selectedPeriod = sharedPreferences.getString("selected_period", "Random")
+        if (selectedPeriod == "Random") return quizData //기존이랑 같음
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd MM yyyy", Locale.getDefault())
+        return quizData.filter {
+            val quizTime = dateFormat.parse(it.date).time
+            when (selectedPeriod) {
+                "Within 3 days" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) <= 3
+                "3 days to 1 week" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 4..7
+                "1 week to 2 weeks" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 8..14
+                "2 weeks to 1 month" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 15..30
+                "1 month to 6 months" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 31..180
+                else -> true
+            }
+        }
+    }
+
+    private fun showNoQuizzesDialogAndExit() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("No Quizzes Available")
+            .setMessage("There are no diary entries available for the selected period.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
+
     private fun displayQuestion(questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
-        if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
+        if (currentQuestionIndex < selectedQuizzes.size) {
+            val quizItem = selectedQuizzes[currentQuestionIndex]
             questionTextView.text = "Date: ${quizItem.date}\n\n${quizItem.question}"
             if (quizItem.choices.size >= 4) {
                 btn1.text = quizItem.choices[0]
@@ -137,8 +179,8 @@ class GameMidActivity : BaseActivity() {
     }
 
     private fun handleAnswer(userAnswer: String, questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
-        if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
+        if (currentQuestionIndex < selectedQuizzes.size) {
+            val quizItem = selectedQuizzes[currentQuestionIndex]
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
             if (userAnswer == quizItem.answer) {
                 correctAnswers++
@@ -152,7 +194,7 @@ class GameMidActivity : BaseActivity() {
                 incorrectQuestions.add(Pair(currentQuestionIndex + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
             }
             currentQuestionIndex++
-            if (currentQuestionIndex < quizList.size) {
+            if (currentQuestionIndex < selectedQuizzes.size) {
                 startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
                 displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
                 startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
@@ -186,10 +228,10 @@ class GameMidActivity : BaseActivity() {
                 }
             }
             handler.post {
-                if (currentQuestionIndex < quizList.size) {
+                if (currentQuestionIndex < selectedQuizzes.size) {
                     questionTextView.text = "Time's up!"
                     currentQuestionIndex++
-                    if (currentQuestionIndex < quizList.size) {
+                    if (currentQuestionIndex < selectedQuizzes.size) {
                         startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
                         displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
                         startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
