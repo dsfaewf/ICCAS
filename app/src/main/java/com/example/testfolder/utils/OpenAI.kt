@@ -21,10 +21,23 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+
+fun main() {
+    val json = JSONObject().apply {
+//                    put("model", "gpt-4-turbo")
+        put("model", "gpt-4o")
+        put("temperature", 0)
+    }
+//    val json = JSONObject().apply {
+//        put("test", "https://firebasestorage.googleapis.com/v0/b/iccas2024-main.appspot.com/o/images%2F94yToHXiXYc4jTFGFukjs4dNSLt1%2F1721225711882.jpg?alt=media&token=a874c05c-2983-4a7f-917c-63e9989f49bd")
+//    }
+    println(json.toString())
+}
 
 object OkHttpClientSingleton {
     val instance: OkHttpClient by lazy {
@@ -35,18 +48,20 @@ object OkHttpClientSingleton {
     }
 }
 
-class OpenAI(lifecycleOwner: LifecycleOwner,
-             context: AppCompatActivity,
-             openAIViewModel: OpenAIViewModel,
-             firebaseViewModel: FirebaseViewModel,
-             loadingAnimation: LoadingAnimation,
-             diaryEditText: EditText) {
+class OpenAI(
+    lifecycleOwner: LifecycleOwner,
+    context: AppCompatActivity,
+    openAIViewModel: OpenAIViewModel,
+    firebaseViewModel: FirebaseViewModel,
+    loadingAnimation: LoadingAnimation,
+    diaryEditText: EditText? = null) {
     companion object {
         const val PROB_TYPE_OX  = 0
         const val PROB_TYPE_MCQ = 1
         const val PROB_TYPE_BLANK  = 2
         const val PROB_TYPE_HINT  = 3
         const val PROB_TYPE_MCQ_REFINED = 4
+        const val PROB_TYPE_IMAGE = 5
         const val NULL_STRING = "NULL"
     }
     private val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
@@ -58,8 +73,9 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
     private lateinit var response_gpt_MCQ: String
     private lateinit var response_gpt_blank: String
     private lateinit var response_gpt_hint: String
+    private lateinit var response_gpt_image_OX: String
     private lateinit var diary: String
-    private val diaryEditText: EditText
+    private val diaryEditText: EditText?
     private var lifecycleOwner: LifecycleOwner
     private var context: AppCompatActivity
     private var openAIViewModel: OpenAIViewModel
@@ -147,12 +163,26 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets. Each dictionary must be separated by new line" +
                         "\nDictionary format: {\"hint\": \"~\"}"
             )
-//            getResponse(
-//                prompt_hint, PROB_TYPE_HINT,
-//                sysMsg = "You are Dictionary bot. Your job is to generate hints into multiple dictionaries without any bullets. Each dictionary must be separated by new line. There must not be any new lines in each dictionary." +
-//                        "\nDictionary format: {\"hint\": \"~\"}"
-//            )
         }
+    }
+
+    fun generateImageQuiz(url: String, keyword: String, timeJson: JSONObject) {
+        Log.d("URL", "IMAGE URL 4: $url")
+        val prompt = get_prompt_for_image_quiz(keyword, timeJson)
+        coroutineScope.launch {
+            getResponse(prompt, PROB_TYPE_IMAGE, sysMsg = NULL_STRING, imageURL = url)
+        }
+    }
+
+    fun get_prompt_for_image_quiz(keyword: String, timeJson: JSONObject): String {
+        val prompt = "You're a quiz generator from users' journal." +
+                "\nGenerate one O/X quiz based on the following info." +
+                "\nKeyword: $keyword." +
+                "\nTime of day: ${timeJson.getString("timeofday")}." +
+                "\nDay of week: ${timeJson.getString("dayofweek")}." +
+                "\nExample answer: {\"question\": \"I enjoyed my dinner\", \"answer\": \"O\"}" +
+                "\nYou can also refer to this picture. Don't add any intro."
+        return prompt
     }
 
     private fun get_prompt_OX_quiz(diary: String, numOfQuestions: Int): String {
@@ -221,25 +251,68 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
         return prompt
     }
 
-    private suspend fun getResponse(prompt: String, probType: Int, sysMsg: String = NULL_STRING): String {
-        val messages = JSONArray().apply {
-            put(JSONObject().apply {
-                put("role", "system")
-                put("content", if (sysMsg == NULL_STRING) "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary." else sysMsg)
-            })
-            put(JSONObject().apply {
-                put("role", "user")
-                put("content", prompt)
-            })
-        }
+    private fun getRequestBody(prompt: String, probType: Int, sysMsg: String, imageURL: String): RequestBody {
+        when (probType) {
+            PROB_TYPE_IMAGE -> {
+                Log.d("URL", "IMAGE URL 5: $imageURL")
+                val messages = JSONArray().apply {
+                    put(
+                        JSONObject().apply {
+                            put("role", "user")
+                            put("content", JSONArray().apply {
+                                put(
+                                    JSONObject().apply {
+                                        put("type", "text")
+                                        put("text", prompt)
+                                    }
+                                )
+                                put(
+                                    JSONObject().apply {
+                                        put("type", "image_url")
+                                        put("image_url", JSONObject().apply {
+                                            put("url", imageURL)
+                                        })
+                                    }
+                                )
+                            })
+                        }
+                    )
+                }
+                val json = JSONObject().apply {
+//                    put("model", "gpt-4-turbo")
+                    put("model", "gpt-4o")
+                    put("messages", messages)
+//                    put("temperature", 0)
+                }
+                Log.d("GPT", "Request body: $json")
+                return json.toString().toRequestBody(mediaType)
+            }
+            else -> {
+                val messages = JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("role", "system")
+                        put("content", if (sysMsg == NULL_STRING) "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary." else sysMsg)
+                    })
+                    put(JSONObject().apply {
+                        put("role", "user")
+                        put("content", prompt)
+                    })
+                }
 
-        val json = JSONObject().apply {
-            put("model", model)
-            put("messages", messages)
-            put("temperature", 0)
+                val json = JSONObject().apply {
+                    put("model", model)
+                    put("messages", messages)
+                    put("temperature", 0)
+                }
+                Log.d("GPT", "Request body: $json")
+                return json.toString().toRequestBody(mediaType)
+            }
         }
+    }
 
-        val requestBody = json.toString().toRequestBody(mediaType)
+    private suspend fun getResponse(prompt: String, probType: Int, sysMsg: String = NULL_STRING, imageURL: String = NULL_STRING): String {
+        val requestBody = getRequestBody(prompt, probType, sysMsg, imageURL)
+//        Log.d("GPT", "Request body: $requestBody")
         val request = Request.Builder()
             .url("https://api.openai.com/v1/chat/completions")
             .addHeader("Authorization", "Bearer $apiKey")
@@ -297,6 +370,10 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
                 Log.i("GPT-RECEIVED", "Got HINT response")
                 response_gpt_hint = result
                 delete_data("blank_quiz", PROB_TYPE_BLANK)
+            }
+            PROB_TYPE_IMAGE -> {
+                Log.i("GPT-RECEIVED", "Got IMAGE quiz response")
+                openAIViewModel.setImgQuizResponse(result)
             }
             else -> throw Exception("Wrong problem type specified")
         }
@@ -432,7 +509,7 @@ class OpenAI(lifecycleOwner: LifecycleOwner,
 //            val quizCountDiff = abs(quizListBlank.count() - quizListHint.count())
 //            if((quizCountDiff >= 2) || (quizListHint.count() > quizListBlank.count())) {
             if(quizListHint.count() > quizListBlank.count()) {
-                    diaryEditText.setText(diary)
+                    diaryEditText!!.setText(diary)
                 loadingAnimation.hideLoading()
                 Log.i("ERROR", "quizListBlank.count()(${quizListBlank.count()}) != quizListHint.count()(${quizListHint.count()})")
                 Log.i("ERROR", "quizListBlank: $quizListBlank")
