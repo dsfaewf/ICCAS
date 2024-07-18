@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     private TextView resultText;
     private TextView lifeCountText;
     private TextView coinText;
+    private LinearLayout lifeContainer;
     private FirebaseUser currentUser;
 
     private Integer[] comNumber = new Integer[3];
@@ -45,8 +48,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
         try {
             requestText = findViewById(R.id.request_text);
             responseText = findViewById(R.id.response_text);
-            lifeCountText = findViewById(R.id.life_count_text);
             resultText = findViewById(R.id.result_text);
+            lifeContainer = findViewById(R.id.life_container);
 
             Button startBtn = findViewById(R.id.start_btn);
             Button answerBtn = findViewById(R.id.answer_btn);
@@ -58,6 +61,7 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 randomNumber();
                 toastMessage("Game started");
                 viewMode("start");
+                initializeLifeImages();
             });
 
             answerBtn.setOnClickListener(view -> numberCheck());
@@ -118,17 +122,24 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                 }
 
                 lifeCount--; // Decrease life count
+                decreaseLife();
 
+                // onCreate 메서드 내부에서 responseText 참조를 수정
+                responseText = findViewById(R.id.response_text);
+
+// numberCheck 메서드에서 responseText를 사용하는 부분 수정
                 if (strike == 3) {
                     toastMessage("Success");
-                    responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    // responseText를 사용하지 않으므로 지움
+                    // responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
                     // Reward coins
                     SingletonJava.getInstance().checkAndRewardCoins(currentUser, MAX_CLEARS_PER_DAY, COIN_REWARD, coinText, this);
                     // Navigate to game list after game ends
                     navigateToGameList();
-                } else if (lifeCount == 0) {
+                } else if (lifeCount <= 0) {
                     toastMessage("Failure");
-                    responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
+                    // responseText를 사용하지 않으므로 지움
+                    // responseText.setText("Answer: " + comNumber[0] + ", " + comNumber[1] + ", " + comNumber[2]);
                     responseText.setTextSize(32); // Strike, Ball 텍스트 크기 설정
                     // Navigate to game list after game ends
                     navigateToGameList();
@@ -137,6 +148,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
                     responseText.setTextSize(32); // Strike, Ball 텍스트 크기 설정
                     showResult(inputNumber);
                 }
+
+
 
                 lifeCountText.setText("Life: " + lifeCount);
                 requestText.setText("");
@@ -179,6 +192,8 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
             lifeCountText.setText("Life: " + lifeCount);
             responseText.setText("");
             resultText.setText("");
+            lifeContainer.removeAllViews();
+            initializeLifeImages();
         } catch (Exception e) {
             Log.e("ServeGameBaseballActivity", "Error during reset", e);
         }
@@ -229,5 +244,22 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         navigateToGameList(); // 이전 화면으로 돌아갈 때 게임 목록으로 이동
+    }
+
+    private void initializeLifeImages() {
+        for (int i = 1; i <= lifeCount; i++) {
+            ImageView lifeImage = new ImageView(this);
+            lifeImage.setImageResource(R.drawable.fish); // 목숨 이미지 리소스 설정
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(100, 150);
+            params.setMargins(0, 2, 0, 2); // 이미지 간격 조절
+            lifeImage.setLayoutParams(params);
+            lifeContainer.addView(lifeImage);
+        }
+    }
+
+    private void decreaseLife() {
+        if (lifeCount > 0) {
+            lifeContainer.removeViewAt(lifeCount - 1); // 마지막 이미지 제거
+        }
     }
 }
