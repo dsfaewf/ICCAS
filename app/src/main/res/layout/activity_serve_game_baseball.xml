@@ -25,6 +25,7 @@
             android:id="@+id/coin_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/bmjua_ttf"
             android:layout_gravity="end"
             android:layout_margin="5dp"
             android:gravity="center_horizontal|center_vertical"
@@ -36,23 +37,23 @@
         android:id="@+id/game_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_below="@id/coin_layout"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/darker_gray"
+            android:background="@drawable/btn_rounded"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:id="@+id/life_container"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
                 android:layout_margin="10dp"
-                android:gravity="start" />
+                android:gravity="start"
+                android:orientation="horizontal" />
 
         </LinearLayout>
 
@@ -65,16 +66,16 @@
                 android:id="@+id/result_text"
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
+                android:layout_marginTop="10dp"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp" />
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/small_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_alignBottom="@id/result_text"
                 android:layout_alignEnd="@id/result_text"
+                android:layout_alignBottom="@id/result_text"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/baseball_cats" />
 
@@ -91,26 +92,26 @@
             android:textColor="@android:color/white"
             android:textSize="25sp"
             android:textStyle="bold"
-            android:visibility="gone"/> <!-- 기본적으로 숨김 처리 -->
-
+            android:visibility="gone" /> <!-- 기본적으로 숨김 처리 -->
 
 
         <EditText
             android:id="@+id/request_text"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:hint="Please enter a number"
             android:inputType="number"
             android:maxLength="3"
             android:textSize="25sp"
-            android:textStyle="bold"
-            android:layout_marginTop="10dp"/>
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/start_btn"
@@ -119,6 +120,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/baseball_button"
+                android:fontFamily="@font/bmjua_ttf"
                 android:text="start"
                 android:textColor="@android:color/black"
                 android:textSize="25sp" />
@@ -130,6 +132,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/baseball_button"
+                android:fontFamily="@font/bmjua_ttf"
                 android:text="answer"
                 android:textColor="@android:color/black"
                 android:textSize="25sp" />
@@ -141,6 +144,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/baseball_button"
+                android:fontFamily="@font/bmjua_ttf"
                 android:text="reset"
                 android:textColor="@android:color/black"
                 android:textSize="25sp" />
