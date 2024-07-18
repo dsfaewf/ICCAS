@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
         val findIdPage = findViewById<TextView>(R.id.find_id_tv)
         val findPwPage = findViewById<TextView>(R.id.find_pw_tv)
         val registerPage = findViewById<TextView>(R.id.register_tv)
-        val googleSignInButton = findViewById<com.google.android.gms.common.SignInButton>(R.id.btn_google_sign_in)
+//        val googleSignInButton = findViewById<com.google.android.gms.common.SignInButton>(R.id.btn_google_sign_in) //구글 버튼 보류
         val inputPw = findViewById<TextInputEditText>(R.id.input_pw)
         val inputId = findViewById<TextInputEditText>(R.id.input_id)
 
@@ -101,11 +101,11 @@ class LoginActivity : AppCompatActivity() {
             loginUser(inputId.text.toString().trim(), inputPw.text.toString().trim())
         }
 
-        // Google 로그인 버튼 클릭 시
-        googleSignInButton.setOnClickListener {
-            showLoading() //로딩 출력
-            signIn()
-        }
+//        // Google 로그인 버튼 클릭 시
+//        googleSignInButton.setOnClickListener {
+//            showLoading() //로딩 출력
+//            signIn()
+//        }
 
         // 아이디 찾기 페이지로 이동
         findIdPage.setOnClickListener {
