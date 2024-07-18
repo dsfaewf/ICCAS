@@ -101,7 +101,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:text="Register"
+        android:text="Sign up"
         android:fontFamily="@font/bmjua_ttf"
         android:background="@drawable/rectangle_btn_style"
         app:layout_constraintEnd_toEndOf="parent"
