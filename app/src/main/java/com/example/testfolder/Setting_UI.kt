@@ -104,6 +104,13 @@ class Setting_UI : BaseActivity() {
         finish() // 현재 액티비티 종료
     }
 
+    private fun navigateToLogin() {
+        val intent = Intent(this,LoginActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
+    }
+
     private fun sendDiariesByEmail() {
         uid?.let {
             val userDiaryRef = database.reference.child("diaries").child(uid)
@@ -208,7 +215,7 @@ class Setting_UI : BaseActivity() {
                     currentUser?.delete()?.addOnCompleteListener { deleteTask ->
                         if (deleteTask.isSuccessful) {
                             Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
-                            navigateToMain()
+                            navigateToLogin()
                         } else {
                             Toast.makeText(this, "Failed to delete account", Toast.LENGTH_SHORT).show()
                         }
