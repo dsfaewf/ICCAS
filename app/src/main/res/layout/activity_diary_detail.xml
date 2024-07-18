@@ -66,25 +66,37 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:fontFamily="@font/bmjua_ttf"
+        android:background="@drawable/btn_rounded"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/edit_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:background="#DDFF"
+        android:background="@drawable/rectangle_btn_style2"
         android:textColor="#000000"
+        android:fontFamily="@font/bmjua_ttf"
+        android:layout_marginBottom="10dp"
         android:padding="10dp" />
 
     <TextView
         android:id="@+id/textview_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="#FF0000"
-        android:padding="5dp"
         android:background="@drawable/rectangle_btn_style2"
-        android:visibility="gone"/>
+        android:fontFamily="@font/bmjua_ttf"
+        android:padding="5dp"
+        android:textColor="#FF0000"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
     <EditText
         android:id="@+id/edit_content"
@@ -95,7 +107,8 @@
         android:gravity="top"
         android:inputType="textMultiLine"
         android:padding="10dp"
-        android:background="#DDFF"
+        android:fontFamily="@font/bmjua_ttf"
+        android:background="@drawable/rectangle_btn_style2"
         android:textColor="#000000"
         android:textSize="16sp" />
 
@@ -104,13 +117,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit and Save"
+        android:fontFamily="@font/bmjua_ttf"
+        android:background="@drawable/btn_rounded"
         android:layout_marginTop="16dp" />
-
-    <Button
-        android:id="@+id/btn_delete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Delete"
-        android:layout_marginTop="8dp" />
 
 </LinearLayout>
