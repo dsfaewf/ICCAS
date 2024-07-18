@@ -11,10 +11,17 @@ class OpenAIViewModel : ViewModel() {
     val gotResponseForBlankLiveData: LiveData<Boolean> get() = _gotResponseForBlankLiveData
     private val _gotResponseForMCQLiveData = MutableLiveData<Boolean>()
     val gotResponseForMCQLiveData: LiveData<Boolean> get() = _gotResponseForMCQLiveData
+    private val _imgQuizResponse = MutableLiveData<String>()
+    val imgQuizResponse: LiveData<String> get() = _imgQuizResponse
 
     fun setApiKey(key: String) {
         // setValue()를 사용하여 값 셋팅
         _apiKey.value = key
+    }
+
+    fun setImgQuizResponse(response: String) {
+        // setValue()를 사용하여 값 셋팅
+        _imgQuizResponse.postValue(response.trim())
     }
 
     fun setGotResponseForBlankLiveData(gotResponse: Boolean) {

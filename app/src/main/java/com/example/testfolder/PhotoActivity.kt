@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -13,16 +14,39 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.exifinterface.media.ExifInterface
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.testfolder.utils.LoadingAnimation
+import com.example.testfolder.utils.OpenAI
+import com.example.testfolder.viewmodels.FirebaseViewModel
+import com.example.testfolder.viewmodels.OpenAIViewModel
+import com.example.testfolder.viewmodels.PhotoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Date
+import java.util.Locale
 
 class PhotoActivity : AppCompatActivity() {
 
@@ -37,15 +61,40 @@ class PhotoActivity : AppCompatActivity() {
     private lateinit var keywordEditText: EditText
     private lateinit var errorTextView: TextView
     private var imageUri: Uri? = null
+    private var lastClickTime: Long = 0
+    private val interval: Long = 1000
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
     private lateinit var storage: FirebaseStorage
     private lateinit var storageReference: StorageReference
 
+    private lateinit var loadingAnimation: LoadingAnimation
+    private lateinit var openAI: OpenAI
+    private lateinit var openAIViewModel: ViewModel
+    private lateinit var firebaseViewModel: ViewModel
+    private lateinit var photoViewModel: ViewModel
+    private lateinit var timeJson: JSONObject
+
+    private var keyword: String? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
+    private val originalFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault())
+    private val targetFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.photo)
+
+        val loadingBackgroundLayout = findViewById<ConstraintLayout>(R.id.loading_background_layout)
+        val loadingImage = findViewById<ImageView>(R.id.loading_image)
+        val loadingText = findViewById<TextView>(R.id.loading_text)
+        val loadingTextDetail = findViewById<TextView>(R.id.loading_text_detail)
+        val loadingTextDetail2 = findViewById<TextView>(R.id.loading_text_detail2)
+
+        openAIViewModel   = ViewModelProvider(this).get(OpenAIViewModel::class.java)
+        firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
+        photoViewModel    = ViewModelProvider(this).get(PhotoViewModel::class.java)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
@@ -61,22 +110,51 @@ class PhotoActivity : AppCompatActivity() {
 
         selectedImageView.clipToOutline = true
 
+        loadingAnimation = LoadingAnimation(this,
+            loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Generating Quiz")
+        openAI = OpenAI(this, this,
+            openAIViewModel as OpenAIViewModel,
+            firebaseViewModel as FirebaseViewModel, loadingAnimation)
+        openAI.fetchApiKey()
+
         btnSelectImage.setOnClickListener {
             openGallery()
         }
 
         btnUploadImage.setOnClickListener {
-            imageUri?.let { uri ->
-                val exifData = extractExifData(uri)
-                val keyword = keywordEditText.text.toString().trim()
-                if (keyword.isEmpty()) {
-                    errorTextView.text = "Please write keyword about your photo."
-                    errorTextView.visibility = View.VISIBLE
-                } else if (exifData.containsKey("GPSLatitude") && exifData.containsKey("GPSLongitude") && exifData.containsKey("DateTime")) {
-                    uploadImageToFirebase(uri, exifData, keyword)
-                } else {
-                    errorTextView.text = "The selected image does not contain necessary location or time data."
-                    errorTextView.visibility = View.VISIBLE
+            // Prevent double click the button
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime >= interval) {
+                lastClickTime = currentTime
+                Log.d("UPLOAD_BUTTON", "Image upload button clicked.")
+                imageUri?.let { uri ->
+                    val exifData = extractExifData(uri)
+                    val keyword = keywordEditText.text.toString().trim()
+                    if (keyword.isEmpty()) {
+                        errorTextView.text = "Please write keyword about your photo."
+                        errorTextView.visibility = View.VISIBLE
+                    } else if (exifData.containsKey("GPSLatitude") && exifData.containsKey("GPSLongitude") && exifData.containsKey(
+                            "DateTime"
+                        )
+                    ) {
+                        this.keyword = keyword
+                        val timestamp = exifData["DateTime"]
+                        val dateForDB = timestampToUKDate(timestamp!!).replace("/", " ")
+                        val timeOfDay = timestampToTimeOfDay(timestamp)
+                        val dayOfWeek = timestampToDayofweek(timestamp)
+                        this.timeJson = JSONObject().apply {
+                            put("timestamp", timestamp)
+                            put("date", dateForDB)
+                            put("dayofweek", dayOfWeek)
+                            put("timeofday", timeOfDay)
+                        }
+                        loadingAnimation.showLoading()
+                        uploadImageToFirebase(uri, exifData, keyword)
+                    } else {
+                        errorTextView.text =
+                            "The selected image does not contain necessary location or time data."
+                        errorTextView.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -85,6 +163,70 @@ class PhotoActivity : AppCompatActivity() {
             val intent = Intent(this, ImageListActivity::class.java)
             startActivity(intent)
         }
+
+        (photoViewModel as PhotoViewModel).urlLiveData.observe(this){ url ->
+            Log.d("URL", "IMAGE URL 3: $url")
+            // Observe the LiveData
+            // Once the api key is fetched, generate new 3 types of quiz
+            openAI.generateImageQuiz(
+                url=url,
+                keyword=keyword!!,
+                timeJson=timeJson
+            )
+        }
+
+        (openAIViewModel as OpenAIViewModel).imgQuizResponse.observe(this){ response ->
+            coroutineScope.launch {
+                (firebaseViewModel as FirebaseViewModel).save_img_OX_data(
+                    dbReference = database,
+                    auth = auth,
+                    quiz = response,
+                    timeJson = timeJson
+                )
+            }
+        }
+
+        (firebaseViewModel as FirebaseViewModel).imgQuizSaved.observe(this){
+            Log.i("DB", "Data saved successfully")
+            loadingAnimation.hideLoading()
+            Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun timestampToTimeOfDay(timestamp: String): String {
+        val date: Date? = originalFormat.parse(timestamp)
+        val timeOfDay: String
+        if (date != null) {
+            when {
+                // Morning
+                ((date.hours >= 5) && (date.hours < 12)) -> timeOfDay = "Morning"
+                // Afternoon
+                ((date.hours >= 12) && (date.hours < 18)) -> timeOfDay = "Afternoon"
+                // Evening
+                ((date.hours >= 18) && (date.hours < 22)) -> timeOfDay = "Evening"
+                // Night
+                ((date.hours >= 22) && (date.hours < 24)) -> timeOfDay = "Night"
+                ((date.hours >= 0) && (date.hours < 5)) -> timeOfDay = "Night"
+                else -> throw Exception("Hour is not between 0-24")
+            }
+            return timeOfDay
+        } else {
+            throw Exception("Date is null")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun timestampToDayofweek(timestamp: String): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss")
+        val dateTime = LocalDateTime.parse(timestamp, formatter)
+        val dayOfWeek = dateTime.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+        return dayOfWeek
+    }
+
+    private fun timestampToUKDate(timestamp: String): String {
+        val date: Date? = originalFormat.parse(timestamp)
+        val formattedDateString = date?.let { targetFormat.format(it) }
+        return formattedDateString!!
     }
 
     private fun openGallery() {
@@ -169,8 +311,12 @@ class PhotoActivity : AppCompatActivity() {
 
             val uploadTask = storageRef.putBytes(data)
             uploadTask.addOnSuccessListener {
-                storageRef.downloadUrl.addOnSuccessListener { uri ->
-                    saveExifDataToFirebase(uri.toString(), exifData, keyword)
+                storageRef.downloadUrl.addOnSuccessListener { url ->
+//                    Log.d("URL", "IMAGE URL 1: $url")
+//                    val preprocessedURL = url.toString().replace("\\", "")
+//                    Log.d("URL", "IMAGE URL 2: $preprocessedURL")
+//                    (photoViewModel as PhotoViewModel).setUrlLiveData(preprocessedURL)
+                    saveExifDataToFirebase(url.toString(), exifData, keyword)
                 }
             }.addOnFailureListener { exception ->
                 Log.e("Firebase", "Failed to upload image: ${exception.message}", exception)
@@ -193,10 +339,29 @@ class PhotoActivity : AppCompatActivity() {
 
             userImagesRef.setValue(exifDataWithKeyword).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    loadingAnimation.hideLoading()
                     Log.d("Firebase", "EXIF data saved successfully")
                     errorTextView.text = "Photo metadata uploaded to the database."
                     errorTextView.setTextColor(getColor(R.color.black))
                     errorTextView.visibility = View.VISIBLE
+                    // Create the arguments to the callable function.
+                    val json = hashMapOf(
+                        "prompt" to openAI.get_prompt_for_image_quiz(keyword, timeJson),
+                        "url" to imageUrl,
+                        "uid" to uid,
+                        "date" to timeJson.getString("date"),
+                    )
+//                    val json = JSONObject().apply {
+//                        put("prompt", openAI.get_prompt_for_image_quiz(keyword, timeJson))
+//                        put("url", imageUrl)
+//                        put("uid", uid)
+//                        put("date", timeJson.getString("date"))
+//                    }
+                    val functions = FirebaseFunctions.getInstance()
+                    Log.d("Firebase", "Called firebase function for gpt use")
+                    functions
+                        .getHttpsCallable("callChatGPTAndStoreResponse")
+                        .call(json)
                 } else {
                     Log.e("Firebase", "Failed to save EXIF data", task.exception)
                     errorTextView.text = "Failed to save EXIF data to Firebase."
