@@ -46,6 +46,9 @@ class Setting_UI : BaseActivity() {
         fontSizeSeekBar.progress = (savedFontSize - 16).toInt()
         sampleTextView.textSize = savedFontSize
 
+        // 저장된 폰트 크기를 본 액티비티로 돌아와도 바로 적용할 수 있도록
+        applyFontSize()
+
         fontSizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val newSize = 16f + progress
