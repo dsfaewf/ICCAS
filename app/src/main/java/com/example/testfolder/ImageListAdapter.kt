@@ -5,11 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 data class ImageData(
+    val imageid: String,
     val imageUrl: String,
     val keyword: String?,
     val dateTime: String?,
@@ -17,7 +22,11 @@ data class ImageData(
     val gpsLongitude: String?
 )
 
-class ImageListAdapter(private val context: Context, private val imageList: List<ImageData>) : BaseAdapter() {
+class ImageListAdapter(private val context: Context, private val imageList: MutableList<ImageData>) : BaseAdapter() {
+    private lateinit var auth: FirebaseAuth
+
+    var deletedPhoto = false
+    var deletedPhotoQuiz = false
 
     override fun getCount(): Int {
         return imageList.size
@@ -48,6 +57,12 @@ class ImageListAdapter(private val context: Context, private val imageList: List
         holder.keywordTextView.text = imageData.keyword
         holder.dateTimeTextView.text = imageData.dateTime
         holder.imageView.clipToOutline = true
+        holder.deleteButton.setOnClickListener {
+            deletePhotoEntry(imageData.imageid)
+            deleteQuizData("img_quiz", imageData.imageid)
+            imageList.removeAt(position)
+            notifyDataSetChanged()
+        }
 
         Glide.with(context)
             .load(imageData.imageUrl)
@@ -61,5 +76,53 @@ class ImageListAdapter(private val context: Context, private val imageList: List
         val imageView: ImageView = view.findViewById(R.id.imageView)
         val keywordTextView: TextView = view.findViewById(R.id.keywordTextView)
         val dateTimeTextView: TextView = view.findViewById(R.id.dateTimeTextView)
+        val deleteButton: TextView = view.findViewById(R.id.deletePhoto)
+    }
+
+    private fun deletePhotoEntry(id: String) {
+        auth = FirebaseAuth.getInstance()
+        Toast.makeText(context, "Deleted photo ID: $id", Toast.LENGTH_SHORT).show()
+
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val diaryRef = FirebaseDatabase.getInstance().reference
+                .child("users")
+                .child(currentUser.uid)
+                .child("images")
+                .child(id)
+
+            diaryRef.removeValue()
+                .addOnSuccessListener {
+                    deletedPhoto = true
+                    if (deletedPhoto && deletedPhotoQuiz) {
+                        Toast.makeText(context, "Photo has been deleted.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(context, "Failed to delete diary: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun deleteQuizData(tableName: String, id: String) {
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val oxQuizRef = FirebaseDatabase.getInstance().reference
+                .child(tableName)
+                .child(currentUser.uid)
+                .child(id)
+
+            oxQuizRef.removeValue()
+                .addOnSuccessListener {
+                    deletedPhotoQuiz = true
+                    if (deletedPhoto && deletedPhotoQuiz) {
+                        Toast.makeText(context, "Quiz data has been deleted.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(context, "Failed to delete quiz data: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

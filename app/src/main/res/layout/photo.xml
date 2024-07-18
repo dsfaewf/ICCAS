@@ -28,6 +28,8 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/rectangle_btn_style"
                     android:padding="7dp"
@@ -50,6 +52,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/bmjua_ttf"
                     android:background="@drawable/rectangle_btn_style2"
                     android:gravity="center"
                     android:hint=" Enter keyword "
@@ -63,6 +66,8 @@
                     android:layout_gravity="center"
                     android:background="@drawable/rectangle_btn_style"
                     android:padding="7dp"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:text="Upload" />
 
                 <TextView
@@ -86,6 +91,8 @@
                     android:layout_marginTop="20dp"
                     android:background="@drawable/rectangle_btn_style"
                     android:padding="7dp"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:text="Photo List" />
 
 

@@ -95,6 +95,7 @@ class Diary_Check : BaseActivity() {
 
         allBtn.setOnClickListener {
             getData()
+            dateTxt.setText(" month / year ")
         }
 
     }

@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ImageListActivity : AppCompatActivity() {
@@ -43,54 +42,23 @@ class ImageListActivity : AppCompatActivity() {
         imageListAdapter = ImageListAdapter(this, imageList)
         listView.adapter = imageListAdapter
 
-        loadImagesFromFirebase()
+        loadImagesFromFirebase(null)
 
         calBtn.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
                 // 날짜를 TextView에 설정
                 dateTxt.text = String.format("%02d/%04d", month + 1, year)
-
-                val currentUser = auth.currentUser
-                if (currentUser != null) {
-                    val uid = currentUser.uid
-                    val userImagesRef = database.child("users").child(uid).child("images")
-
-                    userImagesRef.addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            imageList.clear()
-                            for (imageSnapshot in snapshot.children) {
-                                val imageUrl = imageSnapshot.child("ImageUrl").value as? String
-                                val keyword = imageSnapshot.child("Keyword").value as? String
-                                val dateTime = imageSnapshot.child("DateTime").value as? String
-                                val gpsLatitude = imageSnapshot.child("GPSLatitude").value as? String
-                                val gpsLongitude = imageSnapshot.child("GPSLongitude").value as? String
-                                if (imageUrl != null && keyword != null) {
-                                    if (dateTime != null) {
-                                        if (dateTime.substring(3) == dateTxt.text.toString()) {
-                                            val imageData = ImageData(imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude)
-                                            imageList.add(imageData)
-                                        }
-                                    }
-                                }
-                            }
-                            imageList.sortBy { it.dateTime?.substring(0, 2) } // 초기 화면 월별로 정렬
-                            imageListAdapter.notifyDataSetChanged()
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.e("Firebase", "Failed to load images", error.toException())
-                        }
-                    })
-                }
+                loadImagesFromFirebase(dateTxt.text.toString())
             }, year, month, day)
             datePickerDialog.show()
         }
         allBtn.setOnClickListener {
-            loadImagesFromFirebase()
+            loadImagesFromFirebase(null)
+            dateTxt.setText(" month / year ")
         }
     }
 
-    private fun loadImagesFromFirebase() {
+    private fun loadImagesFromFirebase(dateString: String?) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val uid = currentUser.uid
@@ -100,14 +68,26 @@ class ImageListActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     imageList.clear()
                     for (imageSnapshot in snapshot.children) {
+                        val imageid = imageSnapshot.key
                         val imageUrl = imageSnapshot.child("ImageUrl").value as? String
                         val keyword = imageSnapshot.child("Keyword").value as? String
                         val dateTime = imageSnapshot.child("DateTime").value as? String
                         val gpsLatitude = imageSnapshot.child("GPSLatitude").value as? String
                         val gpsLongitude = imageSnapshot.child("GPSLongitude").value as? String
                         if (imageUrl != null && keyword != null) {
-                            val imageData = ImageData(imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude)
-                            imageList.add(imageData)
+                            if (dateTime != null) {
+                                if (dateTime.substring(3) == dateTxt.text.toString()) {
+                                    val imageData = imageid?.let { ImageData(it, imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude) }
+                                    if (imageData != null) {
+                                        imageList.add(imageData)
+                                    }
+                                } else {
+                                    val imageData = imageid?.let { ImageData(it, imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude) }
+                                    if (imageData != null) {
+                                        imageList.add(imageData)
+                                    }
+                                }
+                            }
                         }
                     }
                     imageList.sortBy { it.dateTime?.substring(0, 2) } // 초기 화면 월별로 정렬

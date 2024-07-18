@@ -25,6 +25,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/rectangle_btn_style2"
                 android:padding="5dp"
+                android:fontFamily="@font/bmjua_ttf"
                 android:text="month/year"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
@@ -42,6 +43,8 @@
                 android:layout_weight="1"
                 android:layout_gravity="right"
                 android:textSize="18sp"
+                android:fontFamily="@font/bmjua_ttf"
+                android:textColor="@color/black"
                 android:layout_marginLeft="20dp"
                 android:background="@drawable/btn_rounded"
                 android:text="ALL" />

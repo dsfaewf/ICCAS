@@ -31,6 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="5dp"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:gravity="center_horizontal|center_vertical"
             android:text="coin"
             android:textSize="30sp" />
@@ -63,6 +65,8 @@
         android:layout_margin="10dp"
         android:layout_gravity="start"
         android:text="Finished!"
+        android:fontFamily="@font/bmjua_ttf"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
@@ -212,6 +216,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="O"
+                            android:fontFamily="@font/bmjua_ttf"
                             android:textColor="@color/black"
                             android:textSize="100sp" />
                     </LinearLayout>
@@ -242,6 +247,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="X"
+                            android:fontFamily="@font/bmjua_ttf"
                             android:textColor="@color/black"
                             android:textSize="100sp" />
 
@@ -276,6 +282,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:text="Pulling out the diary"
             android:textColor="@android:color/white"
             android:textSize="20sp" />

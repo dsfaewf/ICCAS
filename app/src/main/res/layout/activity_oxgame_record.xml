@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:background="@drawable/btn_rounded"
             android:text="Daily" />
 
@@ -26,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:background="@drawable/btn_rounded"
             android:text="Monthly" />
     </LinearLayout>
@@ -44,10 +46,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:background="@drawable/btn_rounded"
+            android:fontFamily="@font/bmjua_ttf"
             android:text="OX" />
 
         <Button
             android:id="@+id/fourChoiceGameRecordButton"
+            android:fontFamily="@font/bmjua_ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/btn_rounded"
@@ -60,6 +64,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/btn_rounded"
             android:layout_margin="5dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:text="Short Answer" />
     </LinearLayout>
 
