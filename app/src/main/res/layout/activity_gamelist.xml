@@ -95,7 +95,7 @@
                                         android:layout_marginTop="5dp"
                                         android:layout_marginBottom="5dp"
                                         android:scaleType="centerInside"
-                                        app:srcCompat="@drawable/gameox" />
+                                        app:srcCompat="@drawable/cat_ox" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -127,7 +127,7 @@
                                         android:layout_marginTop="5dp"
                                         android:layout_marginEnd="2dp"
                                         android:scaleType="centerInside"
-                                        app:srcCompat="@drawable/gamebtn4" />
+                                        app:srcCompat="@drawable/cat_4choice" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -167,7 +167,7 @@
                                         android:layout_marginStart="5dp"
                                         android:layout_marginTop="5dp"
                                         android:layout_marginEnd="5dp"
-                                        app:srcCompat="@drawable/game_answer" />
+                                        app:srcCompat="@drawable/cat_shotanswer" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -198,7 +198,7 @@
                                         android:layout_marginStart="5dp"
                                         android:layout_marginTop="5dp"
                                         android:layout_marginEnd="5dp"
-                                        app:srcCompat="@drawable/gameox" />
+                                        app:srcCompat="@drawable/cat_diaryox" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
