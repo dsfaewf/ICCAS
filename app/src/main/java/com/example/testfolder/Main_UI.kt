@@ -15,8 +15,9 @@ class Main_UI : BaseActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
-    private lateinit var mediaPlayer: MediaPlayer
+    private var mediaPlayer: MediaPlayer? = null
     private var musicServiceIntent: Intent? = null
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +26,14 @@ class Main_UI : BaseActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         val isMusicOn = sharedPreferences.getBoolean("music_on", true)
 
         if (isMusicOn) {
             mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
             musicServiceIntent = Intent(this, MusicService::class.java)
             startService(musicServiceIntent)
+            mediaPlayer?.start()
         }
 
 //        checkFirstLogin() //설문 페이지 알림 일단 꺼 놓음.
@@ -47,7 +49,7 @@ class Main_UI : BaseActivity() {
         }
 
         diaryButton.setOnClickListener {
-            mediaPlayer.start()
+            mediaPlayer?.start()
             navigateToDiaryWriteUI()
         }
 
@@ -91,7 +93,7 @@ class Main_UI : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        mediaPlayer?.release()
 
         if (musicServiceIntent != null) {
             stopService(musicServiceIntent)
