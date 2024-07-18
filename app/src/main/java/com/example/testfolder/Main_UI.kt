@@ -29,13 +29,12 @@ class Main_UI : BaseActivity() {
         val isMusicOn = sharedPreferences.getBoolean("music_on", true)
 
         if (isMusicOn) {
+            mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
             musicServiceIntent = Intent(this, MusicService::class.java)
             startService(musicServiceIntent)
         }
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
-
-        checkFirstLogin()
+//        checkFirstLogin() //설문 페이지 알림 일단 꺼 놓음.
 
         val imageButton1 = findViewById<View>(R.id.my_button4) as Button
         val diaryButton = findViewById<View>(R.id.my_button2) as Button

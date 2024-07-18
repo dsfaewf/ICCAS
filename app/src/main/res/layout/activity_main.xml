@@ -26,67 +26,126 @@
             android:layout_marginBottom="30dp"
             app:srcCompat="@drawable/logo1" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button2"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="Diary"
-            android:textSize="24sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button6"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="Photo"
-            android:textSize="24sp" />
+            <ImageView
+                android:id="@+id/cat_element1"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:gravity="left"
+                android:layout_marginBottom="-5dp"
+                app:srcCompat="@drawable/cat_element1" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button3"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="My Cat"
-            android:textSize="24sp" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/my_button2"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/cat_element1"
+                android:background="@drawable/rectangle_style"
+                android:gravity="center"
+                android:text="Diary"
+                android:textSize="24sp" />
+        </RelativeLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_game"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="Game"
-            android:textSize="24sp" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button5"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="Game Record"
-            android:textSize="24sp"
-            android:visibility="gone" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/my_button4"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/rectangle_style"
-            android:gravity="center"
-            android:text="Setting"
-            android:textSize="24sp" />
+            <ImageView
+                android:id="@+id/cat_element2"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="-5dp"
+                app:srcCompat="@drawable/cat_element2" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/my_button6"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/cat_element2"
+                android:background="@drawable/rectangle_style"
+                android:gravity="center"
+                android:text="Photo"
+                android:textSize="24sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/cat_element3"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="-8dp"
+                app:srcCompat="@drawable/cat_element3" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/my_button3"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/cat_element3"
+                android:background="@drawable/rectangle_style"
+                android:gravity="center"
+                android:text="My Cat"
+                android:textSize="24sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/cat_element4"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="-5dp"
+                app:srcCompat="@drawable/cat_element4" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_game"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/cat_element4"
+                android:background="@drawable/rectangle_style"
+                android:gravity="center"
+                android:text="Game"
+                android:textSize="24sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:id="@+id/cat_element5"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="-10dp"
+                app:srcCompat="@drawable/cat_element5" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/my_button4"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@id/cat_element5"
+                android:background="@drawable/rectangle_style"
+                android:gravity="center"
+                android:text="Setting"
+                android:textSize="24sp" />
+        </RelativeLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

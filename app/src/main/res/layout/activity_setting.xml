@@ -5,6 +5,17 @@
     android:orientation="vertical"
     android:padding="40dp">
 
+
+    <Switch
+        android:id="@+id/music_switch"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_gravity="center"
+        android:background="@color/gray_light"
+        android:text="Background Music"
+        android:textStyle="bold" />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,24 +50,6 @@
     </LinearLayout>
 
     <!-- activity_setting.xml -->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/gray_light"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center">
-
-        <Switch
-            android:id="@+id/music_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:text="Background Music"
-            android:layout_gravity="center" />
-    </LinearLayout>
-
 
 
     <Button
