@@ -1,29 +1,111 @@
 package com.example.testfolder
 
+import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.util.Calendar
 
 class Diary_Check : BaseActivity() {
 
+    private lateinit var listView: ListView
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var diaryContainer: LinearLayout
     private lateinit var auth: FirebaseAuth
+    private lateinit var diaryListAdapter: DiaryListAdapter
+    private lateinit var dateTxt: TextView
+    private lateinit var calBtn: ImageButton
+    private lateinit var allBtn: Button
+    private val diaryList = mutableListOf<DiaryData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diary_check)
         applyFontSize() // 폰트 크기 적용
-        diaryContainer = findViewById(R.id.diary_container)
+
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        listView = findViewById(R.id.diaryListView)
+        dateTxt = findViewById(R.id.date_text_view2)
+        calBtn = findViewById(R.id.calBtn2)
+        allBtn = findViewById(R.id.button3)
+        diaryListAdapter = DiaryListAdapter(this, diaryList)
+        listView.adapter = diaryListAdapter
 
         // Singleton을 통해 Firebase 객체 갖고 오게 변경
         auth = SingletonKotlin.getAuth()
+        getData()
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val diaryData = diaryList[position]
+//            val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java).apply {
+//                putExtra("diaryId", diaryData.diaryId)
+//                putExtra("date", diaryData.date)
+//                putExtra("content", diaryData.content)
+//            }
+            val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java).apply {
+                putExtra("diaryId", diaryData.diaryId)
+                putExtra("date", diaryData.date)
+                putExtra("content", diaryData.content)
+            }
+            startActivity(intent)
+        }
+
+        calBtn.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
+                // 날짜를 TextView에 설정
+                dateTxt.text = String.format("%02d/%04d", month + 1, year)
+
+                // 클릭한 날짜로 조회
+                databaseReference.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        diaryList.clear()
+
+                        for (diarySnapshot in snapshot.children) {
+                            val date = diarySnapshot.key?.replace(" ", "/")
+                            val content = diarySnapshot.child("content").getValue(String::class.java)
+                            val diaryId = diarySnapshot.key
+
+                            if (date != null && content != null && diaryId != null) {
+                                // Checking if the year and month match
+                                if (date.substring(3) == dateTxt.text.toString()) {
+                                    diaryList.add(DiaryData(diaryId, content, date))
+                                }
+                            }
+                        }
+                        diaryList.sortBy { it.date?.substring(0, 2) } // 초기 화면 월별로 정렬
+                        diaryListAdapter.notifyDataSetChanged()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle possible errors
+                    }
+                })
+            }, year, month, day)
+            datePickerDialog.show()
+        }
+
+        allBtn.setOnClickListener {
+            getData()
+        }
+
+    }
+    private fun navigateToDiaryWriteUI() {
+        val intent = Intent(this, Diary_write_UI::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish() // 현재 액티비티 종료
+    }
+
+    private fun getData() {
         val currentUser = SingletonKotlin.getCurrentUser()
 
         if (currentUser != null) {
@@ -33,17 +115,18 @@ class Diary_Check : BaseActivity() {
 
             databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    diaryContainer.removeAllViews()
+                    diaryList.clear()
+
                     for (diarySnapshot in snapshot.children) {
-                        var date = diarySnapshot.key
-                        date = date?.replace(" ", "/")
-                        Log.d("DIARY_LIST", "date: $date")
+                        val date = diarySnapshot.key?.replace(" ", "/")
                         val content = diarySnapshot.child("content").getValue(String::class.java)
                         val diaryId = diarySnapshot.key
                         if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
-                            addDiaryEntryToView(date, content, diaryId)
+                            diaryList.add(DiaryData(diaryId, content, date))
                         }
                     }
+                    diaryList.sortBy { it.date?.substring(3, 5) }    // 초기 화면 월별로 정렬
+                    diaryListAdapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -52,48 +135,9 @@ class Diary_Check : BaseActivity() {
             })
         }
     }
-
-    private fun addDiaryEntryToView(date: String, content: String, diaryId: String) {
-        val dateTextView = TextView(this).apply {
-            text = date
-            textSize = 18f
-            setPadding(0, 10, 0, 0)
-            setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
-        }
-
-        val contentTextView = TextView(this).apply {
-            text = content
-            textSize = 16f
-            setPadding(0, 5, 0, 10)
-            setTextColor(resources.getColor(android.R.color.black)) // Text color set to black
-        }
-
-        val diaryEntryLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(0, 20, 0, 20)
-            addView(dateTextView)
-            addView(contentTextView)
-            //setBackgroundResource(R.drawable.diary_entry_background) // Optional: add background to each entry
-            setOnClickListener {
-                val intent = Intent(this@Diary_Check, DiaryDetailActivity::class.java)
-                intent.putExtra("diaryId", diaryId)
-                intent.putExtra("date", date)
-                intent.putExtra("content", content)
-                startActivity(intent)
-            }
-        }
-
-        diaryContainer.addView(diaryEntryLayout)
-    }
-    private fun navigateToDiaryWriteUI() {
-        val intent = Intent(this, Diary_write_UI::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        finish() // 현재 액티비티 종료
-    }
-
     override fun onBackPressed() {
         super.onBackPressed()
         navigateToDiaryWriteUI() // 이전 화면으로 돌아갈 때 Diary_write_UI로 이동
     }
+
 }

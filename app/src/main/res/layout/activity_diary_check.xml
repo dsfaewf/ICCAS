@@ -1,45 +1,57 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/diary_background">
+    android:background="@drawable/diary_background"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/search_bar_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
-
-        <EditText
-            android:id="@+id/search_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/rectangle_btn_style2"
-            android:padding="5dp"
-            android:hint="Enter date (dd/MM/yyyy)"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:inputType="date" />
-    </LinearLayout>
-
-    <ScrollView
-        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_bar_container"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/diary_container"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#DDFF"
-            android:padding="10dp" />
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
 
-    </ScrollView>
+            <TextView
+                android:id="@+id/date_text_view2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/rectangle_btn_style2"
+                android:padding="5dp"
+                android:text="month/year"
+                android:textColor="@android:color/black"
+                android:textSize="18sp" />
 
-</RelativeLayout>
+            <ImageButton
+                android:id="@+id/calBtn2"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/calendar" />
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="right"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/btn_rounded"
+                android:text="ALL" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/diaryListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/white" />
+    </LinearLayout>
+
+</LinearLayout>
