@@ -33,10 +33,10 @@
 
             <ImageView
                 android:id="@+id/cat_element1"
-                android:layout_width="40dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="-10dp"
+                android:layout_marginBottom="-5dp"
                 app:srcCompat="@drawable/cat_element1" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -60,7 +60,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="-10dp"
+                android:layout_marginBottom="-5dp"
                 app:srcCompat="@drawable/cat_element2" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -84,7 +84,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="-10dp"
+                android:layout_marginBottom="-8dp"
                 app:srcCompat="@drawable/cat_element3" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -108,7 +108,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="-10dp"
+                android:layout_marginBottom="-5dp"
                 app:srcCompat="@drawable/cat_element4" />
 
             <androidx.appcompat.widget.AppCompatButton
