@@ -259,7 +259,7 @@
                                 android:layout_marginLeft="6dp"
                                 android:layout_marginRight="6dp"
                                 android:scaleType="centerInside"
-                                app:srcCompat="@drawable/gameupdown" />
+                                app:srcCompat="@drawable/cat_upanddown" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -291,7 +291,7 @@
                                 android:layout_height="120dp"
                                 android:layout_marginLeft="5dp"
                                 android:layout_marginRight="5dp"
-                                app:srcCompat="@drawable/gamebaseball" />
+                                app:srcCompat="@drawable/cat_baseball" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -324,7 +324,7 @@
                                 android:layout_height="110dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginBottom="5dp"
-                                android:background="@drawable/gamesame"
+                                android:background="@drawable/cat_samepic"
                                 android:scaleType="centerInside" />
 
                             <TextView

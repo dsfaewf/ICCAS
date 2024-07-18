@@ -46,6 +46,9 @@ class Setting_UI : BaseActivity() {
         fontSizeSeekBar.progress = (savedFontSize - 16).toInt()
         sampleTextView.textSize = savedFontSize
 
+        // 저장된 폰트 크기를 본 액티비티로 돌아와도 바로 적용할 수 있도록
+        applyFontSize()
+
         fontSizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val newSize = 16f + progress
@@ -99,6 +102,13 @@ class Setting_UI : BaseActivity() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         finish() // 현재 액티비티 종료
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this,LoginActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
     }
 
     private fun sendDiariesByEmail() {
@@ -205,7 +215,7 @@ class Setting_UI : BaseActivity() {
                     currentUser?.delete()?.addOnCompleteListener { deleteTask ->
                         if (deleteTask.isSuccessful) {
                             Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
-                            navigateToMain()
+                            navigateToLogin()
                         } else {
                             Toast.makeText(this, "Failed to delete account", Toast.LENGTH_SHORT).show()
                         }
