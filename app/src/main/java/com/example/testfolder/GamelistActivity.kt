@@ -107,7 +107,7 @@ class GamelistActivity : AppCompatActivity() {
                 val selectedOption = options[selectedId]
                 saveSetting(selectedOption)
                 dialog.dismiss()
-                finish()
+//                finish()
             }
         }
 
