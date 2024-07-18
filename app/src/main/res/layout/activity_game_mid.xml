@@ -31,6 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="5dp"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:gravity="center_horizontal|center_vertical"
             android:text="coin"
             android:textSize="30sp" />
@@ -62,6 +64,8 @@
         android:layout_margin="10dp"
         android:layout_gravity="start"
         android:text="Finished!"
+        android:fontFamily="@font/bmjua_ttf"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
@@ -175,6 +179,8 @@
                     android:background="@drawable/rectangle_btn_style"
                     android:gravity="center"
                     android:text="1"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/bmjua_ttf"
                     android:textSize="15dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -183,6 +189,8 @@
                     android:layout_height="match_parent"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:background="@drawable/rectangle_btn_style"
                     android:gravity="center"
                     android:text="2"
@@ -207,6 +215,8 @@
                     android:layout_weight="1"
                     android:background="@drawable/rectangle_btn_style"
                     android:gravity="center"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:text="3"
                     android:textSize="15dp" />
 
@@ -216,6 +226,8 @@
                     android:layout_height="match_parent"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:background="@drawable/rectangle_btn_style"
                     android:text="4"
                     android:textSize="15dp" />

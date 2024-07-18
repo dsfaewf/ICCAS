@@ -50,6 +50,8 @@
 
                         <TextView
                             android:id="@+id/coin_text"
+                            android:fontFamily="@font/bmjua_ttf"
+                            android:textColor="@color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end"
@@ -134,6 +136,8 @@
                     android:clickable="true"
                     android:gravity="center"
                     android:padding="10dp"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:text="Buy it now"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -173,6 +177,7 @@
             android:layout_height="48dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
@@ -181,11 +186,13 @@
             android:gravity="center"
             android:text="ROOM"
             android:textSize="20sp"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/deco_btn"
             android:layout_width="0dp"
+            android:fontFamily="@font/bmjua_ttf"
             android:layout_height="48dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
@@ -197,12 +204,15 @@
             android:gravity="center"
             android:text="DECO"
             android:textSize="20sp"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/game_btn"
             android:layout_width="0dp"
             android:layout_height="48dp"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"

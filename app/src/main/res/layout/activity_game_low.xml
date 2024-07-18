@@ -33,6 +33,8 @@
             android:layout_margin="5dp"
             android:gravity="center_horizontal|center_vertical"
             android:text="coin"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:textSize="30sp" />
     </LinearLayout>
 

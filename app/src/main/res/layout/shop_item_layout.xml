@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Item Name"
+        android:fontFamily="@font/bmjua_ttf"
         android:gravity="center"
         android:textSize="14sp" />
 
@@ -25,5 +26,6 @@
         android:layout_height="wrap_content"
         android:text="Price"
         android:gravity="center"
+        android:fontFamily="@font/bmjua_ttf"
         android:textSize="14sp" />
 </LinearLayout>

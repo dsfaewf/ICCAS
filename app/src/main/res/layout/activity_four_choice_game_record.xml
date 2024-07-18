@@ -17,12 +17,16 @@
             android:id="@+id/dailyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:text="Daily" />
 
         <Button
             android:id="@+id/monthlyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:text="Monthly" />
     </LinearLayout>
 
@@ -39,17 +43,23 @@
             android:id="@+id/oxGameRecordButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:text="OX" />
 
         <Button
             android:id="@+id/fourChoiceGameRecordButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:text="4 Choice" />
 
         <Button
             android:id="@+id/shortAnswerGameRecordButton"
             android:layout_width="wrap_content"
+            android:fontFamily="@font/bmjua_ttf"
+            android:textColor="@color/black"
             android:layout_height="wrap_content"
             android:text="Short Answer" />
     </LinearLayout>

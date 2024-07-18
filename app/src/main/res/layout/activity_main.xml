@@ -44,6 +44,7 @@
                 android:id="@+id/my_button2"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:fontFamily="@font/bmjua_ttf"
                 android:layout_below="@id/cat_element1"
                 android:background="@drawable/rectangle_style"
                 android:gravity="center"
@@ -72,6 +73,7 @@
                 android:layout_below="@id/cat_element2"
                 android:background="@drawable/rectangle_style"
                 android:gravity="center"
+                android:fontFamily="@font/bmjua_ttf"
                 android:text="Photo"
                 android:textSize="24sp" />
         </RelativeLayout>
@@ -97,6 +99,7 @@
                 android:background="@drawable/rectangle_style"
                 android:gravity="center"
                 android:text="My Cat"
+                android:fontFamily="@font/bmjua_ttf"
                 android:textSize="24sp" />
         </RelativeLayout>
 
@@ -121,6 +124,7 @@
                 android:background="@drawable/rectangle_style"
                 android:gravity="center"
                 android:text="Game"
+                android:fontFamily="@font/bmjua_ttf"
                 android:textSize="24sp" />
         </RelativeLayout>
 
@@ -145,6 +149,7 @@
                 android:background="@drawable/rectangle_style"
                 android:gravity="center"
                 android:text="Setting"
+                android:fontFamily="@font/bmjua_ttf"
                 android:textSize="24sp" />
         </RelativeLayout>
     </LinearLayout>

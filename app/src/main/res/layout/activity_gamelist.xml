@@ -42,6 +42,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_weight="1"
                             android:text="Main Game"
+                            android:fontFamily="@font/bmjua_ttf"
                             android:textColor="@color/black"
                             android:textSize="25sp"
                             android:textStyle="bold" />
@@ -102,6 +103,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
                                         android:layout_margin="5dp"
+                                        android:fontFamily="@font/bmjua_ttf"
+                                        android:textColor="@color/black"
                                         android:background="@drawable/white_style"
                                         android:gravity="center"
                                         android:text="OX\nQuiz"
@@ -136,6 +139,8 @@
                                         android:layout_margin="5dp"
                                         android:background="@drawable/white_style"
                                         android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:fontFamily="@font/bmjua_ttf"
                                         android:text="4 choice\nQuiz"
                                         android:textSize="18sp" />
 
@@ -176,6 +181,8 @@
                                         android:layout_margin="5dp"
                                         android:background="@drawable/white_style"
                                         android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:fontFamily="@font/bmjua_ttf"
                                         android:text="Short\nanswer"
                                         android:textSize="18sp" />
                                 </LinearLayout>
@@ -207,6 +214,8 @@
                                         android:layout_margin="5dp"
                                         android:background="@drawable/white_style"
                                         android:gravity="center"
+                                        android:fontFamily="@font/bmjua_ttf"
+                                        android:textColor="@color/black"
                                         android:text="OX Quiz\nwith picture"
                                         android:textSize="18sp" />
                                 </LinearLayout>
@@ -222,6 +231,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="5dp"
                         android:text="Mini Game"
+                        android:fontFamily="@font/bmjua_ttf"
                         android:textColor="@color/black"
                         android:textSize="25sp"
                         android:textStyle="bold" />
@@ -258,6 +268,8 @@
                                 android:layout_margin="5dp"
                                 android:background="@drawable/white_style"
                                 android:gravity="center"
+                                android:fontFamily="@font/bmjua_ttf"
+                                android:textColor="@color/black"
                                 android:text="up&amp;down\n number"
                                 android:textSize="18sp" />
                         </LinearLayout>
@@ -288,6 +300,8 @@
                                 android:layout_margin="5dp"
                                 android:background="@drawable/white_style"
                                 android:gravity="center"
+                                android:fontFamily="@font/bmjua_ttf"
+                                android:textColor="@color/black"
                                 android:text="baseball\n number"
                                 android:textSize="18sp" />
 
@@ -320,6 +334,8 @@
                                 android:layout_margin="5dp"
                                 android:background="@drawable/white_style"
                                 android:gravity="center"
+                                android:fontFamily="@font/bmjua_ttf"
+                                android:textColor="@color/black"
                                 android:text="same\npicture"
                                 android:textSize="18sp" />
                         </LinearLayout>
@@ -335,6 +351,8 @@
                         android:background="@drawable/circle_btn_w_style"
                         android:elevation="5dp"
                         android:text="GAME RECORD"
+                        android:fontFamily="@font/bmjua_ttf"
+                        android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
