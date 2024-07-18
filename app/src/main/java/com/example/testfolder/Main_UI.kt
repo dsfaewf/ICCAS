@@ -34,7 +34,7 @@ class Main_UI : BaseActivity() {
             startService(musicServiceIntent)
         }
 
-        checkFirstLogin()
+//        checkFirstLogin() //설문 페이지 알림 일단 꺼 놓음.
 
         val imageButton1 = findViewById<View>(R.id.my_button4) as Button
         val diaryButton = findViewById<View>(R.id.my_button2) as Button
