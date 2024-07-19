@@ -141,7 +141,7 @@
                                         android:gravity="center"
                                         android:textColor="@color/black"
                                         android:fontFamily="@font/bmjua_ttf"
-                                        android:text="4 choice\nQuiz"
+                                        android:text="Multiple Choice\nQuestions"
                                         android:textSize="18sp" />
 
                                 </LinearLayout>

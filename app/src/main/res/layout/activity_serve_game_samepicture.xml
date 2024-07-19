@@ -29,6 +29,8 @@
             android:layout_gravity="end"
             android:layout_marginStart="5dp"
             android:gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/bmjua_ttf"
             android:text="coin"
             android:textSize="30sp" />
     </LinearLayout>
