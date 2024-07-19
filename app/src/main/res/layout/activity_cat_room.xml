@@ -51,6 +51,8 @@
                     android:layout_margin="5dp"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="coin"
+                    android:fontFamily="@font/bmjua_ttf"
+                    android:textColor="@color/black"
                     android:textSize="30sp" />
             </LinearLayout>
 
@@ -131,6 +133,8 @@
                 android:background="@drawable/circle_btn_style"
                 android:clickable="true"
                 android:gravity="center"
+                android:fontFamily="@font/bmjua_ttf"
+                android:textColor="@color/black"
                 android:text="shop"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -147,6 +151,8 @@
                 android:layout_marginBottom="10dp"
                 android:textSize="20sp"
                 android:clickable="true"
+                android:fontFamily="@font/bmjua_ttf"
+                android:textColor="@color/black"
                 android:background="@drawable/circle_btn_style"
                 android:text="deco"
                 android:textStyle="bold" />
@@ -162,6 +168,8 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="10dp"
+                android:fontFamily="@font/bmjua_ttf"
+                android:textColor="@color/black"
                 android:background="@drawable/circle_btn_style"
                 android:text="diary"
                 android:clickable="true"
@@ -178,6 +186,8 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:clickable="true"
+                android:fontFamily="@font/bmjua_ttf"
+                android:textColor="@color/black"
                 android:background="@drawable/circle_btn_style"
                 android:text="game"
                 android:textSize="20sp"

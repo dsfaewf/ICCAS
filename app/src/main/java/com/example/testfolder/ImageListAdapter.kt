@@ -1,6 +1,7 @@
 package com.example.testfolder
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,14 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.values
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 data class ImageData(
     val imageid: String,
     val imageUrl: String,
+    val imgName: String,
     val keyword: String?,
     val dateTime: String?,
     val gpsLatitude: String?,
@@ -58,6 +63,7 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
         holder.dateTimeTextView.text = imageData.dateTime
         holder.imageView.clipToOutline = true
         holder.deleteButton.setOnClickListener {
+            deleteImage(imageData.imgName)
             deletePhotoEntry(imageData.imageid)
             deleteQuizData("img_quiz", imageData.imageid)
             imageList.removeAt(position)
@@ -81,8 +87,6 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
 
     private fun deletePhotoEntry(id: String) {
         auth = FirebaseAuth.getInstance()
-        Toast.makeText(context, "Deleted photo ID: $id", Toast.LENGTH_SHORT).show()
-
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val diaryRef = FirebaseDatabase.getInstance().reference
@@ -100,6 +104,27 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(context, "Failed to delete diary: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+    private fun deleteImage(imgName: String) {
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val storageRef =
+                FirebaseStorage.getInstance().getReference("images/${currentUser.uid}/$imgName")
+
+
+            storageRef.delete()
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(
+                        context,
+                        "Failed to delete image: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
     }

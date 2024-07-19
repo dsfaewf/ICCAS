@@ -70,6 +70,7 @@ class ImageListActivity : AppCompatActivity() {
                     for (imageSnapshot in snapshot.children) {
                         val imageid = imageSnapshot.key
                         val imageUrl = imageSnapshot.child("ImageUrl").value as? String
+                        val imgName = imageSnapshot.child("imgName").value as? String
                         val keyword = imageSnapshot.child("Keyword").value as? String
                         val dateTime = imageSnapshot.child("DateTime").value as? String
                         val gpsLatitude = imageSnapshot.child("GPSLatitude").value as? String
@@ -79,15 +80,15 @@ class ImageListActivity : AppCompatActivity() {
                         if (dateString != null) {
                             Log.d("dateString",dateString)
                         }
-                        if (imageUrl != null && keyword != null) {
+                        if (imageUrl != null && keyword != null && imgName != null) {
                             if (dateTime != null) {
                                 if ( dateFormat == dateString) {
-                                    val imageData = imageid?.let { ImageData(it, imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude) }
+                                    val imageData = imageid?.let { ImageData(it, imageUrl, imgName, keyword, dateTime, gpsLatitude, gpsLongitude) }
                                     if (imageData != null) {
                                         imageList.add(imageData)
                                     }
                                 } else if(dateString == null){
-                                    val imageData = imageid?.let { ImageData(it, imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude) }
+                                    val imageData = imageid?.let { ImageData(it, imageUrl, imgName, keyword, dateTime, gpsLatitude, gpsLongitude) }
                                     if (imageData != null) {
                                         imageList.add(imageData)
                                     }
