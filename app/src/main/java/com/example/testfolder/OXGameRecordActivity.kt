@@ -95,7 +95,8 @@ class OXGameRecordActivity : AppCompatActivity() {
         val correctAnswersData = dailyResults.map { (date, dailyGames) ->
             val totalCorrectAnswers = dailyGames.sumOf { (it["correctAnswers"] as Long).toInt() }
             val avgCorrectAnswers = totalCorrectAnswers.toFloat() / dailyGames.size
-            "['$date', $avgCorrectAnswers]"
+            val avgCorrectPercentage = (avgCorrectAnswers / 5) * 100
+            "['$date', $avgCorrectPercentage]"
         }.joinToString(",\n")
 
         val totalTimeData = dailyResults.map { (date, dailyGames) ->
@@ -115,7 +116,7 @@ class OXGameRecordActivity : AppCompatActivity() {
 
                     function drawCharts() {
                         var correctAnswersData = google.visualization.arrayToDataTable([
-                            ['Date', 'Average Correct Answers'],
+                            ['Date', 'Average Correct Answers (%)'],
                             $correctAnswersData
                         ]);
 
@@ -125,9 +126,9 @@ class OXGameRecordActivity : AppCompatActivity() {
                         ]);
 
                         var correctAnswersOptions = {
-                            title: 'Average Correct Answers by Date',
+                            title: 'Average Correct Answers by Date (%)',
                             hAxis: { title: 'Date', titleTextStyle: { color: '#333' } },
-                            vAxis: { minValue: 0, maxValue: 10 },
+                            vAxis: { minValue: 0, maxValue: 100 },
                             curveType: 'function',
                             legend: { position: 'bottom' }
                         };
