@@ -48,7 +48,7 @@ class ImageListActivity : AppCompatActivity() {
             val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
                 // 날짜를 TextView에 설정
                 dateTxt.text = String.format("%02d/%04d", month + 1, year)
-                loadImagesFromFirebase(dateTxt.text.toString())
+                loadImagesFromFirebase(dateTxt.text as String)
             }, year, month, day)
             datePickerDialog.show()
         }
@@ -74,14 +74,19 @@ class ImageListActivity : AppCompatActivity() {
                         val dateTime = imageSnapshot.child("DateTime").value as? String
                         val gpsLatitude = imageSnapshot.child("GPSLatitude").value as? String
                         val gpsLongitude = imageSnapshot.child("GPSLongitude").value as? String
+                        val dateFormat = dateTime?.substring(5,7) + "/" + dateTime?.substring(0, 4)
+                        Log.d("dateFormat",dateFormat)
+                        if (dateString != null) {
+                            Log.d("dateString",dateString)
+                        }
                         if (imageUrl != null && keyword != null) {
                             if (dateTime != null) {
-                                if (dateTime.substring(3) == dateTxt.text.toString()) {
+                                if ( dateFormat == dateString) {
                                     val imageData = imageid?.let { ImageData(it, imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude) }
                                     if (imageData != null) {
                                         imageList.add(imageData)
                                     }
-                                } else {
+                                } else if(dateString == null){
                                     val imageData = imageid?.let { ImageData(it, imageUrl, keyword, dateTime, gpsLatitude, gpsLongitude) }
                                     if (imageData != null) {
                                         imageList.add(imageData)
@@ -90,7 +95,7 @@ class ImageListActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    imageList.sortBy { it.dateTime?.substring(0, 2) } // 초기 화면 월별로 정렬
+                    imageList.sortBy { it.dateTime?.substring(5, 7) } // 초기 화면 월별로 정렬
                     imageListAdapter.notifyDataSetChanged()
                 }
 
