@@ -286,13 +286,15 @@ class GameLowActivity : BaseActivity() {
         }
 
         val message = """
-        Quiz completed!
-        Correct answers: $correctAnswers
-        Time taken for correct answers: $totalTimeSeconds seconds
-        \n\n
-        Incorrect questions:
-        $incorrectQuestionsText
-        """.trimIndent()
+Quiz completed!
+Correct answers: $correctAnswers
+Time taken for correct answers: $totalTimeSeconds seconds
+
+
+
+Incorrect questions:
+$incorrectQuestionsText
+""".trimIndent()
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Game Result")
