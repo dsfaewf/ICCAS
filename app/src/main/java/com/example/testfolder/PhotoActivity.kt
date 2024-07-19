@@ -60,6 +60,7 @@ class PhotoActivity : AppCompatActivity() {
     private lateinit var selectedImageView: ImageView
     private lateinit var keywordEditText: EditText
     private lateinit var errorTextView: TextView
+    private var imgName: String? = null
     private var imageUri: Uri? = null
     private var lastClickTime: Long = 0
     private val interval: Long = 1000
@@ -147,6 +148,7 @@ class PhotoActivity : AppCompatActivity() {
                             put("date", dateForDB)
                             put("dayofweek", dayOfWeek)
                             put("timeofday", timeOfDay)
+                            put("imgName", imgName)
                         }
                         loadingAnimation.showLoading()
                         uploadImageToFirebase(uri, exifData, keyword)
@@ -303,6 +305,8 @@ class PhotoActivity : AppCompatActivity() {
         if (currentUser != null) {
             val uid = currentUser.uid
             val storageRef = storageReference.child("images/$uid/${System.currentTimeMillis()}.jpg")
+            imgName = "${System.currentTimeMillis()}.jpg"
+            Log.d("storage name ", imgName!!)
 
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
             val baos = ByteArrayOutputStream()
@@ -316,7 +320,7 @@ class PhotoActivity : AppCompatActivity() {
 //                    val preprocessedURL = url.toString().replace("\\", "")
 //                    Log.d("URL", "IMAGE URL 2: $preprocessedURL")
 //                    (photoViewModel as PhotoViewModel).setUrlLiveData(preprocessedURL)
-                    saveExifDataToFirebase(url.toString(), exifData, keyword)
+                    saveExifDataToFirebase(url.toString(), exifData, keyword, imgName!!)
                 }
             }.addOnFailureListener { exception ->
                 Log.e("Firebase", "Failed to upload image: ${exception.message}", exception)
@@ -328,7 +332,7 @@ class PhotoActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveExifDataToFirebase(imageUrl: String, exifData: Map<String, String>, keyword: String) {
+    private fun saveExifDataToFirebase(imageUrl: String, exifData: Map<String, String>, keyword: String, imgName: String) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val uid = currentUser.uid
@@ -336,6 +340,7 @@ class PhotoActivity : AppCompatActivity() {
             val exifDataWithKeyword = exifData.toMutableMap()
             exifDataWithKeyword["Keyword"] = keyword
             exifDataWithKeyword["ImageUrl"] = imageUrl
+            exifDataWithKeyword["imgName"] = imgName
 
             userImagesRef.setValue(exifDataWithKeyword).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
