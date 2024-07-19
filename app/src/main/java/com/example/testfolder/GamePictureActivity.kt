@@ -7,6 +7,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -16,10 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -60,7 +59,6 @@ class GamePictureActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var database: FirebaseDatabase
-    private lateinit var storage: FirebaseStorage
 
     data class QuizItem(
         val answer: String = "",
@@ -75,7 +73,6 @@ class GamePictureActivity : BaseActivity() {
 
         sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
         database = FirebaseDatabase.getInstance()
-        storage = FirebaseStorage.getInstance()
 
         progressBar = findViewById(R.id.progressBar1)
         obutton = findViewById(R.id.o_btn)
@@ -105,19 +102,9 @@ class GamePictureActivity : BaseActivity() {
         obutton.isEnabled = false
         xbutton.isEnabled = false
 
-        try {
-            currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
-        } catch (e: IllegalStateException) {
-            Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
-            finish()
+        if (!initializeSingleton()) {
+            showInitializationErrorDialog()
             return
-        }
-
-        try {
-            SingletonKotlin.loadUserCoins(coinText)
-        } catch (e: IllegalStateException) {
-            Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
-            finish()
         }
 
         val excludeIds = setOf(R.id.o_btn, R.id.x_btn)
@@ -137,44 +124,20 @@ class GamePictureActivity : BaseActivity() {
         }
     }
 
-    // 퀴즈 데이터를 로드하는 함수
-    private fun loadQuizData() {
-        val userId = currentUser.uid
-        val quizRef = database.reference.child("img_quiz").child(userId)
-
-        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val quizzes = mutableListOf<QuizItem>()
-                for (dateSnapshot in snapshot.children) {
-                    val date = dateSnapshot.key ?: ""
-                    for (quizSnapshot in dateSnapshot.children) {
-                        val quiz = quizSnapshot.getValue(QuizItem::class.java)
-                        if (quiz != null) {
-                            quizzes.add(quiz.copy(date = date))
-                        }
-                    }
-                }
-                quizList = quizzes
-                if (quizList.size >= 5) {
-                    selectedQuizzes = quizList.shuffled().take(5)
-                    startRound()
-                    obutton.isEnabled = true
-                    xbutton.isEnabled = true
-                } else {
-                    showNoQuizzesDialogAndExit()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@GamePictureActivity, "Failed to load quizzes", Toast.LENGTH_SHORT).show()
-            }
-        })
+    private fun initializeSingleton(): Boolean {
+        return try {
+            currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
+            SingletonKotlin.loadUserCoins(coinText)
+            true
+        } catch (e: IllegalStateException) {
+            false
+        }
     }
 
-    private fun showNoQuizzesDialogAndExit() {
+    private fun showInitializationErrorDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("No Quizzes Available")
-            .setMessage("There are no enough quiz entries available. At least 5 diaries data needed.")
+        builder.setTitle("Initialization Error")
+            .setMessage("SingletonKotlin is not initialized. Please restart the application.")
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
                 finish()
@@ -184,7 +147,81 @@ class GamePictureActivity : BaseActivity() {
         dialog.show()
     }
 
-    // 라운드를 시작하는 함수
+    private fun loadQuizData() {
+        Log.d("GamePictureActivity", "Starting to load quiz data")
+        val userId = currentUser.uid
+        val quizRef = database.reference.child("img_quiz").child(userId)
+
+        quizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("GamePictureActivity", "Data change detected")
+                val quizzes = mutableListOf<QuizItem>()
+                for (dateSnapshot in snapshot.children) {
+                    val date = dateSnapshot.key ?: ""
+                    Log.d("GamePictureActivity", "Processing date: $date")
+                    for (quizSnapshot in dateSnapshot.children) {
+                        val quiz = quizSnapshot.getValue(QuizItem::class.java)
+                        if (quiz != null) {
+                            quizzes.add(quiz.copy(date = date))
+                            Log.d("GamePictureActivity", "Added quiz: ${quiz.question}")
+                        } else {
+                            Log.d("GamePictureActivity", "Quiz is null")
+                        }
+                    }
+                }
+                quizList = filterQuizDataByPeriod(quizzes)
+                Log.d("GamePictureActivity", "Filtered quizzes: ${quizList.size}")
+                if (quizList.size >= 5) {
+                    selectedQuizzes = quizList.shuffled().take(5)
+                    startRound()
+                    obutton.isEnabled = true
+                    xbutton.isEnabled = true
+                    Log.d("GamePictureActivity", "Quizzes loaded successfully, starting round")
+                } else {
+                    showNoQuizzesDialogAndExit()
+                    Log.d("GamePictureActivity", "Not enough quizzes, showing dialog")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("GamePictureActivity", "Failed to load quizzes: ${error.message}")
+                Toast.makeText(this@GamePictureActivity, "Failed to load quizzes", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+    private fun filterQuizDataByPeriod(quizData: List<QuizItem>): List<QuizItem> {
+        val selectedPeriod = sharedPreferences.getString("selected_period", "Random")
+        if (selectedPeriod == "Random") return quizData
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd MM yyyy", Locale.getDefault())  // ㅅㅂ 왜 포맷 그렇게 해놨었냐고 우석아~
+        return quizData.filter {
+            val quizTime = dateFormat.parse(it.date).time
+            when (selectedPeriod) {
+                "Within 3 days" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) <= 3
+                "3 days to 1 week" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 4..7
+                "1 week to 2 weeks" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 8..14
+                "2 weeks to 1 month" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 15..30
+                "1 month to 6 months" -> TimeUnit.MILLISECONDS.toDays(currentTime - quizTime) in 31..180
+                else -> true
+            }
+        }
+    }
+
+    private fun showNoQuizzesDialogAndExit() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("No Quizzes Available")
+            .setMessage("There are no quiz entries available for the selected period. Please try a different period or add more quiz entries.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
+
     private fun startRound() {
         startTime = System.currentTimeMillis()
         progressStatus = 0
@@ -194,26 +231,24 @@ class GamePictureActivity : BaseActivity() {
         startProgressBar()
     }
 
-    // 현재 라운드의 문제를 표시하는 함수
     private fun displayQuestion() {
         if (currentRound < selectedQuizzes.size) {
             val quizItem = selectedQuizzes[currentRound]
             findViewById<TextView>(R.id.qeustionbox).text = "Date: ${quizItem.date}\n\n${quizItem.question}"
-            loadImageForQuiz(quizItem) // 퀴즈에 해당하는 이미지를 로드
+            loadImageForQuiz(quizItem)
         } else {
             val totalGameTime = totalTime / 1000
-            SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime) //ox 그래프 통계에 함께 저장
+            SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime)
             showGameResultDialog(correctAnswers, totalGameTime, incorrectQuestions)
         }
     }
 
-    // 퀴즈에 해당하는 이미지를 로드하는 함수
     private fun loadImageForQuiz(quizItem: QuizItem) {
-        val imageUrl = quizItem.url //url에 바로 접근하도록 변경
-        if (imageUrl.isNotEmpty()) { // url이 있다면 해당 url의 이미지를 넣어버리도록 처리
+        val imageUrl = quizItem.url
+        if (imageUrl.isNotEmpty()) {
             Glide.with(this@GamePictureActivity).load(imageUrl).into(questionImg)
         } else {
-            questionImg.setImageResource(R.drawable.colosseum) // URL이 없으면 기본 이미지 사용
+            questionImg.setImageResource(R.drawable.colosseum)
         }
     }
 

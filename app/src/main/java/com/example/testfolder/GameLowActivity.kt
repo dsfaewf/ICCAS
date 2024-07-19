@@ -156,7 +156,7 @@ class GameLowActivity : BaseActivity() {
     private fun showNoQuizzesDialogAndExit() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("No Quizzes Available")
-            .setMessage("There are no diary entries available for the selected period.")
+            .setMessage("There are no quiz entries available for the selected period. Please try a different period or add more quiz entries.")
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
                 finish()
