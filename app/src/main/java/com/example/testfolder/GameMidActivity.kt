@@ -118,8 +118,8 @@ class GameMidActivity : BaseActivity() {
             // 설정된 기간에 맞게 퀴즈 데이터 필터링
             SingletonKotlin.loadMultipleChoiceQuizData { quizData ->
                 quizList = filterQuizDataByPeriod(quizData)
-                if (quizList.size >= 5) {
-                    selectedQuizzes = quizList.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 5개만 선택
+                if (quizList.isNotEmpty()) {
+                    selectedQuizzes = quizList.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 최대 totalRounds개 선택
                     startTime = System.currentTimeMillis()
                     displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
                     startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
@@ -234,13 +234,13 @@ class GameMidActivity : BaseActivity() {
         progressBarThread?.interrupt()
         progressBarThread = Thread {
             val startRoundTime = System.currentTimeMillis()
-            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {  // 0.2 * 300 = 60초
+            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {
                 progressStatus += 1
                 handler.post {
                     progressBar.progress = progressStatus
                 }
                 try {
-                    Thread.sleep(200)   // 0.2초 대기
+                    Thread.sleep(200)
                 } catch (e: InterruptedException) {
                     return@Thread
                 }
@@ -250,7 +250,7 @@ class GameMidActivity : BaseActivity() {
                     questionTextView.text = "Time's up!"
                     currentQuestionIndex++
                     if (currentQuestionIndex < selectedQuizzes.size) {
-                        startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
+                        startTime = System.currentTimeMillis()
                         displayQuestion(questionTextView, btn1, btn2, btn3, btn4)
                         startProgressBar(questionTextView, btn1, btn2, btn3, btn4)
                     } else {
@@ -346,4 +346,3 @@ $incorrectQuestionsText
         progressBarThread?.interrupt()
     }
 }
-

@@ -114,7 +114,7 @@ class GameLowActivity : BaseActivity() {
             // 설정된 기간에 맞게 퀴즈 데이터 필터링
             SingletonKotlin.loadOXQuizData { quizData ->
                 quizList = filterQuizDataByPeriod(quizData)
-                if (quizList.size >= 5) {
+                if (quizList.isNotEmpty()) {
                     selectedQuizzes = quizList.shuffled().take(5)
                     startRound(questionTextView)
                     // 답변 버튼 활성화
@@ -222,13 +222,13 @@ class GameLowActivity : BaseActivity() {
         progressBarThread?.interrupt()
         progressBarThread = Thread {
             val startRoundTime = System.currentTimeMillis()
-            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {  // 0.2 * 300 = 60초
+            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {
                 progressStatus += 1
                 handler.post {
                     progressBar.progress = progressStatus
                 }
                 try {
-                    Thread.sleep(200)   // 0.2초 대기
+                    Thread.sleep(200)
                 } catch (e: InterruptedException) {
                     return@Thread
                 }
