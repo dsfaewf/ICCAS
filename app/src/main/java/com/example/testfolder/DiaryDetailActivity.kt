@@ -10,6 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
+import com.example.testfolder.Diary_write_UI.Companion.PROB_TYPE_BLANK
+import com.example.testfolder.Diary_write_UI.Companion.PROB_TYPE_MCQ
+import com.example.testfolder.Diary_write_UI.Companion.PROB_TYPE_OX
 import com.example.testfolder.utils.LoadingAnimation
 import com.example.testfolder.utils.OpenAI
 import com.example.testfolder.utils.PreprocessTexts
@@ -18,6 +21,8 @@ import com.example.testfolder.viewmodels.DiaryWriteViewModel
 import com.example.testfolder.viewmodels.FirebaseViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.functions.FirebaseFunctions
+import kotlin.math.round
 
 class DiaryDetailActivity : BaseActivity() {
 
@@ -35,6 +40,7 @@ class DiaryDetailActivity : BaseActivity() {
     private lateinit var mediaEandS: MediaPlayer   //효과음 재생용 변수
     private lateinit var mediafail: MediaPlayer   //효과음 재생용 변수
     private lateinit var mediadelete: MediaPlayer   //효과음 재생용 변수
+    private lateinit var loadingAnimation: LoadingAnimation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,8 +59,8 @@ class DiaryDetailActivity : BaseActivity() {
         val openAIViewModel = ViewModelProvider(this).get(OpenAIViewModel::class.java)
         val firebaseViewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
         val diaryWriteViewModel = ViewModelProvider(this).get(DiaryWriteViewModel::class.java)
-        val loadingAnimation = LoadingAnimation(this,
-            loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Generating Quiz")
+        loadingAnimation = LoadingAnimation(this,
+            loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Please wait")
         val myOpenAI = OpenAI(this, this, openAIViewModel, firebaseViewModel, loadingAnimation, contentEditText)
         myOpenAI.fetchApiKey()
         mediaEandS = MediaPlayer.create(this, R.raw.paper_flip)
@@ -112,7 +118,7 @@ class DiaryDetailActivity : BaseActivity() {
                 // Update class variable with the current diary content
                 this.newContent = contentEditText.text.toString().trim()
                 this.numOfTokens = PreprocessTexts.getNumOfTokens(newContent)
-                this.numOfQuestions = numOfTokens/5
+                this.numOfQuestions = numOfTokens/8
                 // If the diary is too short, don't run
                 if (numOfQuestions < 1){
                     mediafail.start()
@@ -123,21 +129,71 @@ class DiaryDetailActivity : BaseActivity() {
                 else {
                     mediaEandS.start()
                     errorTextView.visibility = TextView.INVISIBLE
-                    // Update diary
-                    updateDiaryEntry()
                     // Update quiz
                     diaryWriteViewModel.onButtonClick()
+                    // Update diary
+                    updateDiaryEntry()
                 }
             }
         }
 
         diaryWriteViewModel.buttonClickEvent.observe(this){
-            loadingAnimation.showLoading()
             // Update date, a member of OpenAI's instance
             myOpenAI.updateDate(dateTextView.text.toString())
+            // Call firebase functions
+            val requestBodyOX = hashMapOf(
+                "model" to myOpenAI.model,
+                "userMsg" to myOpenAI.getUserPrompt(
+                    probType= PROB_TYPE_OX,
+                    diary= this.newContent,
+                    numOfQuestions= this.numOfQuestions),
+                "sysMsg" to myOpenAI.getSysPrompt(
+                    probType= PROB_TYPE_OX
+                ),
+                "uid" to auth.currentUser!!.uid,
+                "date" to myOpenAI.getDate(),
+            )
+            val requestBodyMCQ = hashMapOf(
+                "model" to myOpenAI.model,
+                "userMsg" to myOpenAI.getUserPrompt(
+                    probType= PROB_TYPE_MCQ,
+                    diary= this.newContent,
+                    numOfQuestions= this.numOfQuestions),
+                "sysMsg" to myOpenAI.getSysPrompt(
+                    probType= PROB_TYPE_MCQ
+                ),
+                "diary" to this.newContent,
+                "uid" to auth.currentUser!!.uid,
+                "date" to myOpenAI.getDate(),
+            )
+            val requestBodyBlank = hashMapOf(
+                "model" to myOpenAI.model,
+                "userMsg" to myOpenAI.getUserPrompt(
+                    probType= PROB_TYPE_BLANK,
+                    diary= this.newContent,
+                    numOfQuestions= round(this.numOfQuestions/1.5).toInt()
+                ),
+                "sysMsg" to myOpenAI.getSysPrompt(
+                    probType= PROB_TYPE_BLANK
+                ),
+                "diary" to this.newContent,
+                "uid" to auth.currentUser!!.uid,
+                "date" to myOpenAI.getDate(),
+            )
+            val functions = FirebaseFunctions.getInstance()
+            Log.d("Firebase", "Called firebase function for gpt use")
+            functions
+                .getHttpsCallable("callChatGPTAndStoreResponseAboutOX")
+                .call(requestBodyOX)
+            functions
+                .getHttpsCallable("callChatGPTAndStoreResponseAboutMCQ")
+                .call(requestBodyMCQ)
+            functions
+                .getHttpsCallable("callChatGPTAndStoreResponseAboutBlank")
+                .call(requestBodyBlank)
             // Observe the LiveData
             // Once the api key is fetched, generate new 3 types of quiz
-            myOpenAI.generate_quiz_and_save(this.newContent, this.numOfQuestions)
+//            myOpenAI.generate_quiz_and_save(this.newContent, this.numOfQuestions)
         }
 
         deleteButton.setOnClickListener {
@@ -163,8 +219,11 @@ class DiaryDetailActivity : BaseActivity() {
                 "content" to this.newContent
             )
 
+            loadingAnimation.showLoading()
             diaryRef.setValue(diaryEntryMap)
                 .addOnSuccessListener {
+                    loadingAnimation.hideLoading()
+                    Toast.makeText(this, "Diary has been modified.", Toast.LENGTH_SHORT).show()
                     Log.d("DB", "Diary has been modified.")
                 }
                 .addOnFailureListener { exception ->

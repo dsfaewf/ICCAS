@@ -25,9 +25,19 @@ import com.example.testfolder.viewmodels.OpenAIViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.testfolder.viewmodels.DiaryWriteViewModel
 import com.example.testfolder.viewmodels.FirebaseViewModel
+import com.google.firebase.functions.FirebaseFunctions
 import java.text.SimpleDateFormat
 
 class Diary_write_UI : BaseActivity() {
+    companion object {
+        const val PROB_TYPE_OX  = 0
+        const val PROB_TYPE_MCQ = 1
+        const val PROB_TYPE_BLANK  = 2
+        const val PROB_TYPE_HINT  = 3
+        const val PROB_TYPE_MCQ_REFINED = 4
+        const val PROB_TYPE_IMAGE = 5
+        const val NULL_STRING = "NULL"
+    }
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
     val currentUser = auth.currentUser
@@ -122,6 +132,54 @@ class Diary_write_UI : BaseActivity() {
             // OpenAI 인스턴스의 date도 함께 update
             myOpenAI.updateDate(dateTextView.text.toString())
 
+            // Call firebase functions
+            val requestBodyOX = hashMapOf(
+                "model" to myOpenAI.model,
+                "userMsg" to myOpenAI.getUserPrompt(
+                    probType= PROB_TYPE_OX,
+                    diary= this.diaryContent,
+                    numOfQuestions= this.numOfQuestions),
+                "sysMsg" to myOpenAI.getSysPrompt(
+                    probType= PROB_TYPE_OX),
+                "uid" to uid,
+                "date" to myOpenAI.getDate(),
+            )
+            val requestBodyMCQ = hashMapOf(
+                "model" to myOpenAI.model,
+                "userMsg" to myOpenAI.getUserPrompt(
+                    probType= PROB_TYPE_MCQ,
+                    diary= this.diaryContent,
+                    numOfQuestions= this.numOfQuestions),
+                "sysMsg" to myOpenAI.getSysPrompt(
+                    probType= PROB_TYPE_MCQ),
+                "diary" to this.diaryContent,
+                "uid" to uid,
+                "date" to myOpenAI.getDate(),
+            )
+            val requestBodyBlank = hashMapOf(
+                "model" to myOpenAI.model,
+                "userMsg" to myOpenAI.getUserPrompt(
+                    probType= PROB_TYPE_BLANK,
+                    diary= this.diaryContent,
+                    numOfQuestions= this.numOfQuestions),
+                "sysMsg" to myOpenAI.getSysPrompt(
+                    probType= PROB_TYPE_BLANK),
+                "diary" to this.diaryContent,
+                "uid" to uid,
+                "date" to myOpenAI.getDate(),
+            )
+            val functions = FirebaseFunctions.getInstance()
+            Log.d("Firebase", "Called firebase function for gpt use")
+            functions
+                .getHttpsCallable("callChatGPTAndStoreResponseAboutOX")
+                .call(requestBodyOX)
+            functions
+                .getHttpsCallable("callChatGPTAndStoreResponseAboutMCQ")
+                .call(requestBodyMCQ)
+            functions
+                .getHttpsCallable("callChatGPTAndStoreResponseAboutBlank")
+                .call(requestBodyBlank)
+
             // 일기 내용을 Firebase 데이터베이스에 업로드
             // 사용자별로 데이터 저장하기
             uid?.let {
@@ -135,6 +193,8 @@ class Diary_write_UI : BaseActivity() {
                 )
                 val dbTask = userDiaryRef.setValue(diaryEntryMap) // 사용자별 위치에 일기 저장
                 dbTask.addOnSuccessListener {
+                    loadingAnimation.hideLoading()
+                    SingletonKotlin.initialize(auth, database.reference)
                     // 코인 업데이트 로직 추가
                     SingletonKotlin.updateUserCoinsWithoutTextView(10,this)
                     Toast.makeText(this, "Diary saved and 10 coins added!", Toast.LENGTH_SHORT).show()
@@ -143,12 +203,12 @@ class Diary_write_UI : BaseActivity() {
             }
 
 
-            // TEST
-            if (uid != null) {
-                myOpenAI.generate_quiz_and_save(this.diaryContent, this.numOfQuestions)
-            } else {
-                Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
-            }
+//            // TEST
+//            if (uid != null) {
+//                myOpenAI.generate_quiz_and_save(this.diaryContent, this.numOfQuestions)
+//            } else {
+//                Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+//            }
 //            diaryWriteViewModel.buttonClickEvent.removeObservers(this)
         }
 //        // UI 상 date가 바뀔 때마다 동작하는 함수
@@ -172,7 +232,7 @@ class Diary_write_UI : BaseActivity() {
                 // Update class variable with the current diary content
                 this.diaryContent = diaryEditText.text.toString().trim()
                 this.numOfTokens = PreprocessTexts.getNumOfTokens(diaryContent)
-                this.numOfQuestions = numOfTokens/5
+                this.numOfQuestions = numOfTokens/8
                 // If the diary is too short, don't run
                 if (numOfQuestions < 1){
                     errorTextView.text = "The diary is too short"
@@ -181,8 +241,6 @@ class Diary_write_UI : BaseActivity() {
                 }
                 // Run only if the diary is long enough
                 else {
-
-
                     mediasave.start() //효과음 재생 추가 - 우석
                     errorTextView.visibility = TextView.INVISIBLE
                     diaryWriteViewModel.onButtonClick()

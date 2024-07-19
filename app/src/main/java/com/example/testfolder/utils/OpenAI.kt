@@ -82,7 +82,8 @@ class OpenAI(
     private var openAIViewModel: OpenAIViewModel
     private var firebaseViewModel: FirebaseViewModel
     private var loadingAnimation: LoadingAnimation
-    val model = "gpt-3.5-turbo-0125"
+//    val model = "gpt-3.5-turbo-0125"
+    val model = "gpt-4o"
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
     val currentUser = auth.currentUser
@@ -102,6 +103,10 @@ class OpenAI(
 
     fun updateDate(date: String) {
         this.date = date.replace("/", " ")
+    }
+
+    fun getDate(): String {
+        return this.date
     }
 
     fun fetchApiKey() {
@@ -194,8 +199,10 @@ class OpenAI(
         val prompt_OX = "Generate $numOfQuestions O/X quiz based on positive contents in the following diary." +
                 "\nDiary: $diary" +
                 "\nExample answer: {\"question\": \"I woke up at 9 AM\", \"answer\": \"O\"}" +
+                "\nEvery question must be clear to solve." +
                 "\nThe number of O and X for answer should be balanced." +
-                "\nUse \"I\" as the subject of the question."
+                "\nUse \"I\" as the subject of the question." +
+                "\nNo present tense, no future tense, only past tense."
 //                "Each answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
     }
@@ -207,6 +214,7 @@ class OpenAI(
                 "{\"question\": \"What did you have for lunch?\", " +
                 "\"choices\": [\"pasta\", \"pizza\", \"sandwich\", \"burger\"], " +
                 "\"answer\": \"pizza\"}" +
+                "\nEvery question must be clear to solve." +
                 "\nUse \"I\" as the subject of the question."
 //                "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
         return prompt_OX
@@ -218,7 +226,8 @@ class OpenAI(
                 "\nExample answer: " +
                 "{\"question\": \"I had <blank> for lunch.\", " +
                 "\"answer\": \"pizza\"}" +
-                "\nEach question must be short and have only one <blank>." +
+                "\nEvery question must be short and have only one <blank>." +
+                "\nEvery question must be clear to solve." +
                 "\nEach <blank> must match just one word." +
                 "\nUse \"I\" as the subject of the question."
 //                "\nEach answer should be separated by \"\\n\", and don't add any introduction to your response."
@@ -256,7 +265,41 @@ class OpenAI(
         return prompt
     }
 
-    private fun getRequestBody(prompt: String, probType: Int, sysMsg: String, imageURL: String): RequestBody {
+    fun getUserPrompt(probType: Int, diary: String, numOfQuestions: Int): String{
+        when (probType) {
+            PROB_TYPE_OX -> {
+                return get_prompt_OX_quiz(diary = diary, numOfQuestions = numOfQuestions)
+            }
+            PROB_TYPE_MCQ -> {
+                return get_prompt_MCQ_quiz(diary = diary, numOfQuestions = numOfQuestions)
+            }
+            PROB_TYPE_BLANK -> {
+                return get_prompt_blank_quiz(diary = diary, numOfQuestions = numOfQuestions)
+            }
+            else -> throw Exception("Wrong problem type specified")
+        }
+    }
+
+    fun getSysPrompt(probType: Int): String{
+        val sysMsg: String
+        when (probType) {
+            PROB_TYPE_OX -> {
+                sysMsg = "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary."
+                return sysMsg
+            }
+            PROB_TYPE_MCQ -> {
+                sysMsg = "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary."
+                return sysMsg
+            }
+            PROB_TYPE_BLANK -> {
+                sysMsg = "You are Dictionary bot. Your job is to generate quiz into multiple dictionaries without any bullets. Dictionaries must be separated by a new line. There must not be any new lines in each dictionary."
+                return sysMsg
+            }
+            else -> throw Exception("Wrong problem type specified")
+        }
+    }
+
+    private fun getRequestBody(prompt: String, probType: Int, sysMsg: String, imageURL: String): String {
         when (probType) {
             PROB_TYPE_IMAGE -> {
                 Log.d("URL", "IMAGE URL 5: $imageURL")
@@ -290,7 +333,7 @@ class OpenAI(
 //                    put("temperature", 0)
                 }
                 Log.d("GPT", "Request body: $json")
-                return json.toString().toRequestBody(mediaType)
+                return json.toString()
             }
             else -> {
                 val messages = JSONArray().apply {
@@ -310,7 +353,7 @@ class OpenAI(
                     put("temperature", 0)
                 }
                 Log.d("GPT", "Request body: $json")
-                return json.toString().toRequestBody(mediaType)
+                return json.toString()
             }
         }
     }
@@ -321,7 +364,7 @@ class OpenAI(
         val request = Request.Builder()
             .url("https://api.openai.com/v1/chat/completions")
             .addHeader("Authorization", "Bearer $apiKey")
-            .post(requestBody)
+            .post(requestBody.toString().toRequestBody(mediaType))
             .build()
 
         return withContext(Dispatchers.IO) {

@@ -243,7 +243,7 @@ class GameHighActivity : BaseActivity() {
 
     private fun handleAnswer(userAnswer: String, questionTextView: TextView, answerEditText: EditText) {
         if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
+            val quizItem = selectedQuizzes[currentQuestionIndex]
             val inputStr = userAnswer.trim()
             val answerStr = quizItem.answer.trim()
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
@@ -260,7 +260,7 @@ class GameHighActivity : BaseActivity() {
                 Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show()
                 incorrectQuestions.add(Pair(currentQuestionIndex + 1, quizItem.date)) // 틀린 문제 번호와 날짜 추가
             }
-            currentQuestionIndex++
+//            currentQuestionIndex++
             if (currentQuestionIndex < quizList.size) {
                 startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
                 displayQuestion(questionTextView, answerEditText)
@@ -388,7 +388,7 @@ $incorrectQuestionsText
 
     private fun showHintDialog() {
         if (currentQuestionIndex < quizList.size) {
-            val quizItem = quizList[currentQuestionIndex]
+            val quizItem = selectedQuizzes[currentQuestionIndex]
             val hintMessage = quizItem.hint
 
             val builder = AlertDialog.Builder(this)
