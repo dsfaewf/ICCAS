@@ -112,7 +112,7 @@ class PhotoActivity : AppCompatActivity() {
         selectedImageView.clipToOutline = true
 
         loadingAnimation = LoadingAnimation(this,
-            loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Generating Quiz")
+            loadingBackgroundLayout, loadingImage, loadingText, loadingTextDetail, loadingTextDetail2, "Please wait")
         openAI = OpenAI(this, this,
             openAIViewModel as OpenAIViewModel,
             firebaseViewModel as FirebaseViewModel, loadingAnimation)
@@ -365,7 +365,7 @@ class PhotoActivity : AppCompatActivity() {
                     val functions = FirebaseFunctions.getInstance()
                     Log.d("Firebase", "Called firebase function for gpt use")
                     functions
-                        .getHttpsCallable("callChatGPTAndStoreResponse")
+                        .getHttpsCallable("callChatGPTAndStoreResponseAboutImage")
                         .call(json)
                 } else {
                     Log.e("Firebase", "Failed to save EXIF data", task.exception)

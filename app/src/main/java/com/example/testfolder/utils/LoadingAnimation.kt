@@ -45,7 +45,7 @@ class LoadingAnimation(activityContext: Context,
         loadingImage.visibility = View.VISIBLE
         loadingText.visibility = View.VISIBLE
         loadingTextDetail.visibility = View.VISIBLE
-        loadingTextDetail2.visibility = View.VISIBLE
+//        loadingTextDetail2.visibility = View.VISIBLE
         loadingImage.startAnimation(rotateAnimation)
         startLoadingTextAnimation()
     }
@@ -55,7 +55,7 @@ class LoadingAnimation(activityContext: Context,
         loadingImage.visibility = View.GONE
         loadingText.visibility = View.GONE
         loadingTextDetail.visibility = View.GONE
-        loadingTextDetail2.visibility = View.GONE
+//        loadingTextDetail2.visibility = View.GONE
         loadingImage.clearAnimation()
         handler.removeCallbacksAndMessages(null) // 애니메이션 중지
     }

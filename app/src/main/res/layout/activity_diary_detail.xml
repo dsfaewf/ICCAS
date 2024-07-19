@@ -43,7 +43,7 @@
             android:id="@+id/loading_text_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AI is generating quiz."
+            android:text="This may take a few seconds."
             android:textSize="30sp"
             android:textColor="@android:color/white"
             android:background="@color/black"
