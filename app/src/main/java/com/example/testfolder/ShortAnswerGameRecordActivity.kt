@@ -68,7 +68,8 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
             finish()
             oxGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
             fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
-            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)        }
+            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
+        }
 
         shortAnswerGameRecordButton.setOnClickListener {
             val intent = Intent(this, ShortAnswerGameRecordActivity::class.java)
@@ -76,7 +77,8 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
             finish()
             oxGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
             fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded)
-            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)        }
+            shortAnswerGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
+        }
     }
 
     private fun renderGraph(results: List<Map<String, Any>>) {
@@ -93,7 +95,8 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
         val correctAnswersData = dailyResults.map { (date, dailyGames) ->
             val totalCorrectAnswers = dailyGames.sumOf { (it["correctAnswers"] as Long).toInt() }
             val avgCorrectAnswers = totalCorrectAnswers.toFloat() / dailyGames.size
-            "['$date', $avgCorrectAnswers]"
+            val avgCorrectPercentage = (avgCorrectAnswers / 5) * 100 // Assuming 5 choices per game
+            "['$date', $avgCorrectPercentage]"
         }.joinToString(",\n")
 
         val totalTimeData = dailyResults.map { (date, dailyGames) ->
@@ -113,7 +116,7 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
 
                     function drawCharts() {
                         var correctAnswersData = google.visualization.arrayToDataTable([
-                            ['Date', 'Average Correct Answers'],
+                            ['Date', 'Average Correct Answers (%)'],
                             $correctAnswersData
                         ]);
 
@@ -123,9 +126,9 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
                         ]);
 
                         var correctAnswersOptions = {
-                            title: 'Average Correct Answers by Date',
+                            title: 'Average Correct Answers by Date (%)',
                             hAxis: { title: 'Date', titleTextStyle: { color: '#333' } },
-                            vAxis: { minValue: 0, maxValue: 10 },
+                            vAxis: { minValue: 0, maxValue: 100 },
                             curveType: 'function',
                             legend: { position: 'bottom' }
                         };
@@ -162,12 +165,14 @@ class ShortAnswerGameRecordActivity : AppCompatActivity() {
         """.trimIndent()
 
     }
+
     private fun navigateToGamelist() {
         val intent = Intent(this, GamelistActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         finish() // 현재 액티비티 종료
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         navigateToGamelist()

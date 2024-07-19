@@ -26,6 +26,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.random.Random
 
 fun main() {
     val json = JSONObject().apply {
@@ -174,13 +175,17 @@ class OpenAI(
         }
     }
 
+    fun getRandomOX(): String {
+        return if (Random.nextBoolean()) "\"O\"" else "\"X\""
+    }
+
     fun get_prompt_for_image_quiz(keyword: String, timeJson: JSONObject): String {
         val prompt = "You're a quiz generator from users' journal." +
                 "\nGenerate one O/X quiz based on the following info." +
                 "\nKeyword: $keyword." +
                 "\nTime of day: ${timeJson.getString("timeofday")}." +
                 "\nDay of week: ${timeJson.getString("dayofweek")}." +
-                "\nExample answer: {\"question\": \"I enjoyed my dinner\", \"answer\": \"O\"}" +
+                "\nExample answer: {\"question\": \"I enjoyed my dinner\", \"answer\": ${getRandomOX()}}" +
                 "\nYou can also refer to this picture. Don't add any intro."
         return prompt
     }

@@ -65,7 +65,8 @@ class GamePictureActivity : BaseActivity() {
     data class QuizItem(
         val answer: String = "",
         val question: String = "",
-        val date: String = ""
+        val date: String = "",
+        val url: String = ""   // 퀴즈와 관련된 이미지 URL
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,6 +137,7 @@ class GamePictureActivity : BaseActivity() {
         }
     }
 
+    // 퀴즈 데이터를 로드하는 함수
     private fun loadQuizData() {
         val userId = currentUser.uid
         val quizRef = database.reference.child("img_quiz").child(userId)
@@ -172,7 +174,7 @@ class GamePictureActivity : BaseActivity() {
     private fun showNoQuizzesDialogAndExit() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("No Quizzes Available")
-            .setMessage("There are no quiz entries available.")
+            .setMessage("There are no enough quiz entries available. At least 5 diaries data needed.")
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
                 finish()
@@ -182,6 +184,7 @@ class GamePictureActivity : BaseActivity() {
         dialog.show()
     }
 
+    // 라운드를 시작하는 함수
     private fun startRound() {
         startTime = System.currentTimeMillis()
         progressStatus = 0
@@ -191,41 +194,27 @@ class GamePictureActivity : BaseActivity() {
         startProgressBar()
     }
 
+    // 현재 라운드의 문제를 표시하는 함수
     private fun displayQuestion() {
         if (currentRound < selectedQuizzes.size) {
             val quizItem = selectedQuizzes[currentRound]
             findViewById<TextView>(R.id.qeustionbox).text = "Date: ${quizItem.date}\n\n${quizItem.question}"
-            loadImageForQuiz(quizItem)
+            loadImageForQuiz(quizItem) // 퀴즈에 해당하는 이미지를 로드
         } else {
             val totalGameTime = totalTime / 1000
-            SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime)
+            SingletonKotlin.saveGameResult("OX", correctAnswers, totalGameTime) //ox 그래프 통계에 함께 저장
             showGameResultDialog(correctAnswers, totalGameTime, incorrectQuestions)
         }
     }
 
+    // 퀴즈에 해당하는 이미지를 로드하는 함수
     private fun loadImageForQuiz(quizItem: QuizItem) {
-        val userId = currentUser.uid
-        val imageRef = database.reference.child("users").child(userId).child("images")
-
-        imageRef.orderByChild("Keyword").equalTo(quizItem.question).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    for (imageSnapshot in snapshot.children) {
-                        val imageUrl = imageSnapshot.child("ImageUrl").getValue(String::class.java)
-                        if (!imageUrl.isNullOrEmpty()) {
-                            Glide.with(this@GamePictureActivity).load(imageUrl).into(questionImg)
-                            return
-                        }
-                    }
-                }
-                // 기본 이미지 설정
-                questionImg.setImageResource(R.drawable.colosseum)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                questionImg.setImageResource(R.drawable.colosseum)
-            }
-        })
+        val imageUrl = quizItem.url //url에 바로 접근하도록 변경
+        if (imageUrl.isNotEmpty()) { // url이 있다면 해당 url의 이미지를 넣어버리도록 처리
+            Glide.with(this@GamePictureActivity).load(imageUrl).into(questionImg)
+        } else {
+            questionImg.setImageResource(R.drawable.colosseum) // URL이 없으면 기본 이미지 사용
+        }
     }
 
     private fun handleAnswer(userAnswer: String) {
