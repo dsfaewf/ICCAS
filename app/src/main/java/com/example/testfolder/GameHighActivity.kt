@@ -370,7 +370,7 @@ class GameHighActivity : BaseActivity() {
             Quiz completed!
             Correct answers: $correctAnswers
             Time taken for correct answers: $totalTimeSeconds seconds
-            --------------------
+            \n\n
             Incorrect questions:
             $incorrectQuestionsText
             """.trimIndent()
