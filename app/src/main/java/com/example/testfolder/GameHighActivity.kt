@@ -124,8 +124,8 @@ class GameHighActivity : BaseActivity() {
             loadingLayout.visibility = View.GONE
             SingletonKotlin.loadBlankQuizData { quizData ->
                 quizList = filterQuizDataByPeriod(quizData)
-                if (quizList.size >= totalRounds) {
-                    selectedQuizzes = quizList.shuffled().take(totalRounds)
+                if (quizList.isNotEmpty()) {
+                    selectedQuizzes = quizList.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 최대 totalRounds개 선택
                     startTime = System.currentTimeMillis()
                     displayQuestion(questionTextView, answerEditText)
                     startProgressBar(questionTextView, answerEditText)
@@ -229,15 +229,12 @@ class GameHighActivity : BaseActivity() {
             val quizItem = selectedQuizzes[currentQuestionIndex]
             val answerLength = quizItem.answer.length
             val question = quizItem.question.replace("<blank>", "_".repeat(answerLength))
-            // Update TextView text
             questionTextView.text = "Date: ${quizItem.date}\n\n${question}"
             answerEditText.text.clear()
-            // Initialize a class variable
             this.date = quizItem.date
             this.answer = quizItem.answer
             this.indexOfFirstUnderbar = questionTextView.text.indexOf('_')
             updateRoundImages()
-            // Activate textChangedListener for the answer edit text
             isTextChangedListenerActive = true
         } else {
             endQuiz()
@@ -286,23 +283,23 @@ class GameHighActivity : BaseActivity() {
         progressBarThread?.interrupt()
         progressBarThread = Thread {
             val startRoundTime = System.currentTimeMillis()
-            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {  // 0.2 * 300 = 60초
+            while (progressStatus < 300 && (System.currentTimeMillis() - startRoundTime) < roundTime) {
                 progressStatus += 1
                 handler.post {
                     progressBar.progress = progressStatus
                 }
                 try {
-                    Thread.sleep(200)   // 0.2초 대기
+                    Thread.sleep(200)
                 } catch (e: InterruptedException) {
                     return@Thread
                 }
             }
             handler.post {
-                if (currentQuestionIndex < quizList.size) {
+                if (currentQuestionIndex < selectedQuizzes.size) {  // selectedQuizzes로 변경
                     questionTextView.text = "Time's up!"
                     currentQuestionIndex++
-                    if (currentQuestionIndex < quizList.size) {
-                        startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
+                    if (currentQuestionIndex < selectedQuizzes.size) {  // selectedQuizzes로 변경
+                        startTime = System.currentTimeMillis()
                         displayQuestion(questionTextView, answerEditText)
                         startProgressBar(questionTextView, answerEditText)
                     } else {

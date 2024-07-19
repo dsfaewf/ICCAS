@@ -35,6 +35,7 @@ class GamePictureActivity : BaseActivity() {
     private var correctAnswers = 0
     private var startTime: Long = 0
     private var totalTime = 0L
+    private val totalRounds = 5
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
     private val incorrectQuestions = mutableListOf<Pair<Int, String>>()
@@ -171,8 +172,10 @@ class GamePictureActivity : BaseActivity() {
                 }
                 quizList = filterQuizDataByPeriod(quizzes)
                 Log.d("GamePictureActivity", "Filtered quizzes: ${quizList.size}")
-                if (quizList.size >= 5) {
-                    selectedQuizzes = quizList.shuffled().take(5)
+//                if (quizList.size >= 5) {
+//                    selectedQuizzes = quizList.shuffled().take(5)
+                if (quizList.isNotEmpty()) {
+                    selectedQuizzes = quizList.shuffled().take(totalRounds) // 랜덤으로 문제를 섞고 최대 totalRounds개 선택
                     startRound()
                     obutton.isEnabled = true
                     xbutton.isEnabled = true
@@ -308,7 +311,6 @@ class GamePictureActivity : BaseActivity() {
             }
         }.apply { start() }
     }
-
     private fun updateRoundImages() {
         val roundDrawable = R.drawable.round
         val numberDrawable = when (currentRound + 1) {
