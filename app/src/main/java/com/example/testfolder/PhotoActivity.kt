@@ -148,7 +148,6 @@ class PhotoActivity : AppCompatActivity() {
                             put("date", dateForDB)
                             put("dayofweek", dayOfWeek)
                             put("timeofday", timeOfDay)
-                            put("imgName", imgName)
                         }
                         loadingAnimation.showLoading()
                         uploadImageToFirebase(uri, exifData, keyword)

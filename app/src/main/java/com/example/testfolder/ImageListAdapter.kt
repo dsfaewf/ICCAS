@@ -63,9 +63,9 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
         holder.dateTimeTextView.text = imageData.dateTime
         holder.imageView.clipToOutline = true
         holder.deleteButton.setOnClickListener {
-            deleteImage(imageData.imgName)
             deletePhotoEntry(imageData.imageid)
             deleteQuizData("img_quiz", imageData.imageid)
+            deleteImageStorage(imageData.imgName)
             imageList.removeAt(position)
             notifyDataSetChanged()
         }
@@ -107,7 +107,7 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
                 }
         }
     }
-    private fun deleteImage(imgName: String) {
+    private fun deleteImageStorage(imgName: String) {
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         if (currentUser != null) {
