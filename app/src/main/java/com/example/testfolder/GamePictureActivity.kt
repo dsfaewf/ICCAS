@@ -17,6 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.Rotate
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
@@ -249,7 +251,8 @@ class GamePictureActivity : BaseActivity() {
     private fun loadImageForQuiz(quizItem: QuizItem) {
         val imageUrl = quizItem.url
         if (imageUrl.isNotEmpty()) {
-            Glide.with(this@GamePictureActivity).load(imageUrl).into(questionImg)
+            val requestOptions = RequestOptions().transform(Rotate(90)) // 90도 회전 옵션 추가
+            Glide.with(this@GamePictureActivity).load(imageUrl).apply(requestOptions).into(questionImg)
         } else {
             questionImg.setImageResource(R.drawable.colosseum)
         }
