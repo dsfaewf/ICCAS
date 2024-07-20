@@ -6,16 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.values
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 data class ImageData(
     val imageid: String,
@@ -63,9 +65,9 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
         holder.dateTimeTextView.text = imageData.dateTime
         holder.imageView.clipToOutline = true
         holder.deleteButton.setOnClickListener {
-            deleteImage(imageData.imgName)
+//            imageData.dateTime?.let { it1 -> deleteQuizData("img_quiz", it1) }
             deletePhotoEntry(imageData.imageid)
-            deleteQuizData("img_quiz", imageData.imageid)
+            deleteImageStorage(imageData.imgName)
             imageList.removeAt(position)
             notifyDataSetChanged()
         }
@@ -89,13 +91,13 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            val diaryRef = FirebaseDatabase.getInstance().reference
+            val photoRef = FirebaseDatabase.getInstance().reference
                 .child("users")
                 .child(currentUser.uid)
                 .child("images")
                 .child(id)
 
-            diaryRef.removeValue()
+            photoRef.removeValue()
                 .addOnSuccessListener {
                     deletedPhoto = true
                     if (deletedPhoto && deletedPhotoQuiz) {
@@ -107,47 +109,76 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
                 }
         }
     }
-    private fun deleteImage(imgName: String) {
+
+    private fun deleteImageStorage(imgName: String) {
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            val storageRef =
-                FirebaseStorage.getInstance().getReference("images/${currentUser.uid}/$imgName")
+            val storageRef = FirebaseStorage.getInstance().getReference("images/${currentUser.uid}/$imgName")
 
+            Log.d("DeleteImageStorage", "Attempting to delete image at path: images/${currentUser.uid}/$imgName")
 
-            storageRef.delete()
-                .addOnSuccessListener {
-                    Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(
-                        context,
-                        "Failed to delete image: ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+            storageRef.metadata.addOnSuccessListener {
+                // Log successful metadata retrieval
+                Log.d("DeleteImageStorage", "Image exists, proceeding with deletion.")
+                storageRef.delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("DeleteImageStorage", "Failed to delete image: ${exception.message}")
+                        Toast.makeText(context, "Failed to delete image: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }.addOnFailureListener {
+                // Log the image not existing
+                Log.e("DeleteImageStorage", "Image does not exist: ${it.message}")
+                Toast.makeText(context, "Image does not exist: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    private fun deleteQuizData(tableName: String, id: String) {
+    private fun deleteQuizData(tableName: String, dateTime: String) {
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        dateFormat.format(dateTime) // 파일 형식 참고해서 해보기
+
         if (currentUser != null) {
             val oxQuizRef = FirebaseDatabase.getInstance().reference
                 .child(tableName)
                 .child(currentUser.uid)
-                .child(id)
+                .child(dateTime)
 
-            oxQuizRef.removeValue()
-                .addOnSuccessListener {
-                    deletedPhotoQuiz = true
-                    if (deletedPhoto && deletedPhotoQuiz) {
-                        Toast.makeText(context, "Quiz data has been deleted.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(context, "Failed to delete quiz data: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
+//            oxQuizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    for (diarySnapshot in snapshot.children) {
+//                        val date = diarySnapshot.key?.replace(" ", "/")
+//                        val content = diarySnapshot.child("content").getValue(String::class.java)
+//                        val diaryId = diarySnapshot.key
+//                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
+//                            diaryList.add(DiaryData(diaryId, content, date))
+//                        }
+//
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    // 데이터 읽기 실패 시 처리합니다.
+//                    Log.e("GetQuizData", "Failed to retrieve data: ${error.message}")
+//                    Toast.makeText(context, "Failed to retrieve quiz data: ${error.message}", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//                oxQuizRef.removeValue()
+//                    .addOnSuccessListener {
+//                        deletedPhotoQuiz = true
+//                        if (deletedPhoto && deletedPhotoQuiz) {
+//                            Toast.makeText(context, "Quiz data has been deleted.", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                    .addOnFailureListener { exception ->
+//                        Toast.makeText(context, "Failed to delete quiz data: ${exception.message}", Toast.LENGTH_SHORT).show()
+//                    }
+//
+
         }
     }
 }

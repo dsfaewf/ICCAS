@@ -148,7 +148,6 @@ class PhotoActivity : AppCompatActivity() {
                             put("date", dateForDB)
                             put("dayofweek", dayOfWeek)
                             put("timeofday", timeOfDay)
-                            put("imgName", imgName)
                         }
                         loadingAnimation.showLoading()
                         uploadImageToFirebase(uri, exifData, keyword)
@@ -304,10 +303,10 @@ class PhotoActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val uid = currentUser.uid
-            val storageRef = storageReference.child("images/$uid/${System.currentTimeMillis()}.jpg")
             imgName = "${System.currentTimeMillis()}.jpg"
+            val storageRef = storageReference.child("images/$uid/$imgName")
             Log.d("storage name ", imgName!!)
-
+            Log.d("URL", "IMAGE URL 1: $storageRef")
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
             val baos = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
