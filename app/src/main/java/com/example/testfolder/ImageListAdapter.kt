@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.ActionCodeUrl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -65,7 +66,7 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
         holder.dateTimeTextView.text = imageData.dateTime
         holder.imageView.clipToOutline = true
         holder.deleteButton.setOnClickListener {
-//            imageData.dateTime?.let { it1 -> deleteQuizData("img_quiz", it1) }
+            imageData.dateTime?.let { it1 -> deleteQuizData("img_quiz", it1, imageData.imageUrl) }
             deletePhotoEntry(imageData.imageid)
             deleteImageStorage(imageData.imgName)
             imageList.removeAt(position)
@@ -137,48 +138,45 @@ class ImageListAdapter(private val context: Context, private val imageList: Muta
         }
     }
 
-    private fun deleteQuizData(tableName: String, dateTime: String) {
+    private fun deleteQuizData(tableName: String, dateTime: String, imageUrl: String) {
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.format(dateTime) // 파일 형식 참고해서 해보기
-
+        val year = dateTime.substring(0,4)
+        val month = dateTime.substring(5,7)
+        val day = dateTime.substring(8,10)
+        val newDate = "$day $month $year"
+        Log.d("newDate", newDate)
         if (currentUser != null) {
             val oxQuizRef = FirebaseDatabase.getInstance().reference
                 .child(tableName)
                 .child(currentUser.uid)
-                .child(dateTime)
+                .child(newDate)
 
-//            oxQuizRef.addListenerForSingleValueEvent(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    for (diarySnapshot in snapshot.children) {
-//                        val date = diarySnapshot.key?.replace(" ", "/")
-//                        val content = diarySnapshot.child("content").getValue(String::class.java)
-//                        val diaryId = diarySnapshot.key
-//                        if (!date.isNullOrEmpty() && !content.isNullOrEmpty() && !diaryId.isNullOrEmpty()) {
-//                            diaryList.add(DiaryData(diaryId, content, date))
-//                        }
-//
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    // 데이터 읽기 실패 시 처리합니다.
-//                    Log.e("GetQuizData", "Failed to retrieve data: ${error.message}")
-//                    Toast.makeText(context, "Failed to retrieve quiz data: ${error.message}", Toast.LENGTH_SHORT).show()
-//                }
-//            })
-//                oxQuizRef.removeValue()
-//                    .addOnSuccessListener {
-//                        deletedPhotoQuiz = true
-//                        if (deletedPhoto && deletedPhotoQuiz) {
-//                            Toast.makeText(context, "Quiz data has been deleted.", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                    .addOnFailureListener { exception ->
-//                        Toast.makeText(context, "Failed to delete quiz data: ${exception.message}", Toast.LENGTH_SHORT).show()
-//                    }
-//
+            oxQuizRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var deleteTargetId: String? = null
+                    for (imgQuizSnapshot in snapshot.children) {
+                        val urlInfo = imgQuizSnapshot.child("url").getValue(String::class.java)
+//                        Log.d("urlInfo", "urlInfo: $urlInfo")
+                        if (urlInfo.equals(imageUrl)) {
+                            deleteTargetId = imgQuizSnapshot.key
+                        }
+                        if (deleteTargetId != null) {
+                            oxQuizRef.child(deleteTargetId).removeValue()
+                                .addOnSuccessListener {
+                                    Log.d("DeleteData", "Data with URL $imageUrl deleted successfully.")
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e("DeleteData", "Failed to delete data: ${exception.message}")
+                                }
+                        }
+                    }
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    // 데이터 읽기 실패 시 처리합니다.
+                }
+            })
         }
     }
 }
