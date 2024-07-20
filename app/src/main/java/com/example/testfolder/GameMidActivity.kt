@@ -188,6 +188,9 @@ class GameMidActivity : BaseActivity() {
 
     private fun handleAnswer(userAnswer: String, questionTextView: TextView, btn1: Button, btn2: Button, btn3: Button, btn4: Button) {
         if (currentQuestionIndex < selectedQuizzes.size) {
+            // 정답을 처리하는 동안 버튼 비활성화
+            disableAnswerButtons()
+
             val quizItem = selectedQuizzes[currentQuestionIndex]
             Log.d("Quiz", "User Answer: $userAnswer, Correct Answer: ${quizItem.answer}")
             if (userAnswer == quizItem.answer) {
@@ -216,11 +219,14 @@ class GameMidActivity : BaseActivity() {
                 startTime = System.currentTimeMillis() // 새로운 라운드 시작 시간 설정
                 displayQuestion(findViewById(R.id.qeustionbox), btn1, btn2, btn3, btn4)
                 startProgressBar(findViewById(R.id.qeustionbox), btn1, btn2, btn3, btn4)
+                // 다음 문제로 넘어갈 때 버튼 활성화
+                enableAnswerButtons()
             } else {
                 endQuiz(findViewById(R.id.qeustionbox))
             }
         }, 2000) // 2초 동안 이미지를 표시
     }
+
 
     private fun endQuiz(questionTextView: TextView) {
         val totalTimeSeconds = totalTime / 1000 // 초 단위로 변환

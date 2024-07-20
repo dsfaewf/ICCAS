@@ -188,6 +188,10 @@ class GameLowActivity : BaseActivity() {
 
     private fun handleAnswer(userAnswer: String, questionTextView: TextView) {
         if (currentRound < selectedQuizzes.size) {
+            // 정답을 처리하는 동안 버튼 비활성화
+            obutton.isEnabled = false
+            xbutton.isEnabled = false
+
             val quizItem = selectedQuizzes[currentRound]
             if (userAnswer == quizItem.answer) {
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
@@ -205,6 +209,7 @@ class GameLowActivity : BaseActivity() {
         }
     }
 
+
     private fun showCorrectWrongImage(imageResId: Int) {
         correctWrongImage.setImageResource(imageResId)
         correctWrongOverlay.visibility = View.VISIBLE
@@ -212,6 +217,9 @@ class GameLowActivity : BaseActivity() {
         handler.postDelayed({
             correctWrongOverlay.visibility = View.GONE
             currentRound++
+            // 다음 문제로 넘어갈 때 버튼을 활성화
+            obutton.isEnabled = true
+            xbutton.isEnabled = true
             startRound(findViewById(R.id.qeustionbox))
         }, 2000)
     }
