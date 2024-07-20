@@ -260,6 +260,9 @@ class GamePictureActivity : BaseActivity() {
 
     private fun handleAnswer(userAnswer: String) {
         if (currentRound < selectedQuizzes.size) {
+            // 정답을 처리하는 동안 버튼 비활성화
+            disableAnswerButtons()
+
             val quizItem = selectedQuizzes[currentRound]
             if (userAnswer == quizItem.answer) {
                 Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show()
@@ -285,8 +288,21 @@ class GamePictureActivity : BaseActivity() {
             correctWrongOverlay.visibility = View.GONE
             currentRound++
             startRound()
+            // 다음 문제로 넘어갈 때 버튼 활성화
+            enableAnswerButtons()
         }, 2000)
     }
+
+    private fun disableAnswerButtons() {
+        obutton.isEnabled = false
+        xbutton.isEnabled = false
+    }
+
+    private fun enableAnswerButtons() {
+        obutton.isEnabled = true
+        xbutton.isEnabled = true
+    }
+
 
     private fun startProgressBar() {
         progressStatus = 0
