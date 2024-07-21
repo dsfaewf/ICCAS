@@ -14,13 +14,13 @@
 
  ---
 ### Objectives
-- The goal of this project:
--- Prevent Alzheimer's disease with an intelligent digital therapeutic game.
-- The target audience:
--- Includes all age groups who exhibit symptoms
-- Main Motivation:
--- By recalling their past experiences through these quizzes, users can improve their memory and cognitive abilities.
--- Enhancing cognitive function not only helps prevent Alzheimer’s but also boosts self-esteem through regular self-reflection during journal writing, which can reduce the incidence of depression.
+- The goal of this project:   
+Prevent Alzheimer's disease with an intelligent digital therapeutic game.
+- The target audience:   
+Includes all age groups who exhibit symptoms
+- Main Motivation:   
+By recalling their past experiences through these quizzes, users can improve their memory and cognitive abilities.   
+Enhancing cognitive function not only helps prevent Alzheimer’s but also boosts self-esteem through regular self-reflection during journal writing, which can reduce the incidence of depression.
 
 ---
 
