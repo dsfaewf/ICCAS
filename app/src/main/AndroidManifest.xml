@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.testfolder">
+    package="com.katzheimer.testfolder">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -23,7 +23,7 @@
             android:value="default_notification_channel_id" />
 
         <service
-            android:name=".MusicService"
+            android:name="com.katzheimer.testfolder.MusicService"
             android:enabled="true"
             android:exported="false" /> <!-- <service -->
         <!-- 필요없어서 주석 처리함 -->
@@ -34,28 +34,28 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity
-            android:name=".ShortAnswerGameRecordActivity"
+            android:name="com.katzheimer.testfolder.ShortAnswerGameRecordActivity"
             android:exported="false" />
         <activity
-            android:name=".FourChoiceGameRecordActivity"
+            android:name="com.katzheimer.testfolder.FourChoiceGameRecordActivity"
             android:exported="false" />
         <activity
-            android:name=".OXGameRecordActivity"
+            android:name="com.katzheimer.testfolder.OXGameRecordActivity"
             android:exported="false" />
         <activity
-            android:name=".MinigameDescriptionSamepictureActivity"
+            android:name="com.katzheimer.testfolder.MinigameDescriptionSamepictureActivity"
             android:exported="false" />
         <activity
-            android:name=".MinigameDescriptionBaseballActivity"
+            android:name="com.katzheimer.testfolder.MinigameDescriptionBaseballActivity"
             android:exported="false" />
         <activity
-            android:name=".MinigameDescriptionNumberActivity"
+            android:name="com.katzheimer.testfolder.MinigameDescriptionNumberActivity"
             android:exported="false" />
         <activity
-            android:name=".DecoActivity"
+            android:name="com.katzheimer.testfolder.DecoActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name="com.katzheimer.testfolder.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,70 +64,70 @@
             </intent-filter>
         </activity> <!-- 로그인 액티비티를 메인으로 -->
         <activity
-            android:name=".LoginActivity"
+            android:name="com.katzheimer.testfolder.LoginActivity"
             android:exported="false" /> <!-- 다른 넘들 -->
         <activity
-            android:name=".SurveyActivity"
+            android:name="com.katzheimer.testfolder.SurveyActivity"
             android:exported="false" />
         <activity
-            android:name=".ServeGame_NumberActivity"
+            android:name="com.katzheimer.testfolder.ServeGame_NumberActivity"
             android:exported="true" />
         <activity
-            android:name=".CatRoomActivity"
+            android:name="com.katzheimer.testfolder.CatRoomActivity"
             android:exported="false" />
         <activity
-            android:name=".ShopActivity"
+            android:name="com.katzheimer.testfolder.ShopActivity"
             android:exported="true" />
         <activity
-            android:name=".ServeGame_samepicture"
+            android:name="com.katzheimer.testfolder.ServeGame_samepicture"
             android:exported="true" />
         <activity
-            android:name=".ServeGameBaseballActivity"
+            android:name="com.katzheimer.testfolder.ServeGameBaseballActivity"
             android:exported="true" />
         <activity
-            android:name=".GamelistActivity"
+            android:name="com.katzheimer.testfolder.GamelistActivity"
             android:exported="false" />
         <activity
-            android:name=".GameHighActivity"
+            android:name="com.katzheimer.testfolder.GameHighActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".GameMidActivity"
+            android:name="com.katzheimer.testfolder.GameMidActivity"
             android:exported="false" />
         <activity
-            android:name=".GameLowActivity"
+            android:name="com.katzheimer.testfolder.GameLowActivity"
             android:exported="false" />
         <activity
-            android:name=".Diary_Check"
+            android:name="com.katzheimer.testfolder.Diary_Check"
             android:exported="false" />
         <activity
-            android:name=".Main_UI"
+            android:name="com.katzheimer.testfolder.Main_UI"
             android:exported="false" />
         <activity
-            android:name=".Setting_UI"
+            android:name="com.katzheimer.testfolder.Setting_UI"
             android:exported="false" />
         <activity
-            android:name=".Diary_write_UI"
+            android:name="com.katzheimer.testfolder.Diary_write_UI"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".DiaryDetailActivity"
+            android:name="com.katzheimer.testfolder.DiaryDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".FindIdActivity"
+            android:name="com.katzheimer.testfolder.FindIdActivity"
             android:exported="false" />
         <activity
-            android:name=".FindPwActivity"
+            android:name="com.katzheimer.testfolder.FindPwActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name="com.katzheimer.testfolder.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".GamePictureActivity"
+            android:name="com.katzheimer.testfolder.GamePictureActivity"
             android:exported="false" />
         <activity
-            android:name=".PhotoActivity"
+            android:name="com.katzheimer.testfolder.PhotoActivity"
             android:exported="false" />
         <activity
-            android:name=".ImageListActivity"
+            android:name="com.katzheimer.testfolder.ImageListActivity"
             android:exported="false" />
     </application>
 

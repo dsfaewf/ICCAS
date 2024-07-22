@@ -17,11 +17,11 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.testfolder"
+    namespace = "com.katzheimer.testfolder"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.testfolder"
+        applicationId = "com.katzheimer.testfolder"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

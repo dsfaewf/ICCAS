@@ -4,7 +4,7 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ServeGameBaseballActivity">
+    tools:context="com.katzheimer.testfolder.ServeGameBaseballActivity">
 
     <LinearLayout
         android:id="@+id/coin_layout"
