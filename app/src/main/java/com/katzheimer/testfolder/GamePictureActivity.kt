@@ -75,7 +75,7 @@ class GamePictureActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_picture)
-
+        SingletonKotlin.initialize(auth,databaseReference)
         sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
         database = FirebaseDatabase.getInstance()
 
@@ -108,8 +108,12 @@ class GamePictureActivity : BaseActivity() {
         xbutton.isEnabled = false
 
         // Initialize if it's not initialized
-        if (!SingletonKotlin.isInitialized()) {
-            SingletonKotlin.initialize(auth, databaseReference)
+//        if (!SingletonKotlin.isInitialized()) {
+//            SingletonKotlin.initialize(auth, databaseReference)
+//        }
+        if (!initializeSingleton()) {
+            showInitializationErrorDialog()
+            return
         }
 
         val excludeIds = setOf(R.id.o_btn, R.id.x_btn)
