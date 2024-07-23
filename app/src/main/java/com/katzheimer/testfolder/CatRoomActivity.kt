@@ -6,7 +6,10 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.GifImageView
 
@@ -16,6 +19,8 @@ class CatRoomActivity : AppCompatActivity() {
     private lateinit var currentUser: FirebaseUser
     private lateinit var roomframe: FrameLayout
     private lateinit var newcatGif: GifImageView
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +29,11 @@ class CatRoomActivity : AppCompatActivity() {
         try {
             currentUser = SingletonKotlin.getCurrentUser() ?: throw IllegalStateException("User authentication required.")
         } catch (e: IllegalStateException) {
-            Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
-            finish()
-            return
+            SingletonKotlin.initialize(auth, database)
+            currentUser = SingletonKotlin.getCurrentUser()!!
+//            Toast.makeText(this, "SingletonKotlin is not initialized.", Toast.LENGTH_SHORT).show()
+//            finish()
+//            return
         }
 
         coinText = findViewById(R.id.coin_text)

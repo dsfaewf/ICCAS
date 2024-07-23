@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.katzheimer.testfolder.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashSet;
@@ -37,11 +39,18 @@ public class ServeGameBaseballActivity extends AppCompatActivity {
 
     private static final int COIN_REWARD = 10;
     private static final int MAX_CLEARS_PER_DAY = 3;
+    private final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance(); // FirebaseAuth 객체 초기화
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_baseball);
+
+        // Initialize if it's not initialized
+        if (!SingletonJava.isInitialized()) {
+            SingletonJava.initialize(auth, databaseReference);
+        }
 
         currentUser = SingletonJava.getInstance().getCurrentUser();
         coinText = findViewById(R.id.coin_text);

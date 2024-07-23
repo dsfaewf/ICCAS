@@ -30,8 +30,8 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
     private lateinit var buyLayout: LinearLayout
     private lateinit var clickedItem: ShopItem
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +39,10 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
 
         Log.d("ShopActivity", "onCreate: Started")
 
-        auth = SingletonKotlin.getAuth()
-        database = SingletonKotlin.getDatabase() // 파이어베이스 객체 가져오기
+        // Initialize if it's not initialized
+        if (!SingletonKotlin.isInitialized()) {
+            SingletonKotlin.initialize(auth, database)
+        }
 
         coinText = findViewById(R.id.coin_text)
         val catGif = findViewById<GifImageView>(R.id.cat_gif)

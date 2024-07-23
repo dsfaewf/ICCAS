@@ -27,6 +27,10 @@ object SingletonKotlin {
         isInitialized = true
     }
 
+    fun isInitialized(): Boolean {
+        return isInitialized
+    }
+
     private fun checkInitialization() {
         if (!isInitialized) {
             throw IllegalStateException("SingletonKotlin is not initialized, call initialize() method first.")

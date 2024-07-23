@@ -21,8 +21,8 @@ import java.util.Map;
 public class SingletonJava {
 
     private static SingletonJava instance;
-    private FirebaseAuth auth;
-    private DatabaseReference database;
+    private static FirebaseAuth auth;
+    private static DatabaseReference database;
 
     private SingletonJava() {
         // Private constructor to prevent instantiation
@@ -41,6 +41,10 @@ public class SingletonJava {
             instance.auth = auth;
             instance.database = database;
         }
+    }
+
+    public static boolean isInitialized() {
+        return !(auth == null || database == null);
     }
 
     private void checkInitialization() {

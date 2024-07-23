@@ -1,6 +1,8 @@
 package com.katzheimer.testfolder;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -36,5 +38,16 @@ public class MusicService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    // Method to check if a service is running
+    public static boolean isServiceRunning(Context context, Class<? extends Service> serviceClass) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

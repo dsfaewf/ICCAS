@@ -18,13 +18,14 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class GamePictureActivity : com.katzheimer.testfolder.BaseActivity() {
+class GamePictureActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
     private val handler = Handler(Looper.getMainLooper())
@@ -40,6 +41,8 @@ class GamePictureActivity : com.katzheimer.testfolder.BaseActivity() {
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
     private val incorrectQuestions = mutableListOf<Pair<Int, String>>()
+    private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     private lateinit var roundImageView: ImageView
     private lateinit var numberImageView: ImageView
@@ -104,9 +107,9 @@ class GamePictureActivity : com.katzheimer.testfolder.BaseActivity() {
         obutton.isEnabled = false
         xbutton.isEnabled = false
 
-        if (!initializeSingleton()) {
-            showInitializationErrorDialog()
-            return
+        // Initialize if it's not initialized
+        if (!SingletonKotlin.isInitialized()) {
+            SingletonKotlin.initialize(auth, databaseReference)
         }
 
         val excludeIds = setOf(R.id.o_btn, R.id.x_btn)

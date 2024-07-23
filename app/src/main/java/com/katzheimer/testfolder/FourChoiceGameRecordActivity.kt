@@ -6,12 +6,17 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.*
 
 class FourChoiceGameRecordActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private var currentViewMode = "daily"
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +32,11 @@ class FourChoiceGameRecordActivity : AppCompatActivity() {
         webView.webViewClient = WebViewClient()
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
+
+        // Initialize if it's not initialized
+        if (!SingletonKotlin.isInitialized()) {
+            SingletonKotlin.initialize(auth, database)
+        }
 
         fourChoiceGameRecordButton.setBackgroundResource(R.drawable.btn_rounded2)
         dailyButton.setBackgroundResource(R.drawable.btn_rounded3)

@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.katzheimer.testfolder.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Random;
@@ -32,11 +34,18 @@ public class ServeGame_NumberActivity extends AppCompatActivity implements View.
     int maxClearsPerDay = 3; // 하루 최대 보상 횟수를 3으로 일단 지정해놓음
 
     FirebaseUser currentUser;
+    private final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance(); // FirebaseAuth 객체 초기화
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_number);
+
+        // Initialize if it's not initialized
+        if (!SingletonJava.isInitialized()) {
+            SingletonJava.initialize(auth, databaseReference);
+        }
 
         currentUser = SingletonJava.getInstance().getCurrentUser(); //싱글톤으로써 객체 불러옴
 

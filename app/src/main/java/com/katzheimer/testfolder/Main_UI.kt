@@ -11,12 +11,12 @@ import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class Main_UI : com.katzheimer.testfolder.BaseActivity() {
+class Main_UI : BaseActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private var mediaPlayer: MediaPlayer? = null
-    private var musicServiceIntent: Intent? = null
+    private lateinit var musicServiceIntent: Intent
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,15 +26,7 @@ class Main_UI : com.katzheimer.testfolder.BaseActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        val isMusicOn = sharedPreferences.getBoolean("music_on", true)
-
-        if (isMusicOn) {
-            mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
-            musicServiceIntent = Intent(this, com.katzheimer.testfolder.MusicService::class.java)
-            startService(musicServiceIntent)
-            mediaPlayer?.start()
-        }
+        mediaPlayer = MediaPlayer.create(this, R.raw.paper_flip)
 
 //        checkFirstLogin() //설문 페이지 알림 일단 꺼 놓음.
 
@@ -94,10 +86,6 @@ class Main_UI : com.katzheimer.testfolder.BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.release()
-
-        if (musicServiceIntent != null) {
-            stopService(musicServiceIntent)
-        }
     }
 
     private fun checkFirstLogin() {

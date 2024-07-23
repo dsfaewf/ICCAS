@@ -9,6 +9,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.GifImageView
 
@@ -24,6 +27,8 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
     private lateinit var saveBtn: TextView
     private lateinit var clickedItem: ShopItem
     private lateinit var newcatGif: GifImageView
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +47,11 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         buyItemList = mutableListOf()
         adapter = ShopItemsAdapter(buyItemList, this, this)
         recyclerView.adapter = adapter
+
+        // Initialize if it's not initialized
+        if (!SingletonKotlin.isInitialized()) {
+           SingletonKotlin.initialize(auth, database)
+        }
 
         // 현재 장착중인 배경으로 배경 설정
         SingletonKotlin.loadUserBackground(frame)
