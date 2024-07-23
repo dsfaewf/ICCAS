@@ -214,16 +214,20 @@ class GamePictureActivity : com.katzheimer.testfolder.BaseActivity() {
     }
 
     private fun showNoQuizzesDialogAndExit() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("No Quizzes Available")
-            .setMessage("There are no quiz entries available for the selected period. Please try a different period or add more quiz entries.")
-            .setPositiveButton("OK") { dialog, _ ->
-                dialog.dismiss()
-                finish()
-            }
-        val dialog = builder.create()
-        dialog.setCancelable(false)
-        dialog.show()
+        val confirmDialog = ConfirmDialog(
+            object : DialogCustomInterface {
+                override fun onClickYesButton(id: Int) {
+                    finish() // Close the activity when the "OK" button is clicked
+                }
+            },
+            title = "No Quizzes Available",
+            content = "There are no quiz entries available for the selected period. Please try a different period or add more quiz entries.",
+            buttonText = "OK",
+            id = -1
+        )
+
+        confirmDialog.isCancelable = false
+        confirmDialog.show(supportFragmentManager, "ConfirmDialog")
     }
 
     private fun startRound() {
@@ -371,25 +375,20 @@ class GamePictureActivity : com.katzheimer.testfolder.BaseActivity() {
             "None"
         }
 
-        val message = """
-Quiz completed!
-Correct answers: $correctAnswers
-Time taken for correct answers: $totalTimeSeconds seconds
---------------------
-Incorrect questions:
-$incorrectQuestionsText
-        """.trimIndent()
+        val confirmDialog = ConfirmDialog(
+            object : DialogCustomInterface {
+                override fun onClickYesButton(id: Int) {
+                    finish() // Close the activity when the "OK" button is clicked
+                }
+            },
+            title = "Game Result",
+            content = " Quiz completed!\n\n*Correct answers: $correctAnswers\nTime taken for correct answers: $totalTimeSeconds sec\n\n* Incorrect questions\n$incorrectQuestionsText",
+            buttonText = "OK",
+            id = -1,
+        )
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Game Result")
-            .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ ->
-                dialog.dismiss()
-                finish()
-            }
-        val dialog = builder.create()
-        dialog.setCancelable(false)
-        dialog.show()
+        confirmDialog.isCancelable = false
+        confirmDialog.show(supportFragmentManager, "ConfirmDialog")
     }
 
     override fun onDestroy() {
