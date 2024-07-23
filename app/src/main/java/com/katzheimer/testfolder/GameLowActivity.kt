@@ -14,12 +14,15 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class GameLowActivity : com.katzheimer.testfolder.BaseActivity() {
+class GameLowActivity : BaseActivity() {
     private lateinit var progressBar: ProgressBar
     private var progressStatus = 0
     private val handler = Handler(Looper.getMainLooper())
@@ -34,6 +37,8 @@ class GameLowActivity : com.katzheimer.testfolder.BaseActivity() {
     private val roundTime = 60 * 1000 // 60초
     private var progressBarThread: Thread? = null
     private val incorrectQuestions = mutableListOf<Pair<Int, String>>() // 틀린 문제 번호와 날짜 저장
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     private lateinit var roundImageView: ImageView
     private lateinit var numberImageView: ImageView
@@ -57,6 +62,11 @@ class GameLowActivity : com.katzheimer.testfolder.BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_low)
+
+        // Initialize if it's not initialized
+        if (!SingletonKotlin.isInitialized()) {
+            SingletonKotlin.initialize(auth, database)
+        }
 
         sharedPreferences = getSharedPreferences("game_settings", Context.MODE_PRIVATE)
 

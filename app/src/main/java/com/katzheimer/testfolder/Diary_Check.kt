@@ -11,16 +11,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.util.Calendar
 
-class Diary_Check : com.katzheimer.testfolder.BaseActivity() {
+class Diary_Check : BaseActivity() {
 
     private lateinit var listView: ListView
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var auth: FirebaseAuth
     private lateinit var diaryListAdapter: DiaryListAdapter
     private lateinit var dateTxt: TextView
     private lateinit var calBtn: ImageButton
     private lateinit var allBtn: Button
     private val diaryList = mutableListOf<DiaryData>()
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance() // FirebaseAuth 객체 초기화
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +39,6 @@ class Diary_Check : com.katzheimer.testfolder.BaseActivity() {
         diaryListAdapter = DiaryListAdapter(this, diaryList)
         listView.adapter = diaryListAdapter
 
-        // Singleton을 통해 Firebase 객체 갖고 오게 변경
-        auth = SingletonKotlin.getAuth()
         getData()
 
         listView.setOnItemClickListener { _, _, position, _ ->
@@ -105,6 +104,10 @@ class Diary_Check : com.katzheimer.testfolder.BaseActivity() {
     }
 
     private fun getData() {
+        // Initialize if it's not initialized
+        if (!SingletonKotlin.isInitialized()) {
+            SingletonKotlin.initialize(auth, database)
+        }
         val currentUser = SingletonKotlin.getCurrentUser()
 
         if (currentUser != null) {

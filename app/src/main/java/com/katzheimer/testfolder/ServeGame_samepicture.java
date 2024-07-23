@@ -14,7 +14,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.katzheimer.testfolder.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -46,11 +48,18 @@ public class ServeGame_samepicture extends AppCompatActivity {
     private static final int MAX_CLEARS_PER_DAY = 3; // 하루 최대 클리어 횟수
 
     private FirebaseUser currentUser;
+    private final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance(); // FirebaseAuth 객체 초기화
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serve_game_samepicture);
+
+        // Initialize if it's not initialized
+        if (!SingletonJava.isInitialized()) {
+            SingletonJava.initialize(auth, databaseReference);
+        }
 
         gridLayout = findViewById(R.id.gridLayout);
         progressBar = findViewById(R.id.progressBar1);
