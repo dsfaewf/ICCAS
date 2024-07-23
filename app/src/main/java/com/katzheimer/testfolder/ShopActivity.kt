@@ -165,37 +165,52 @@ class ShopActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
         }
     }
 
-    private fun showAlreadyPurchasedDialog() { // 이미 구매한 건 경고 메시지 알려주기
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Item Already Purchased")
-            .setMessage("You have already purchased this item.")
-            .setPositiveButton("OK") { dialog, which ->
-                dialog.dismiss()
-            }
-            .show()
-    }
+    private fun showAlreadyPurchasedDialog() {
+        val confirmDialog = ConfirmDialog(
+            object : DialogCustomInterface {
+                override fun onClickYesButton(id: Int) {
+                }
+            },
+            title = "Item Already Purchased",
+            content = "You have already purchased this item",
+            buttonText = "OK",
+            id = -1
+        )
 
-    private fun showPurchaseConfirmationDialog(clickedItem: ShopItem) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Purchase Confirmation")
-            .setMessage("Do you want to buy ${clickedItem.name} for ${clickedItem.price}?")
-            .setPositiveButton("Buy") { dialog, which ->
-                handlePurchase(clickedItem)
-            }
-            .setNegativeButton("Cancel") { dialog, which ->
-                dialog.dismiss()
-            }
-            .show()
+        confirmDialog.isCancelable = false
+        confirmDialog.show(supportFragmentManager, "ConfirmDialog")
+    }
+    private fun showPurchaseConfirmationDialog(clickedItem: ShopItem)  {
+        val confirmDialog = ConfirmDialog(
+            object : DialogCustomInterface {
+                override fun onClickYesButton(id: Int) {
+                    handlePurchase(clickedItem)
+                }
+            },
+            title = "Purchase Confirmation",
+            content = "Do you want to buy ${clickedItem.name} for ${clickedItem.price}?",
+            buttonText = "Buy",
+            id = 1
+        )
+
+        confirmDialog.isCancelable = false
+        confirmDialog.show(supportFragmentManager, "ConfirmDialog")
     }
 
     private fun showNotEnoughCoinsDialog(clickedItem: ShopItem) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Not Enough Coins")
-            .setMessage("You don't have enough coins to buy ${clickedItem.name}.")
-            .setPositiveButton("OK") { dialog, which ->
-                dialog.dismiss()
-            }
-            .show()
+        val confirmDialog = ConfirmDialog(
+            object : DialogCustomInterface {
+                override fun onClickYesButton(id: Int) {
+                }
+            },
+            title = "Not Enough Coins",
+            content = "You don't have enough coins to buy ${clickedItem.name}.",
+            buttonText = "OK",
+            id = -1
+        )
+
+        confirmDialog.isCancelable = false
+        confirmDialog.show(supportFragmentManager, "ConfirmDialog")
     }
 
     private fun handlePurchase(clickedItem: ShopItem) {

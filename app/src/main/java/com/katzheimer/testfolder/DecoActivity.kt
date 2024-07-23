@@ -105,18 +105,21 @@ class DecoActivity : AppCompatActivity(), ShopItemsAdapter.OnItemClickListener {
     }
 
     private fun showConfirmationDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Save Confirmation")
-            .setMessage("Do you want to save and move to the room?")
-            .setPositiveButton("Yes") { dialog, which ->
-                val intent = Intent(this, CatRoomActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            .setNegativeButton("No") { dialog, which ->
-                dialog.dismiss()
-            }
-            .show()
+        val dialog = ConfirmDialog(
+            confirmDialogInterface = object : DialogCustomInterface {
+                override fun onClickYesButton(id: Int) {
+                    val intent = Intent(this@DecoActivity, CatRoomActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            },
+            title = "Save Confirmation",
+            content = "Do you want to save and move to the room?",
+            buttonText = "Yes",
+            id = 1 // or any other identifier you need
+        )
+
+        dialog.show(supportFragmentManager, "ConfirmDialog")
     }
 
     override fun onBackPressed() {
