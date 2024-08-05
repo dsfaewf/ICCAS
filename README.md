@@ -2,6 +2,14 @@
 
 ## Katzheimer
 
+### Award
+
+## Awarded at EKC2024 Life and Science Poster Session
+![image](https://github.com/user-attachments/assets/db0bac8a-83d6-4f11-ab57-377018581b6e)
+
+![image](https://github.com/user-attachments/assets/15915938-721e-4d55-a77e-2d76894cd579)
+
+
 ### Overview and Background
   ![image](https://github.com/user-attachments/assets/6be31fe2-d6f8-4c57-b0cf-7be323948133)
 
