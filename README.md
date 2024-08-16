@@ -40,7 +40,7 @@ Enhancing cognitive function not only helps prevent Alzheimer’s but also boost
 
 허진영 | 강우석 | 윤별 | 심준혁
 ---|---|---|---|
-[JINYOUNG HEO](https://github.com/JinYoung-Heo) | [USEOK KANG](https://github.com/MuHaRVEY) | [YOON BYUL](https://github.com/YOON331) | [JUNHYOEK SIM](https://github.com/dsfaewf)
+[JINYOUNG HEO](https://github.com/JinYoung-Heo) | [USEOK KANG](https://github.com/MuHaRVEY) | [BYUL YOON](https://github.com/YOON331) | [JUNHYOEK SIM](https://github.com/dsfaewf)
 ---
 
 ### 설치방법
