@@ -4,7 +4,7 @@
 
 ### Award
 
-## Awarded at EKC2024 Life and Science Poster Session
+## Awarded at EKC2024 Life Science and Health Section Poster Session
 ![image](https://github.com/user-attachments/assets/db0bac8a-83d6-4f11-ab57-377018581b6e)
 
 ![image](https://github.com/user-attachments/assets/15915938-721e-4d55-a77e-2d76894cd579)
