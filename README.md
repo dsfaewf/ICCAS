@@ -2,6 +2,13 @@
 
 ## Katzheimer
 
+### 설치방법 Download 
+
+임시 구글 드라이브 url 입니다
+[Download : Google Drive Link](https://drive.google.com/file/d/1TElKNRbNJZfpIYmMTzO9KV5U1pREust4/view)
+ 
+---
+
 ### Award
 
 ## Awarded at EKC2024 Life Science and Health Section Poster Session
@@ -41,13 +48,6 @@ Enhancing cognitive function not only helps prevent Alzheimer’s but also boost
 허진영 | 강우석 | 윤별 | 심준혁
 ---|---|---|---|
 [JINYOUNG HEO](https://github.com/JinYoung-Heo) | [USEOK KANG](https://github.com/MuHaRVEY) | [BYUL YOON](https://github.com/YOON331) | [JUNHYOEK SIM](https://github.com/dsfaewf)
----
-
-### 설치방법
-
-임시 구글 드라이브 url 입니다
-[Download : Google Drive Link](https://drive.google.com/file/d/1TElKNRbNJZfpIYmMTzO9KV5U1pREust4/view)
- 
 ---
 
 ### 의존성
