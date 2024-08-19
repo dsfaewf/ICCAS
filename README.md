@@ -45,7 +45,8 @@ Enhancing cognitive function not only helps prevent Alzheimer’s but also boost
 
 ### 설치방법
 
-QR code.
+임시 구글 드라이브 url 입니다
+[Download : Google Drive Link](https://drive.google.com/file/d/1TElKNRbNJZfpIYmMTzO9KV5U1pREust4/view)
  
 ---
 
